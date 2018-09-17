@@ -1,0 +1,69 @@
+﻿生成启动时间为 2018-04-26 11:55:04。
+     1>项目“E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\chargingTriple\chargingTriple.vcxproj”在节点 2 上(Build 个目标)。
+     1>CustomBuild:
+         Moc'ing charging.h...
+         Uic'ing charging.ui...
+         Moc'ing ui_charg_grid.h...
+         Moc'ing CommandQueue.h...
+         Moc'ing win_qextserialport.h...
+         Moc'ing qextserialbase.h...
+         Rcc'ing charging.qrc...
+     1>RCC : warning : No resources in 'E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\chargingTriple\charging.qrc'.
+         
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I.\GeneratedFiles /I. /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include /I.\GeneratedFiles\Debug /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtCore /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtGui /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimedia /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimediaWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtNetwork /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQuick /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSql /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtTest /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebKit /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\ActiveQt /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtBluetooth /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtConcurrent /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtHelp /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtOpenGL /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtPrintSupport /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtDeclarative /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtScript /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSensors /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSvg /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebkitWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXmlPatterns /Zi /nologo /W1 /WX- /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_MULTIMEDIA_LIB /D QT_MULTIMEDIAWIDGETS_LIB /D QT_NETWORK_LIB /D QT_QML_LIB /D QT_QUICK_LIB /D QT_SQL_LIB /D QT_TESTLIB_LIB /D QT_BLUETOOTH_LIB /D QT_CONCURRENT_LIB /D QT_HELP_LIB /D QT_OPENGL_LIB /D QT_PRINTSUPPORT_LIB /D QT_DECLARATIVE_LIB /D QT_SCRIPT_LIB /D QT_SENSORS_LIB /D QT_SVG_LIB /D QT_WEBKITWIDGETS_LIB /D QT_WIDGETS_LIB /D QT_XML_LIB /D QT_XMLPATTERNS_LIB /D _MBCS /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt charging.cpp CommandQueue.cpp GeneratedFiles\Debug\moc_charging.cpp GeneratedFiles\Debug\moc_CommandQueue.cpp GeneratedFiles\Debug\moc_qextserialbase.cpp GeneratedFiles\Debug\moc_ui_charg_grid.cpp GeneratedFiles\Debug\moc_win_qextserialport.cpp init.cpp main.cpp operatorfile.cpp qextserialbase.cpp ReadIniFile.cpp SerialPort.cpp serial_op.cpp thread.cpp timer.cpp ui_show.cpp useful.cpp win_qextserialport.cpp
+         charging.cpp
+         CommandQueue.cpp
+         moc_charging.cpp
+         moc_CommandQueue.cpp
+         moc_qextserialbase.cpp
+         moc_ui_charg_grid.cpp
+         moc_win_qextserialport.cpp
+         init.cpp
+         main.cpp
+         operatorfile.cpp
+         qextserialbase.cpp
+         ReadIniFile.cpp
+         SerialPort.cpp
+         serial_op.cpp
+         thread.cpp
+         timer.cpp
+         ui_show.cpp
+         useful.cpp
+         win_qextserialport.cpp
+         正在生成代码...
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I.\GeneratedFiles /I. /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include /I.\GeneratedFiles\Debug /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtCore /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtGui /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimedia /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimediaWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtNetwork /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQuick /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSql /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtTest /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebKit /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\ActiveQt /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtBluetooth /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtConcurrent /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtHelp /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtOpenGL /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtPrintSupport /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtDeclarative /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtScript /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSensors /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSvg /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebkitWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXmlPatterns /Zi /nologo /W1 /WX- /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_MULTIMEDIA_LIB /D QT_MULTIMEDIAWIDGETS_LIB /D QT_NETWORK_LIB /D QT_QML_LIB /D QT_QUICK_LIB /D QT_SQL_LIB /D QT_TESTLIB_LIB /D QT_BLUETOOTH_LIB /D QT_CONCURRENT_LIB /D QT_HELP_LIB /D QT_OPENGL_LIB /D QT_PRINTSUPPORT_LIB /D QT_DECLARATIVE_LIB /D QT_SCRIPT_LIB /D QT_SENSORS_LIB /D QT_SVG_LIB /D QT_WEBKITWIDGETS_LIB /D QT_WIDGETS_LIB /D QT_XML_LIB /D QT_XMLPATTERNS_LIB /D _MBCS /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt GeneratedFiles\qrc_charging.cpp
+         qrc_charging.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I.\GeneratedFiles /I. /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include /I.\GeneratedFiles\Debug /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtCore /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtGui /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimedia /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimediaWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtNetwork /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQuick /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSql /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtTest /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebKit /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\ActiveQt /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtBluetooth /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtConcurrent /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtHelp /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtOpenGL /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtPrintSupport /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtDeclarative /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtScript /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSensors /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSvg /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebkitWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXml /IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXmlPatterns /Zi /nologo /W1 /WX- /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_MULTIMEDIA_LIB /D QT_MULTIMEDIAWIDGETS_LIB /D QT_NETWORK_LIB /D QT_QML_LIB /D QT_QUICK_LIB /D QT_SQL_LIB /D QT_TESTLIB_LIB /D QT_BLUETOOTH_LIB /D QT_CONCURRENT_LIB /D QT_HELP_LIB /D QT_OPENGL_LIB /D QT_PRINTSUPPORT_LIB /D QT_DECLARATIVE_LIB /D QT_SCRIPT_LIB /D QT_SENSORS_LIB /D QT_SVG_LIB /D QT_WEBKITWIDGETS_LIB /D QT_WIDGETS_LIB /D QT_XML_LIB /D QT_XMLPATTERNS_LIB /D _MBCS /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt ui_charg_grid.cpp
+         ui_charg_grid.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /l"0x0409" /nologo /fo"x64\Debug\charging.res" charging.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\x64\Debug\\chargingV2.exe" /NOLOGO /LIBPATH:C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\qtmaind.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Cored.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Guid.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Multimediad.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5MultimediaWidgetsd.lib data_send.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Networkd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Qmld.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Quickd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Sqld.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Testd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5WebKitd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5AxContainerd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5AxBased.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Bluetoothd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Concurrentd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Helpd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5OpenGLd.lib opengl32.lib glu32.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5PrintSupportd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Declaratived.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Scriptd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Sensorsd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Svgd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5WebkitWidgetsd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Widgetsd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5Xmld.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5XmlPatternsd.lib C:\Qt\Qt5.3.0\5.3\msvc2013_64\lib\Qt5AxBase.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\x64\Debug\chargingV2.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\x64\Debug\chargingV2.lib" /MACHINE:X64 x64\Debug\charging.res
+         x64\Debug\charging.obj
+         x64\Debug\CommandQueue.obj
+         x64\Debug\moc_charging.obj
+         x64\Debug\moc_CommandQueue.obj
+         x64\Debug\moc_qextserialbase.obj
+         x64\Debug\moc_ui_charg_grid.obj
+         x64\Debug\moc_win_qextserialport.obj
+         x64\Debug\qrc_charging.obj
+         x64\Debug\init.obj
+         x64\Debug\main.obj
+         x64\Debug\operatorfile.obj
+         x64\Debug\qextserialbase.obj
+         x64\Debug\ReadIniFile.obj
+         x64\Debug\SerialPort.obj
+         x64\Debug\serial_op.obj
+         x64\Debug\thread.obj
+         x64\Debug\timer.obj
+         x64\Debug\ui_show.obj
+         x64\Debug\useful.obj
+         x64\Debug\win_qextserialport.obj
+         x64\Debug\ui_charg_grid.obj
+         chargingTriple.vcxproj -> E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\x64\Debug\chargingV2.exe
+     1>已完成生成项目“E:\0Chenlin\MyProject\WorkSpace\ChargingV2\Project\chargingTriple\chargingTriple.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:37.13
