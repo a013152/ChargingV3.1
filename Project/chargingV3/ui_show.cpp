@@ -404,16 +404,15 @@ QAction * charging::createMenus()
 	m_menuSys->addAction(action10);
 	connect(action10, SIGNAL(triggered()), this, SLOT(OnBtnShowDebugInfo()));
 	
-	
-	//connect(action11, SIGNAL(triggered()), this, SLOT(onOpenLoginDialog()));
-	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
-	QAction * action11 = new QAction("串口设备", m_menuSys);
-	m_menuSys->addAction(action11);
 
 	QAction * action12 = new QAction("CAN设备", m_menuSys);
 	m_menuSys->addAction(action12);
 	action12->setCheckable(true);
 	connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOpenCanDevice(bool)));
+
+	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
+	QAction * action11 = new QAction("串口设备", m_menuSys);
+	m_menuSys->addAction(action11);
 
 	QAction * action4 = new QAction("显示信息等级", m_menuSys);
 	m_menuSys->addAction(action4);
@@ -513,13 +512,10 @@ void charging::createChargGrid()
 				p_charge_grid->setBatteryModel(QString::fromLocal8Bit(itBatteryModel->second.droneModel));
 			}
 		}
-		if (CLOSET_TYPE == 1)
-			m_gridLayout->addWidget(p_charge_grid, i / 8, i % 8);
-		else if ( CLOSET_TYPE == 2)
-			m_gridLayout->addWidget(p_charge_grid, i / 5, i % 5);
+		
+		m_gridLayout->addWidget(p_charge_grid, i / 5, i % 5);	
 
 		m_vtUiChargGrid.append(p_charge_grid);
-
 
 		QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::singleClicked, this, &charging::OnBtnChargingOrStopCharging1);
 		QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::doubleClicked, this, &charging::OnBtnDisChargingOrStop1);

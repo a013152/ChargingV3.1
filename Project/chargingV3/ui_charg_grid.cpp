@@ -118,7 +118,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	
 	setBorderColor(0);
 
-	this->setFixedSize(QSize(85, 75)); //设置自身的大小
+	this->setFixedSize(QSize(120, 110)); //设置自身的大小
 	m_strBtnStyleOffline = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Gray.png);}";
 	m_strBtnStyleFree = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal.png);}"
 		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Hover.png);}";
