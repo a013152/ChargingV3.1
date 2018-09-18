@@ -10,10 +10,10 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	isCharging = false;
 	isDisCharging = false; 
 	//groupBox->setGeometry(QRect(20, 60, 281, 121));
-	label = new QLabel("电压", this);
+	label = new QLabel("1电压", this);
 	label->setObjectName(QStringLiteral("label"));
 	label->setGeometry(QRect(20, 70, 41, 20));
-	label_2 = new QLabel("电流", this);
+	label_2 = new QLabel("2电流", this);
 	label_2->setObjectName(QStringLiteral("label_2"));
 	label_2->setGeometry(QRect(80, 70, 41, 20));
 	label_2->setStyleSheet("QLabel{color:white;}");
@@ -40,11 +40,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	progressBar_3->setTextVisible(false);
 	progressBar_3->setOrientation(Qt::Vertical);
 
-
-	label_4 = new QLabel("电池状态", this);
-	label_4->setObjectName(QStringLiteral("label_4"));
-	label_4->setGeometry(QRect(90, 65, 80, 20));
-	label_4->setStyleSheet("QLabel{color:rgb(17,191,255,255);}");
+	 
 
 	label_5 = new QLabel("M100", this);
 	label_5->setObjectName(QStringLiteral("label_5"));
@@ -69,7 +65,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 
 	pushButton = new DoubleClickedButton("", this);  //充电
 	pushButton->setObjectName(QStringLiteral("pushButton")); 
-	pushButton->setGeometry(QRect(0, 3, 85, 73));
+	pushButton->setGeometry(QRect(0, 3, 110, 95));
 	//pushButton->setStyleSheet("QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Gray.png);}");
 	/*static int i = 0;
 	i++;
@@ -118,7 +114,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	
 	setBorderColor(0);
 
-	this->setFixedSize(QSize(120, 110)); //设置自身的大小
+	this->setFixedSize(QSize(110, 95)); //设置自身的大小
 	m_strBtnStyleOffline = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Gray.png);}";
 	m_strBtnStyleFree = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal.png);}"
 		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Hover.png);}";
@@ -206,7 +202,6 @@ void ui_charg_grid::setTemperature(float tem)
 void ui_charg_grid::setBatteryState(QString strState ,QString strVol)
 {
 	//需要加载不同的图片
-	//label_4->setText(strState);
 	if (strState == "电池在线")
 	{ 
 		//判断电压
@@ -305,7 +300,7 @@ void ui_charg_grid::setBorderColor(int iState)
 	if (iState == 0){ 
 		//this->setStyleSheet("QGroupBox{border: 2px solid red;}QGroupBox:title{font: bold 14px;color:white;}");
 		QString str = this->styleSheet();
-		this->setStyleSheet("QGroupBox{font-size:16px;font-weight:bold;border: 2px solid gray;border-radius:8px;margin-top:6px;}\
+		this->setStyleSheet("QGroupBox{font-size:20px;font-weight:bold;border: 0px solid gray;border-radius:8px;margin-top:6px;}\
 						QGroupBox:title{color:white;subcontrol-origin: margin;left: 0px;}");
 		str = this->styleSheet();
 	}

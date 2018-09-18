@@ -69,7 +69,7 @@ private:
 	QLabel *label = NULL;    //电压
 	QLabel *label_2 = NULL;	 //电流
 	QLabel *label_3 = NULL;	 //充电器状态
-	QLabel *label_4 = NULL;  //电池 状态
+	 
 	QLabel *label_5 = NULL;	 //电池型号
 	QLabel *label_6 = NULL;	 //文字 电池型号
 	QLabel *label_7 = NULL;	 //文字 电池状态

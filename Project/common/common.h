@@ -18,12 +18,9 @@ extern QString g_AppPath;  //exe路径
 #define MAX_CLOSET  10  //最大柜子数量
 #define MAX_CHARGER 48  //每个柜子最大充电器数量
 
-#define CLOSET_TYPE 1//柜子种类
-#if CLOSET_TYPE==1
-	#define MAX_BATTERY 48  //每个柜子最大电池数量
-#elif CLOSET_TYPE==2
-	#define MAX_BATTERY 30  //每个柜子最大电池数量
-#endif
+ 
+	#define MAX_BATTERY 15  //每个柜子最大电池数量
+
 #define ONE_PAGE_CLOSET 5  //每页柜子数量
 #define ONE_CLOSET_SCAN_COMMAND 14 //每柜子扫描命令数量 3个M 8个G 3个D 一共14个
 

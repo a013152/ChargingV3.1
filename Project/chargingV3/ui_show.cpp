@@ -618,8 +618,7 @@ void charging::adjustUI()
 	setWindowIcon(QIcon(g_AppPath + "/ICon/MainWindow.ico"));
 
 	//设置 电池组区域 尺寸
-	//m_groupBox->setGeometry(QRect(1, 60, 798, 484));
-	m_groupBox->setGeometry(QRect(1, 60, 798, 557));
+	m_groupBox->setGeometry(QRect(100, 100, 698, 507));
 	m_groupBox->setStyleSheet("QGroupBox{border: 0px }");
 	
 
@@ -655,7 +654,7 @@ void charging::adjustUI()
 
 	
 	//设置操作按钮位置、大小、背景图
-	ui.btnMenuSys->setGeometry(QRect(530, 3, 94, 62));
+	ui.btnMenuSys->setGeometry(QRect(580, 3, 94, 62));
 	ui.btnMenuSys->setText("");
 	ui.btnMenuSys->setStyleSheet("QPushButton{border-image: url(" + g_AppPath + "/img/btn_operator.png);}" //
 			"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btn_operator_hover.png);}"
@@ -669,7 +668,7 @@ void charging::adjustUI()
 	//		"QPushButton:pressed{border-image: url(" + g_AppPath + "/img/btn_serial_port.png);}"); //
 
 	//设置操作按钮位置、大小、背景图
-	ui.btnSysClose->setGeometry(QRect(650, 3, 94, 62));
+	ui.btnSysClose->setGeometry(QRect(690, 3, 94, 62));
 	ui.btnSysClose->setText("");
 	ui.btnSysClose->setStyleSheet("QPushButton{border-image: url(" + g_AppPath + "/img/btn_close.png);}"
 			"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btn_close_hover.png);}"
