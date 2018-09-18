@@ -85,11 +85,9 @@ void charging::OnClickMenuCom(QAction * action)
 
 			if (!meTimer->isActive())
 				meTimer->start();
-			if (m_bContinueScan)
-			{
-				printfDebugInfo("开始扫描设备！\n", enDebugInfoPriority::DebugInfoLevelOne);
-				beginScanBatteryState();  
-			}
+			if (m_bContinueScan)			
+				printfDebugInfo("开始扫描设备！\n", enDebugInfoPriority::DebugInfoLevelOne);	
+			beginScanBatteryState();  
 		}
 		else{ 
 			printfDebugInfo("打开串口" + s_preStr + "失败", enDebugInfoPriority::DebugInfoLevelOne);
