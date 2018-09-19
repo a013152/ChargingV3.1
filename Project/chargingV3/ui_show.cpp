@@ -190,10 +190,10 @@ void charging::onOpenOptionWin( )
 		m_pProcess = new QProcess(this);
 
 #if defined(QT_DEBUG)
-	strPath = g_AppPath + "/chargingOption.exe";
-	strExe = "chargingOption.exe";
+	strPath = g_AppPath + "/" + CHARGINGOPTIONPROCESS;
+	strExe = CHARGINGOPTIONPROCESS;
 #   else
-	strExe = "chargingOption.exe";
+	strExe = CHARGINGOPTIONPROCESS;
 #  endif
 
 	// 判断进程是否存在

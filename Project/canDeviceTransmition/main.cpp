@@ -206,6 +206,60 @@ int _tmain(int argc, _TCHAR* argv[])
 	system("mode con cols=100 ");    //调整窗口大小
 	GET_P->m_pPrintfFun = _callbackPrintf;
 	GET_T->m_pPrintfFun = _callbackPrintf;
+	//创建有名管道
+	HANDLE hPipe = 0;
+	DWORD wlen = 0;
+	DWORD rlen = 0;
+	//创建管道
+	hPipe = CreateNamedPipe(
+		TEXT("\\\\.\\Pipe\\canDevicePipe"),						//管道名
+		PIPE_ACCESS_DUPLEX,									//管道类型 
+		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,	//管道参数，双向通信 
+		PIPE_UNLIMITED_INSTANCES,							//管道能创建的最大实例数量
+		0,													//输出缓冲区长度 0表示默认
+		0,													//输入缓冲区长度 0表示默认
+		NMPWAIT_WAIT_FOREVER,								//超时时间,NMPWAIT_WAIT_FOREVER为不限时等待
+		NULL);
+	if (INVALID_HANDLE_VALUE == hPipe)
+	{
+		printf("创建管道失败:%d ", GetLastError());
+		system("PAUSE");
+	}
+	else{
+		printf("创建管道完成，等待主进程连接管道\n");
+		//等待客户端连接管道
+		ConnectNamedPipe(hPipe, NULL);
+		printf("主进程接入管道\n");
+		while (true)
+		{
+			char rbuf[256] = "";
+			char wbuf[256] = "";
+			if (ReadFile(hPipe, rbuf, sizeof(rbuf), &rlen, 0) != FALSE)	//接受服务发送过来的内容
+			{
+				printf("接收主进程信息: data = %s, size = %d\n", rbuf, rlen);
+				
+				if (strcmp(rbuf, "0xff") == 0)
+				{
+					sprintf_s(wbuf, 256 ,"进程即将退出！\n");
+					
+					WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
+					Sleep(1000);
+					break;
+				}
+				strcpy_s(wbuf, 256, rbuf);
+
+				WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
+
+				 
+			}
+		}
+	}
+	CloseHandle(hPipe);
+
+	return 0;
+
+
+
 	int a = 0;
 	displayOption();
 	while (true)

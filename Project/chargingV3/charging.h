@@ -52,6 +52,9 @@ extern QString g_winTitle;
 extern QString g_AppPath;
 
 #define DBHOSTNAME "119.23.48.100"
+#define CHARGINGOPTIONPROCESS  "chargingOption.exe"  //设置程序名称（修改电池电压……的进程）
+#define CANDEVICETRANSMITION "canDeviceTransmition.exe" //can 设备通讯进程
+
 
 //设置窗口置顶
 void SetWindowTop(char * _szAppName);
@@ -250,6 +253,19 @@ public:
 	//void paintEvent(QPaintEvent *);
 
 	void extractNumber(QString strSrouce, int& iNumber);  //提取数字
+
+
+	public:
+		//操作can设备进程函数
+		//开启进程 
+		bool startCanDeviceProcess();
+		//关闭进程
+		bool clossCanDeviceProcess();
+		//发送
+		int sendToCanDeviceProcess(char * szData, int nLength);
+		//接收
+		int receiveFromCanDeviceProcess(char * szData);
+
 private:
 	bool m_LButtonPress = false; //按下标志
 	QPoint m_MousePrePoint;  //鼠标位置
