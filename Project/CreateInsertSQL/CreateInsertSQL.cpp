@@ -5,9 +5,9 @@
 #include <string>
 #include <stdlib.h>
 
-#define BASEDBID 673  //数据库id起址
-#define BASELOCALID 100  //本地的电池id起址  1号柜=100， 2号柜=200
-#define ONELOOP 48		//单柜充电器数量
+#define BASEDBID 723  //数据库id起址
+#define BASELOCALID 151  //本地的电池id起址  1号柜=100， 2号柜=200
+#define ONELOOP 15		//单柜充电器数量
 #define BASETIME 1		//
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -18,7 +18,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		for (int i = 1; i <= ONELOOP; i++){
 			//('my_id','local_id','unit_num','battery_type','state','owner','temperature','voltage','current','message','count')
 			sprintf_s(szSQL, "INSERT INTO battery VALUES(%d, %d, 1,'%s', '未放置电池',0, 0, 0, 0, '',0);\n",
-				i + BASEDBID + (iCloset)* ONELOOP, i + BASELOCALID + (iCloset)* 100, i <= 40 ? "PHANTOM4" : "S1000");
+				i + BASEDBID + (iCloset)* ONELOOP, i + BASELOCALID + (iCloset)* 15,  "PHANTOM4" );
 
 			strSQL += szSQL;
 

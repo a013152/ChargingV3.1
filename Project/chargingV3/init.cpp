@@ -37,7 +37,7 @@ void charging::init_now()
 	createClosetRadio();
 	//printfDebugInfo("05创建柜子编号控件，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	//qtime1.restart();
-	//创建充电格控件
+	//创建充电格控件+ 充电器层级
 	createChargGrid();
 	//printfDebugInfo("06创建充电格控件，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	//qtime1.restart(); 
@@ -93,7 +93,7 @@ void charging::readConfig()
 	{
 		
 		//整合配置内容
-		combineConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger);
+		combineConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger, m_mapLevel);
 		//if (init_)
 		{
 			for (MAP_BATTERY_IT it = m_mapBattery.begin(); it != m_mapBattery.end(); it++ )
@@ -203,29 +203,16 @@ void charging::initConnectWidget()
 	
 }
 //整合配置内容,
-void charging::combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, MAP_CHARGER& mapCharger/*, MAP_RELAY& mapRelay*/)
+void charging::combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, 
+	MAP_CHARGER& mapCharger, MAP_LEVEL& mapLevel)
 {
 	int nTempId = 0;
 	QString strTemp; 
 	MAP_CHARGER_IT itCharger;
 	MAP_BATTERY_IT itBattery;
 	MAP_CLOSET_IT itCloset;
+	MAP_LEVEL_IT itLevel;
 
-	for (itBattery = m_mapBattery.begin(); itBattery != m_mapBattery.end(); itBattery++)
-	{
-		//关联电池与充电器
-		itCharger = m_mapCharger.find(itBattery->second.relatedCharger);
-		if (itCharger != m_mapCharger.end()){
-			stBatteryInfo obj(itBattery->second);
-		}
-		// 关联电池与充电柜
-		nTempId = itBattery->first / 100;
-		itCloset = m_mapCloset.find(nTempId);
-		if (itCloset != m_mapCloset.end()){
-			stBatteryInfo obj(itBattery->second);
-			itCloset->second.mapBattery.insert(MAP_BATTERY::value_type(atoi(obj.id), obj));
-		} 
-	}
 	for (itCharger = m_mapCharger.begin(); itCharger != m_mapCharger.end(); itCharger++)
 	{
 		// 关联充电器与充电柜
@@ -235,7 +222,43 @@ void charging::combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP
 			stCharger obj(itCharger->second);
 			itCloset->second.mapCharger.insert(MAP_CHARGER::value_type(obj.id, obj));
 		}
+		//根据充电器的nLevel创建层级
+		itLevel = mapLevel.find(itCharger->second.nLevel);
+		if (itLevel != mapLevel.end()){
+			stCharger obj(itCharger->second);
+			itLevel->second.mapCharger.insert(MAP_CHARGER::value_type(obj.id, obj));
+		}
+		else{
+			stLevel objLevel; stCharger objCharger(itCharger->second);
+			objLevel.nLevel = itCharger->second.nLevel;			
+			objLevel.mapCharger.insert(MAP_CHARGER::value_type(objCharger.id, objCharger));
+			mapLevel.insert(MAP_LEVEL::value_type(objLevel.nLevel, objLevel));
+		}
 	}
+
+	for (itBattery = m_mapBattery.begin(); itBattery != m_mapBattery.end(); itBattery++)
+	{
+		//关联电池与充电器
+		itCharger = m_mapCharger.find(itBattery->second.relatedCharger);
+		if (itCharger != m_mapCharger.end()){
+			
+			//电池再根据充电器，关联层级
+			itLevel = mapLevel.find(itCharger->second.nLevel);
+			if (itLevel != mapLevel.end()){
+				stBatteryInfo obj(itBattery->second);
+				itLevel->second.mapBattery.insert(MAP_BATTERY::value_type(atoi(obj.id), obj));
+			}
+
+		}
+		// 关联电池与充电柜
+		nTempId = itBattery->first / 100;
+		itCloset = m_mapCloset.find(nTempId);
+		if (itCloset != m_mapCloset.end()){
+			stBatteryInfo obj(itBattery->second);
+			itCloset->second.mapBattery.insert(MAP_BATTERY::value_type(atoi(obj.id), obj));
+		} 
+	}
+	
 	return; 
 }  
 

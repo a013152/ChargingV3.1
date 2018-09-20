@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <map>
+#include <vector>
 #include <stdlib.h>
 #include<cmath>
 #include <QString>
@@ -87,11 +88,21 @@ struct  stBatteryInfo
 	}
 };
 
+
+
+//充电器类型 add 20180920
+enum enChargerType
+{
+	DJI_Charger = 0,   //大疆充电槽
+	NF_Charger = 1		//能飞充电板
+};
+
 //充电器信息
 struct stCharger
 {
 	unsigned int id;  //充电器编号
-	//unsigned int relatedRelay;	//关联继电器
+	unsigned int nLevel;	//所在层数
+	enChargerType chargerType;  //充电器类型
 	//std::map<unsigned int, stBatteryInfo> mapBattery;//电池列表（映射）1个充电器最多带三个电池
 	QTime timeLockChargingState;   //2秒内禁止刷新充电器状态
 	QString beginChergeTime;       //充电开始时间 add20180521
@@ -107,7 +118,7 @@ struct stCharger
 	float fCurrent;			//电流
 	//bool bNeedReadVol;  //需要读取电压标志
 	unsigned int nScanWatchDog;  //在线状态看门狗，用于判断不在线
-	stCharger() :id(0), isChargingPre(false), isCharging(false), bOnline(false),
+	stCharger() :id(0), nLevel(0), chargerType(NF_Charger), isChargingPre(false), isCharging(false), bOnline(false),
 		isDisCharging(false), /*bNeedReadVol(false),*/ nScanWatchDog(0), 
 		isOverHeat(false), nSeekT(0), nSeekV(0), fCurrent(0)
 	{
@@ -120,8 +131,8 @@ struct stCharger
 	stCharger(const stCharger& other)   //拷贝构造函数   
 	{
 		this->id = other.id;
-		//this->relatedRelay = other.relatedRelay;
-		//this->mapBattery = other.mapBattery;
+		this->nLevel = other.nLevel;
+		this->chargerType = other.chargerType;
 		this->isChargingPre = other.isChargingPre;
 		this->isCharging = other.isCharging;
 		this->isDisCharging = other.isDisCharging;
@@ -210,7 +221,16 @@ struct stCharger
 	}
 };
 
+// 层结构体 20180920
+struct stLevel
+{
+	unsigned int nLevel;
+	std::map<unsigned int, stBatteryInfo> mapBattery;
+	std::map<unsigned int, stCharger> mapCharger;
+	stLevel() :nLevel(0){
 
+	}
+};
 //继电器信息
 struct stRelay
 {
@@ -293,6 +313,10 @@ typedef std::map<unsigned int, stBatteryModelInfo>::iterator MAP_BATTERY_MODEL_I
 
 typedef std::map<unsigned int, stCharger> MAP_CHARGER; //充电器
 typedef std::map<unsigned int, stCharger>::iterator MAP_CHARGER_IT;
+
+typedef std::map<unsigned int, stLevel> MAP_LEVEL; //层
+typedef std::map<unsigned int, stLevel>::iterator MAP_LEVEL_IT; 
+
 
 //typedef std::map<unsigned int, stRelay> MAP_RELAY; //继电器
 //typedef std::map<unsigned int, stRelay>::iterator MAP_RELAY_IT;

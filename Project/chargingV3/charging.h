@@ -160,7 +160,7 @@ private:
 	void addChargerScanTime();
 
 	//整合配置内容
-	void combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, MAP_CHARGER& mapCharger/*, MAP_RELAY& mapRelay*/);
+	void combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, MAP_CHARGER& mapCharger, MAP_LEVEL& mapRelay);
 
 	//拼装命令，加入发送队列
 	void toSend(QString command, stCommand::enPriority enPriority = stCommand::normal);
@@ -331,7 +331,7 @@ private slots :
 	
 	QAction * serial_scan(QAction *);//扫描串口创建菜单
 
-	void createChargGrid(); //创建充电UI格
+	void createChargGrid(); //创建充电UI格+ 充电器层级
 
 	void createDebugInfoUI(); //创建调试信息界面区域
 
@@ -411,7 +411,7 @@ private:
 private:
 	//读取的文件配置
 	MAP_CLOSET m_mapCloset;  MAP_BATTERY_MODEL m_mapBatteryModel; MAP_BATTERY m_mapBattery;
-	 MAP_CHARGER m_mapCharger;
+	MAP_CHARGER m_mapCharger;  MAP_LEVEL m_mapLevel;
 	int m_iError = 0;
 	 
 	//命令队列
@@ -427,6 +427,7 @@ private:
 	QGridLayout* m_gridLayout;  //格子布局
 	QGroupBox* m_groupBox;		//格子组
 	QVector< ui_charg_grid*> m_vtUiChargGrid;	//电池格子
+	QVector<QPushButton*> m_vtUiLevelBtn; //层级ui按钮（导航栏） //add 20180920
 
 	QGroupBox* m_GroupBox_DebugInfo = nullptr;	 //调试信息显示组
 	QLabel* m_Label_DebugInfo = nullptr;	 //调试信息显示

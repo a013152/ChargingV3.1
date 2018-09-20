@@ -1,0 +1,24 @@
+[2018-07-27 15:20:56.6198] [ag.j] [Error]:       
+发送失败：System.InvalidOperationException: 端口被关闭。
+   在 System.IO.Ports.SerialPort.Write(Byte[] buffer, Int32 offset, Int32 count)
+   在 ag.j(Byte A_0, Byte A_1, Byte A_2, Byte A_3, Byte A_4, UInt16 A_5, Boolean A_6, Byte A_7, Byte[] A_8, Int32 A_9, Int32 A_10)       
+[] [Timer.MyTimerCallback => ag.a => ag.j] []
+
+[2018-07-27 15:20:57.5079] [ag.j] [Error]:       
+发送失败：System.InvalidOperationException: 端口被关闭。
+   在 System.IO.Ports.SerialPort.Write(Byte[] buffer, Int32 offset, Int32 count)
+   在 ag.j(Byte A_0, Byte A_1, Byte A_2, Byte A_3, Byte A_4, UInt16 A_5, Boolean A_6, Byte A_7, Byte[] A_8, Int32 A_9, Int32 A_10)       
+[] [Timer.MyTimerCallback => ag.a => ag.j] []
+
+[2018-07-27 15:20:58.5219] [ag.j] [Error]:       
+发送失败：System.InvalidOperationException: 端口被关闭。
+   在 System.IO.Ports.SerialPort.Write(Byte[] buffer, Int32 offset, Int32 count)
+   在 ag.j(Byte A_0, Byte A_1, Byte A_2, Byte A_3, Byte A_4, UInt16 A_5, Boolean A_6, Byte A_7, Byte[] A_8, Int32 A_9, Int32 A_10)       
+[] [Timer.MyTimerCallback => ag.a => ag.j] []
+
+[2018-07-27 15:20:59.5360] [ag.j] [Error]:       
+发送失败：System.InvalidOperationException: 端口被关闭。
+   在 System.IO.Ports.SerialPort.Write(Byte[] buffer, Int32 offset, Int32 count)
+   在 ag.j(Byte A_0, Byte A_1, Byte A_2, Byte A_3, Byte A_4, UInt16 A_5, Boolean A_6, Byte A_7, Byte[] A_8, Int32 A_9, Int32 A_10)       
+[] [Timer.MyTimerCallback => ag.a => ag.j] []
+
