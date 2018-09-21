@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5DD5572B-7DE9-4B3C-8BCE-345063E38646}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
+    <ProjectName>chargingOption</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

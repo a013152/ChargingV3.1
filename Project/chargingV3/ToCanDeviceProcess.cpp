@@ -70,6 +70,11 @@ bool closeProcessFromName( DWORD dwTH32ProcessID)
 	 // 已经知道进程ID,直接关闭
 	HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwTH32ProcessID);
 	bResult = TerminateProcess(hProcess, 0);
+	if (bResult)
+	{
+		s_canDeviceProcessId = 0;
+		s_hPipe = 0;
+	}
 	return bResult;
 }
 
@@ -153,6 +158,9 @@ bool charging::clossCanDeviceProcess()
 			sendToCanDeviceProcess(szExit, 5);
 			char szTemp[256] = { 0 }; 
 			receiveFromCanDeviceProcess(szTemp);
+			s_canDeviceProcessId = 0;
+			CloseHandle(s_hPipe);
+			s_hPipe = 0;
 			return 0;
 		}
 		closeProcessFromName(s_canDeviceProcessId);
@@ -184,7 +192,7 @@ int charging::receiveFromCanDeviceProcess(char * szData)
 	{
 		DWORD rlen = 0;
 		ReadFile(s_hPipe, szData, 256, &rlen, NULL); //接受CAN进程发送过来的内容
-		QString strQ = "接收："; strQ += szData;
+		QString strQ = "接收："; strQ += QString(szData);  
 		printfDebugInfo(strQ, enDebugInfoPriority::DebugInfoLevelOne);
 	}
 	return 0;
@@ -206,7 +214,7 @@ void charging::onOpenCanDevice(bool checked)
 	if (i == 0){
 		startCanDeviceProcess();
 	}
-	if (++i > 5)
+	if (++i > 2)
 	{
 		clossCanDeviceProcess();
 		i = 0;

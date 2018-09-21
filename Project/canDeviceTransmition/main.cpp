@@ -240,7 +240,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				
 				if (strcmp(rbuf, "0xff") == 0)
 				{
-					sprintf_s(wbuf, 256 ,"进程即将退出！\n");
+					sprintf_s(wbuf, 256 ,"CAN device Process will exit！\n");
 					
 					WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
 					Sleep(1000);

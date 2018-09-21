@@ -1,0 +1,34 @@
+#pragma once
+#include "resource.h"
+
+// CPage3_SetAddressCAN 对话框
+
+class CPage3_SetAddressCAN : public CDialogEx
+{
+	DECLARE_DYNAMIC(CPage3_SetAddressCAN)
+
+public:
+	CPage3_SetAddressCAN(CWnd* pParent = NULL);   // 标准构造函数
+	virtual ~CPage3_SetAddressCAN();
+
+// 对话框数据
+	enum { IDD = IDD_DIALOG3 };
+	void setStateRect(CRect &rect);//设置group边框
+	void setSendFun(SENDCOMMAND fun){ m_pPrintfFun = fun; }//设置发送函数指针
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
+
+	DECLARE_MESSAGE_MAP()
+public:
+	virtual BOOL OnInitDialog();
+	afx_msg void OnPaint();
+
+
+private:
+	SENDCOMMAND m_pPrintfFun = NULL; //发送函数
+	CWnd* m_pParent;
+public:
+	afx_msg void OnBnClickedBtnOpenCan();
+	afx_msg void OnBnClickedBtnCloseCan();
+};
