@@ -490,7 +490,7 @@ void charging::oneClosetCharging()
 }
 
 
-//创建充电UI格
+//创建充电UI格+ 充电器层级
 void charging::createChargGrid()
 {
 	m_gridLayout = new QGridLayout(this);
@@ -547,10 +547,8 @@ void charging::createChargGrid()
 	//		}
 	//	} 
 	//	m_vtUiChargGrid.append(p_charge_grid); 
-
 	//	QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::singleClicked, this, &charging::OnBtnChargingOrStopCharging1);
 	//	QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::doubleClicked, this, &charging::OnBtnDisChargingOrStop1);
-
 	//	//定制非智能状态
 	//	p_charge_grid->setFixedSize(QSize(85*2 +12, 70));
 	//	p_charge_grid->setGeometry(QRect(19 + ((i - 40) * 193), 523, 85 * 2 + 12, 73));
@@ -566,6 +564,25 @@ void charging::createChargGrid()
 	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Red_W.png);}";
 	//	p_charge_grid->setChargerState(STATE_OFFLINE);
 	//}
+
+	//创建层级
+	QString strPushButton;
+	QRect rect_;
+	int count = 1;
+	for (auto itLevel : m_mapLevel)
+	{
+		strPushButton = QString("%1层").arg(itLevel.first);
+		QPushButton* pushButton = new QPushButton(strPushButton, this);
+		//设置位置
+		rect_.setLeft(20);
+		rect_.setTop(50 + 50 * count++);
+		rect_.setWidth(90);
+		rect_.setHeight(30);
+		pushButton->setGeometry(rect_);
+
+		m_vtUiLevelBtn.append(pushButton);
+	}
+	
 }
 
 //创建ui：调试信息区域

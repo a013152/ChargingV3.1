@@ -146,7 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="canDevice.cpp" />
+    <ClCompile Include="ToCanDeviceProcess.cpp" />
     <ClCompile Include="charging.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="DoubleClickedButton.cpp" />
