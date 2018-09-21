@@ -6,6 +6,7 @@
 #include "MyQComboBox.h"
 
 QString g_AppPath;
+QString g_winTitle;
 
 
 chargingOption::chargingOption(QWidget *parent)
@@ -529,7 +530,11 @@ void chargingOption::OnBtnDel2()
 void chargingOption::SendChargingProgramToReadConfig()
 {
 	HWND hwnd = NULL;
-	LPWSTR path = (LPWSTR)g_winTitle.utf16();  //g_winTitle = "智能充电保护箱" //默认名称
+	int iError = 0;
+	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", g_AppPath + "\\set.ini", &iError);
+	if (iError != 0)
+		g_winTitle = MAIN_WINDOW_TITLE;
+	LPWSTR path = (LPWSTR)g_winTitle.utf16();    
 	hwnd = ::FindWindowW(NULL, path);
 	if (::IsWindow(hwnd))
 	{		 

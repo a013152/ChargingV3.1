@@ -25,7 +25,7 @@
 #endif
 
 const ULONG_PTR CUSTOM_TYPE = 10000;
-extern QString g_winTitle = MAIN_WINDOW_TITLE;
+extern QString g_winTitle ;
 
 
 extern QString g_AppPath;
