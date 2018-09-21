@@ -9,10 +9,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateInsertSQL", "CreateIn
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chargingV3", "chargingV3\chargingV3.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
+<<<<<<< HEAD
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "canDeviceTransmition", "canDeviceTransmition\canDeviceTransmition.vcxproj", "{BB6D7E8C-6F4B-420F-84E2-89AFBB36CA4E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chargerDebuger", "ChargingDebuger\ChargerDebuger.vcxproj", "{7C619CED-63B8-48E1-96D7-970D6B76A3AD}"
 EndProject
+=======
+>>>>>>> c71452081e820657e00b920e363d814ccfed1cd8
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -43,6 +46,7 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
+<<<<<<< HEAD
 		{BB6D7E8C-6F4B-420F-84E2-89AFBB36CA4E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{BB6D7E8C-6F4B-420F-84E2-89AFBB36CA4E}.Debug|Win32.Build.0 = Debug|Win32
 		{BB6D7E8C-6F4B-420F-84E2-89AFBB36CA4E}.Debug|x64.ActiveCfg = Debug|Win32
@@ -55,6 +59,8 @@ Global
 		{7C619CED-63B8-48E1-96D7-970D6B76A3AD}.Release|Win32.ActiveCfg = Release|Win32
 		{7C619CED-63B8-48E1-96D7-970D6B76A3AD}.Release|Win32.Build.0 = Release|Win32
 		{7C619CED-63B8-48E1-96D7-970D6B76A3AD}.Release|x64.ActiveCfg = Release|Win32
+=======
+>>>>>>> c71452081e820657e00b920e363d814ccfed1cd8
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

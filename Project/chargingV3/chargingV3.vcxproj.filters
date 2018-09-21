@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="charging.cpp" />
+    <ClCompile Include="ui_show.cpp" />
     <ClCompile Include="CommandQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,10 +81,7 @@
     <ClCompile Include="win_qextserialport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_show.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToCanDeviceProcess.cpp">
+    <ClCompile Include="canDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,19 +141,19 @@
     <CustomBuild Include="..\common\typedef.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="win_qextserialport.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_loginDialog.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="ui_charg_grid.h">
+      <Filter>Source Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GeneratedFiles\ui_charging.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ui_charg_grid.h">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="GeneratedFiles\ui_loginDialog.h">
+      <Filter>Source Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GeneratedFiles\ui_messageBoxCus.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="win_qextserialport.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

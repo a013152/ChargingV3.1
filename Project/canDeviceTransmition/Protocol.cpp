@@ -3,7 +3,7 @@
 #include "Transmit.h"
 #define GET_T CTransmit::GetInstance()
 
-BYTE g_CAN_ID_Default[2] = { 0x01, 0x05 };//临时的CAN ID 写入与读取;  //当前的CAN ID  0x111
+BYTE g_CAN_ID_Default[2] = { 0x11, 0x01 };//临时的CAN ID 写入与读取;  //当前的CAN ID  0x111
 BYTE g_CAN_ID_Common[2] = { 0xff, 0x07 };//通用的CAN ID 设置DJI 充电槽的can id时使用
 
 BYTE g_DefaultKey = 0xff; //默认密匙 0xff

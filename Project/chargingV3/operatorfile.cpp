@@ -213,11 +213,8 @@ void COperatorFile::readChargerInfo(MAP_CHARGER& mapCharger, int* iError)
 		stCharger obj;
 		transitionContent1(qstrlist[0], qstr2, qba2, szTemp); //id	 
 		obj.id = atoi(szTemp);
-		transitionContent1(qstrlist[1], qstr2, qba2, szTemp); // 层级
-		obj.nLevel = atoi(szTemp);
-		transitionContent1(qstrlist[2], qstr2, qba2, szTemp); // 类型
-		obj.chargerType = (enChargerType)atoi(szTemp);
-		
+		//transitionContent1(qstrlist[1], qstr2, qba2, szTemp); //继电器id	 
+		//obj.relatedRelay = atoi(szTemp);
 
 		mapCharger.insert(MAP_CHARGER::value_type(obj.id, obj));
 	}
