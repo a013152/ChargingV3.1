@@ -24,16 +24,22 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Transmit.h">
+    <ClInclude Include="aes256.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlCAN.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="crc.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Protocol.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="aes256.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="crc.h">
+    <ClInclude Include="Transmit.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,19 +47,19 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TransmitionTest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Transmit.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocol.cpp">
+    <ClCompile Include="aes256.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="crc.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="aes256.c">
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Transmit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

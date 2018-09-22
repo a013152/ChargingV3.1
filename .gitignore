@@ -8,3 +8,9 @@
 *.tlog
 *.obj
 *.obj
+*.suo
+*.ilk
+*.ipch
+*.log
+*.pch
+*.opensdf

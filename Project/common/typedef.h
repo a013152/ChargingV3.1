@@ -1,16 +1,16 @@
-#pragma  once
+ï»¿#pragma  once
 /*
-ÉùÃ÷½á¹¹Ìå
-±¾ÎÄ¼şÃüÃû¹æÔò st+´óĞ´Ê××ÖÄ¸ ÀıÈç£ºstBatteryInfo µç³ØĞÅÏ¢
+å£°æ˜ç»“æ„ä½“
+æœ¬æ–‡ä»¶å‘½åè§„åˆ™ st+å¤§å†™é¦–å­—æ¯ ä¾‹å¦‚ï¼šstBatteryInfo ç”µæ± ä¿¡æ¯
 
-	@version£º 1.1
-	@author£ºchenlin
-	@date£º20180122
+	@versionï¼š 1.1
+	@authorï¼šchenlin
+	@dateï¼š20180122
 
-	ĞŞ¶©
-	1.0  ´´½¨µç³ØĞÍºÅ¡¢µç³ØĞÅÏ¢½á¹¹Ìå
-	1.1	 Ìí¼ÓÃüÁî½á¹¹Ìå
-	1.2  ĞŞ¸Äµç³Ø½á¹¹ Ìí¼Ó¹ØÁª³äµçÆ÷¡¢¹ØÁª¼ÌµçÆ÷¡£
+	ä¿®è®¢
+	1.0  åˆ›å»ºç”µæ± å‹å·ã€ç”µæ± ä¿¡æ¯ç»“æ„ä½“
+	1.1	 æ·»åŠ å‘½ä»¤ç»“æ„ä½“
+	1.2  ä¿®æ”¹ç”µæ± ç»“æ„ æ·»åŠ å…³è”å……ç”µå™¨ã€å…³è”ç»§ç”µå™¨ã€‚
 */
 
 #include <string.h>
@@ -22,18 +22,18 @@
 #include <QDateTime>
 #include "common.h"
 
-//µç³ØĞÍºÅĞÅÏ¢
+//ç”µæ± å‹å·ä¿¡æ¯
 struct stBatteryModelInfo
 {
-	unsigned int id;		//±àºÅ
-	char droneModel[128];   //ÎŞÈË»úĞÍºÅ	
-	unsigned int capacity;  //ÈİÁ¿	
-	float chargingVoltage;//³äµçµçÑ¹
-	float chargingCurrent; //³äµçµçÁ÷
-	float storageVoltage; //´¢´æµçÑ¹
-	float fullVoltage;		//ÂúÔØµçÑ¹	
-	char connectType[20]; //Á´½ÓÖÖÀà£¿4S 6S
-	bool balance;   //ÊÇ·ñÆ½ºâ£¨·ÇÖÇÄÜµç³Øfalse ÖÇÄÜµç³Øtrue)
+	unsigned int id;		//ç¼–å·
+	char droneModel[128];   //æ— äººæœºå‹å·	
+	unsigned int capacity;  //å®¹é‡	
+	float chargingVoltage;//å……ç”µç”µå‹
+	float chargingCurrent; //å……ç”µç”µæµ
+	float storageVoltage; //å‚¨å­˜ç”µå‹
+	float fullVoltage;		//æ»¡è½½ç”µå‹	
+	char connectType[20]; //é“¾æ¥ç§ç±»ï¼Ÿ4S 6S
+	bool balance;   //æ˜¯å¦å¹³è¡¡ï¼ˆéæ™ºèƒ½ç”µæ± false æ™ºèƒ½ç”µæ± true)
 	
 
 	stBatteryModelInfo() : id(0), capacity(0), chargingVoltage(0.0),\
@@ -45,22 +45,22 @@ struct stBatteryModelInfo
 	}
 };
 
-//µç³ØĞÅÏ¢
+//ç”µæ± ä¿¡æ¯
 struct  stBatteryInfo
 {
-	unsigned int dbid;		  //Êı¾İ¿â¶ÔÓ¦id
-	char id[5];					//µç³Øid	
-	unsigned int modelId;     //µç³ØĞÍºÅId	
-	bool online;		      //ÊÇ·ñÊ¹ÓÃ  //false µÄ»°Ìø¹ı´¦ÀíÂß¼­
-	char user[256];				//ÉêÇëÊ¹ÓÃÕß
-	unsigned int relatedCharger;  //¹ØÁª³äµçÆ÷ µØÖ·
-	//unsigned int relatedRelay;  //¹ØÁª¼ÌµçÆ÷¿ØÖÆ°å µØÖ·
-	//char relatedLoop;  //¹ØÁª»ØÂ·  
-	bool isExisted;				//ÊÇ·ñ´æÔÚ
-	bool isChanged;				//ÊÇ·ñ±»¸ü»»¹ıµç³Ø//Õë¶ÔÉ¨Ãè¼ä¸ôÆÚ¼äÓĞµç³Ø¸ü»»ÏÖÏó
-	bool isApplyCharging;       //ÊÇ·ñĞèÒªÔ¤³ä£¨Õë¶ÔÍ¬×éµÄµç³ØÕıÔÚ³äµç£¬£©
-	QTime timeLockCloseLoop;	//½ûÖ¹¶Ï¿ª»ØÂ·µÄ¼ÆÊ±Æ÷ 
-	QTime timeLockUI;   //½ûÖ¹Ë¢ĞÂ¶ÔÓ¦uiµÄ¼ÆÊ±Æ÷
+	unsigned int dbid;		  //æ•°æ®åº“å¯¹åº”id
+	char id[5];					//ç”µæ± id	
+	unsigned int modelId;     //ç”µæ± å‹å·Id	
+	bool online;		      //æ˜¯å¦ä½¿ç”¨  //false çš„è¯è·³è¿‡å¤„ç†é€»è¾‘
+	char user[256];				//ç”³è¯·ä½¿ç”¨è€…
+	unsigned int relatedCharger;  //å…³è”å……ç”µå™¨ åœ°å€
+	//unsigned int relatedRelay;  //å…³è”ç»§ç”µå™¨æ§åˆ¶æ¿ åœ°å€
+	//char relatedLoop;  //å…³è”å›è·¯  
+	bool isExisted;				//æ˜¯å¦å­˜åœ¨
+	bool isChanged;				//æ˜¯å¦è¢«æ›´æ¢è¿‡ç”µæ± //é’ˆå¯¹æ‰«æé—´éš”æœŸé—´æœ‰ç”µæ± æ›´æ¢ç°è±¡
+	bool isApplyCharging;       //æ˜¯å¦éœ€è¦é¢„å……ï¼ˆé’ˆå¯¹åŒç»„çš„ç”µæ± æ­£åœ¨å……ç”µï¼Œï¼‰
+	QTime timeLockCloseLoop;	//ç¦æ­¢æ–­å¼€å›è·¯çš„è®¡æ—¶å™¨ 
+	QTime timeLockUI;   //ç¦æ­¢åˆ·æ–°å¯¹åº”uiçš„è®¡æ—¶å™¨
 	
 	stBatteryInfo() : dbid(0), online(1), modelId(0), \
 		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false){
@@ -70,7 +70,7 @@ struct  stBatteryInfo
 		timeLockUI.start();
 		//memset(gridNO, 0, 4);
 	}
-	stBatteryInfo(const stBatteryInfo& other)   //¿½±´¹¹Ôìº¯Êı   
+	stBatteryInfo(const stBatteryInfo& other)   //æ‹·è´æ„é€ å‡½æ•°   
 	{
 		this->dbid = other.dbid;
 		this->modelId = other.modelId;
@@ -86,28 +86,35 @@ struct  stBatteryInfo
 		this->timeLockCloseLoop = other.timeLockCloseLoop;
 	}
 };
+//å……ç”µå™¨ç±»å‹ add 20180920
+enum enChargerType
+{
+	DJI_Charger = 0,   //å¤§ç–†å……ç”µæ§½
+	NF_Charger = 1		//èƒ½é£å……ç”µæ¿
+};
 
-//³äµçÆ÷ĞÅÏ¢
+//å……ç”µå™¨ä¿¡æ¯
 struct stCharger
 {
-	unsigned int id;  //³äµçÆ÷±àºÅ
-	//unsigned int relatedRelay;	//¹ØÁª¼ÌµçÆ÷
-	//std::map<unsigned int, stBatteryInfo> mapBattery;//µç³ØÁĞ±í£¨Ó³Éä£©1¸ö³äµçÆ÷×î¶à´øÈı¸öµç³Ø
-	QTime timeLockChargingState;   //2ÃëÄÚ½ûÖ¹Ë¢ĞÂ³äµçÆ÷×´Ì¬
-	QString beginChergeTime;       //³äµç¿ªÊ¼Ê±¼ä add20180521
+	unsigned int id;  //å……ç”µå™¨ç¼–å·
+	unsigned int nLevel;	//ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½
+	enChargerType chargerType;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//std::map<unsigned int, stBatteryInfo> mapBattery;//ç”µæ± åˆ—è¡¨ï¼ˆæ˜ å°„ï¼‰1ä¸ªå……ç”µå™¨æœ€å¤šå¸¦ä¸‰ä¸ªç”µæ± 
+	QTime timeLockChargingState;   //2ç§’å†…ç¦æ­¢åˆ·æ–°å……ç”µå™¨çŠ¶æ€
+	QString beginChergeTime;       //å……ç”µå¼€å§‹æ—¶é—´ add20180521
 	bool isChargingPre;
-	bool isCharging;  //ÕıÔÚ³äµç±êÖ¾
-	bool isDisCharging;  //ÕıÔÚ·Åµç±êÖ¾
-	bool bOnline;  //³äµçÆ÷ÔÚÏß×´Ì¬
-	bool isOverHeat;  //ÊÇ·ñ¹ıÈÈ
-	char nSeekT;  //ÎÂ¶ÈÊı×é¸¡±ê
-	char nSeekV;  //µçÑ¹Êı×é¸¡±ê
-	float fTemperature[3];  //ÎÂ¶È
-	float fVoltage[3];			//µçÑ¹
-	float fCurrent;			//µçÁ÷
-	//bool bNeedReadVol;  //ĞèÒª¶ÁÈ¡µçÑ¹±êÖ¾
-	unsigned int nScanWatchDog;  //ÔÚÏß×´Ì¬¿´ÃÅ¹·£¬ÓÃÓÚÅĞ¶Ï²»ÔÚÏß
-	stCharger() :id(0), isChargingPre(false), isCharging(false), bOnline(false),
+	bool isCharging;  //æ­£åœ¨å……ç”µæ ‡å¿—
+	bool isDisCharging;  //æ­£åœ¨æ”¾ç”µæ ‡å¿—
+	bool bOnline;  //å……ç”µå™¨åœ¨çº¿çŠ¶æ€
+	bool isOverHeat;  //æ˜¯å¦è¿‡çƒ­
+	char nSeekT;  //æ¸©åº¦æ•°ç»„æµ®æ ‡
+	char nSeekV;  //ç”µå‹æ•°ç»„æµ®æ ‡
+	float fTemperature[3];  //æ¸©åº¦
+	float fVoltage[3];			//ç”µå‹
+	float fCurrent;			//ç”µæµ
+	//bool bNeedReadVol;  //éœ€è¦è¯»å–ç”µå‹æ ‡å¿—
+	unsigned int nScanWatchDog;  //åœ¨çº¿çŠ¶æ€çœ‹é—¨ç‹—ï¼Œç”¨äºåˆ¤æ–­ä¸åœ¨çº¿
+	stCharger() :id(0), nLevel(0), chargerType(NF_Charger), isChargingPre(false), isCharging(false), bOnline(false),
 		isDisCharging(false), /*bNeedReadVol(false),*/ nScanWatchDog(0), 
 		isOverHeat(false), nSeekT(0), nSeekV(0), fCurrent(0)
 	{
@@ -117,11 +124,11 @@ struct stCharger
 		timeLockChargingState.start();
 		beginChergeTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
 	}
-	stCharger(const stCharger& other)   //¿½±´¹¹Ôìº¯Êı   
+	stCharger(const stCharger& other)   //æ‹·è´æ„é€ å‡½æ•°   
 	{
 		this->id = other.id;
-		//this->relatedRelay = other.relatedRelay;
-		//this->mapBattery = other.mapBattery;
+		this->nLevel = other.nLevel;
+		this->chargerType = other.chargerType;
 		this->isChargingPre = other.isChargingPre;
 		this->isCharging = other.isCharging;
 		this->isDisCharging = other.isDisCharging;
@@ -139,7 +146,7 @@ struct stCharger
 		this->nSeekV = other.nSeekV;
 		this->fCurrent = other.fCurrent;
 	}
-	float getAverage(float* arrayFloat){ //»ñÈ¡Æ½¾ù
+	float getAverage(float* arrayFloat){ //è·å–å¹³å‡
 		float  averageTemp = 0; char count_ = 0;
 		for (int i = 0; i < 3; i++){
 			if (arrayFloat[i] != 0){
@@ -152,7 +159,7 @@ struct stCharger
 	}
 	float saveTemperature(float fTemp){
 		float  averageTemp = getAverage(fTemperature);
-		if (fabs(fTemp - averageTemp) < 50)//²îÖµ²»³¬¹ı50¶È£¬ÊÓÎªÓĞĞ§
+		if (fabs(fTemp - averageTemp) < 50)//å·®å€¼ä¸è¶…è¿‡50åº¦ï¼Œè§†ä¸ºæœ‰æ•ˆ
 		{
 			if (nSeekT < 3){
 				fTemperature[nSeekT++] = fTemp;
@@ -167,7 +174,7 @@ struct stCharger
 		float  averageTemp = getAverage(fVoltage); 
 		if (fVol >= 3.3 && fVol <= 4.4){
 			if (averageTemp  == 0
-				|| (averageTemp != 0 && fabs(fVol - averageTemp) < 0.9))//²îÖµ²»³¬¹ı0.9V£¬ÊÓÎªÓĞĞ§
+				|| (averageTemp != 0 && fabs(fVol - averageTemp) < 0.9))//å·®å€¼ä¸è¶…è¿‡0.9Vï¼Œè§†ä¸ºæœ‰æ•ˆ
 			{
 				if (nSeekV < 3){
 					fVoltage[nSeekV++] = fVol;
@@ -180,13 +187,13 @@ struct stCharger
 		return averageTemp;
 	}
 
-	void updateBeginChargeTime(){  //¸üĞÂ³äµçÊ±¼ä
+	void updateBeginChargeTime(){  //æ›´æ–°å……ç”µæ—¶é—´
 		beginChergeTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm");
 	}
 	int calculateChargeTime()
 	{
 		if (isChargingPre == false && isCharging == true){
-			updateBeginChargeTime(); //¿ªÊ¼³äµç ¼ÇÂ¼¿ªÊ¼³äµçÊ±¼ä¡£
+			updateBeginChargeTime(); //å¼€å§‹å……ç”µ è®°å½•å¼€å§‹å……ç”µæ—¶é—´ã€‚
 		}
 		isChargingPre = isCharging;
 		static QDate dateCurrent, dateBeginCharge;
@@ -206,19 +213,28 @@ struct stCharger
 		nInterval += (dateCurrent.day() - beginDay) * 24 * 60;
 		nInterval += (timeCurrent.hour() - beginHour) * 60;
 		nInterval += (timeCurrent.minute() - beginMinite);
-		return nInterval; //·µ»Ø·ÖÖÓ
+		return nInterval; //è¿”å›åˆ†é’Ÿ
 	}
 };
 
+// å±‚çº§ 20180920
+struct stLevel
+{
+	unsigned int nLevel;
+	std::map<unsigned int, stBatteryInfo> mapBattery;
+	std::map<unsigned int, stCharger> mapCharger;
+	stLevel() :nLevel(0){
 
-//¼ÌµçÆ÷ĞÅÏ¢
+	}
+};
+//ç»§ç”µå™¨ä¿¡æ¯
 struct stRelay
 {
-	//unsigned int id;			//¼ÌµçÆ÷±àºÅ 
-	//std::map<unsigned int, stCharger> mapCharger;//³äµçÆ÷ÁĞ±í£¨Ó³Éä£©1¸ö¼ÌµçÆ÷Æ÷×î¶à¹ØÁª¶ş¸ö³äµçÆ÷
-	//std::map<unsigned int, stBatteryInfo> mapBattery;//µç³ØÁĞ±í£¨Ó³Éä£©1¸ö¼ÌµçÆ÷Æ÷×î¶à¹ØÁªÁù¸öµç³Ø
-	//char szLoopInfo[7];			//»ØÂ·±ÕºÏĞÅÏ¢
-	//char szBatteryExistInfo[7]; //µç³Ø´æÔÚĞÅÏ¢
+	//unsigned int id;			//ç»§ç”µå™¨ç¼–å· 
+	//std::map<unsigned int, stCharger> mapCharger;//å……ç”µå™¨åˆ—è¡¨ï¼ˆæ˜ å°„ï¼‰1ä¸ªç»§ç”µå™¨å™¨æœ€å¤šå…³è”äºŒä¸ªå……ç”µå™¨
+	//std::map<unsigned int, stBatteryInfo> mapBattery;//ç”µæ± åˆ—è¡¨ï¼ˆæ˜ å°„ï¼‰1ä¸ªç»§ç”µå™¨å™¨æœ€å¤šå…³è”å…­ä¸ªç”µæ± 
+	//char szLoopInfo[7];			//å›è·¯é—­åˆä¿¡æ¯
+	//char szBatteryExistInfo[7]; //ç”µæ± å­˜åœ¨ä¿¡æ¯
 	//stRelay() :id(0){
 	//	memset(szLoopInfo, 0, 7);
 	//	memset(szBatteryExistInfo, 0, 7);
@@ -230,7 +246,7 @@ struct stRelay
 	//	strcpy(this->szLoopInfo, other.szLoopInfo);
 	//	strcpy(this->szBatteryExistInfo, other.szBatteryExistInfo);
 	//}
-	//void getCurrentOnLoop(int* loopA, int* loopB){  //»ñÈ¡Á½×éµ±Ç°±ÕºÏµÄ»ØÂ·£¬A; B, -1´ú±íËùÓĞ»ØÂ·Î´±ÕºÏ
+	//void getCurrentOnLoop(int* loopA, int* loopB){  //è·å–ä¸¤ç»„å½“å‰é—­åˆçš„å›è·¯ï¼ŒA; B, -1ä»£è¡¨æ‰€æœ‰å›è·¯æœªé—­åˆ
 	//	*loopA = -1;
 	//	*loopB = -1;
 	//	for (int i = 0; i < MAX_RELAY_TO_LOOP; i++){
@@ -242,7 +258,7 @@ struct stRelay
 	//		}
 	//	}
 	//}
-	////¸ù¾İ±ÕºÏµÄ»ØÂ·²éÕÒµç³Ø±àºÅ
+	////æ ¹æ®é—­åˆçš„å›è·¯æŸ¥æ‰¾ç”µæ± ç¼–å·
 	//int getBattery(int nloop){
 	//	for (std::map<unsigned int, stBatteryInfo>::iterator itBattery = mapBattery.begin(); \
 	//		itBattery != mapBattery.end(); itBattery++){
@@ -255,7 +271,7 @@ struct stRelay
 	//}
 };
 
-//µç³ØidÓëµç³Ø´æÔÚ¹ØÏµ
+//ç”µæ± idä¸ç”µæ± å­˜åœ¨å…³ç³»
 struct stBatteryIsExist{
 	unsigned int nBatteryID;
 	bool bExisted;
@@ -266,16 +282,16 @@ struct stBatteryIsExist{
 };
 
 
-//³äµç¹ñĞÅÏ¢
+//å……ç”µæŸœä¿¡æ¯
 struct stChargingCloset
 {
-	char id[10];  //³äµç¹ñ±àºÅ
+	char id[10];  //å……ç”µæŸœç¼–å·
 	
-	//std::map<unsigned int, stRelay> mapRelay;//¼ÌµçÆ÷ĞÅÏ¢
+	//std::map<unsigned int, stRelay> mapRelay;//ç»§ç”µå™¨ä¿¡æ¯
 
-	std::map<unsigned int, stCharger> mapCharger;//³äµçÆ÷ĞÅÏ¢
+	std::map<unsigned int, stCharger> mapCharger;//å……ç”µå™¨ä¿¡æ¯
 
-	std::map<unsigned int, stBatteryInfo> mapBattery;//µç³ØÁĞ±í£¨Ó³Éä£© Í¨¹ıid¹ØÁª£¨¹ñ×ÓµÄID ºóÁ½Î»Óëµç³ØID Ç°Á½Î»ÏàÍ¬
+	std::map<unsigned int, stBatteryInfo> mapBattery;//ç”µæ± åˆ—è¡¨ï¼ˆæ˜ å°„ï¼‰ é€šè¿‡idå…³è”ï¼ˆæŸœå­çš„ID åä¸¤ä½ä¸ç”µæ± ID å‰ä¸¤ä½ç›¸åŒ
 	stChargingCloset(){
 		memset(id, 0, 10);
 		
@@ -284,31 +300,31 @@ struct stChargingCloset
 
 
 
-typedef std::map<unsigned int, stChargingCloset> MAP_CLOSET;   //³äµç¹ñÁĞ±íÀàĞÍ
-typedef std::map<unsigned int, stChargingCloset>::iterator MAP_CLOSET_IT;  //³äµç¹ñÁĞ±íµü´úÆ÷
-typedef std::map<unsigned int, stBatteryInfo> MAP_BATTERY;  //µç³ØÁĞ±í
-typedef std::map<unsigned int, stBatteryInfo>::iterator MAP_BATTERY_IT;  //µç³ØÁĞ±íµü´úÆ÷
-typedef std::map<unsigned int, stBatteryModelInfo> MAP_BATTERY_MODEL; //µç³ØĞÍºÅ
-typedef std::map<unsigned int, stBatteryModelInfo>::iterator MAP_BATTERY_MODEL_IT; //µç³ØĞÍºÅ
+typedef std::map<unsigned int, stChargingCloset> MAP_CLOSET;   //å……ç”µæŸœåˆ—è¡¨ç±»å‹
+typedef std::map<unsigned int, stChargingCloset>::iterator MAP_CLOSET_IT;  //å……ç”µæŸœåˆ—è¡¨è¿­ä»£å™¨
+typedef std::map<unsigned int, stBatteryInfo> MAP_BATTERY;  //ç”µæ± åˆ—è¡¨
+typedef std::map<unsigned int, stBatteryInfo>::iterator MAP_BATTERY_IT;  //ç”µæ± åˆ—è¡¨è¿­ä»£å™¨
+typedef std::map<unsigned int, stBatteryModelInfo> MAP_BATTERY_MODEL; //ç”µæ± å‹å·
+typedef std::map<unsigned int, stBatteryModelInfo>::iterator MAP_BATTERY_MODEL_IT; //ç”µæ± å‹å·
 
-typedef std::map<unsigned int, stCharger> MAP_CHARGER; //³äµçÆ÷
+typedef std::map<unsigned int, stCharger> MAP_CHARGER; //å……ç”µå™¨
 typedef std::map<unsigned int, stCharger>::iterator MAP_CHARGER_IT;
 
-//typedef std::map<unsigned int, stRelay> MAP_RELAY; //¼ÌµçÆ÷
-//typedef std::map<unsigned int, stRelay>::iterator MAP_RELAY_IT;
+typedef std::map<unsigned int, stLevel> MAP_LEVEL; //ç»§ç”µå™¨
+typedef std::map<unsigned int, stLevel>::iterator MAP_LEVEL_IT;
  
 
 
-//ÃüÁî ½á¹¹Ìå
+//å‘½ä»¤ ç»“æ„ä½“
 struct stCommand
 {
-	enum enPriority{		//ÓÅÏÈ¼¶
+	enum enPriority{		//ä¼˜å…ˆçº§
 		normal = 0,   
-		front,		//Ç°¼¶ÃüÁî ²åÈë¶ÓÁĞÇ°¡£
-		hight,		//¸ß¼¶ÃüÁî ²åÈë¶ÓÁĞÇ°£¬²¢ÇÒ¼ì²âÊ§°ÜÖØ·¢2´Î¡£
+		front,		//å‰çº§å‘½ä»¤ æ’å…¥é˜Ÿåˆ—å‰ã€‚
+		hight,		//é«˜çº§å‘½ä»¤ æ’å…¥é˜Ÿåˆ—å‰ï¼Œå¹¶ä¸”æ£€æµ‹å¤±è´¥é‡å‘2æ¬¡ã€‚
 	};
 	enPriority m_enPriority;
-	QString m_strCommand;  //ÃüÁî
+	QString m_strCommand;  //å‘½ä»¤
 	stCommand(QString strCommand="", enPriority pri = normal) :\
 		m_strCommand(strCommand), m_enPriority(pri){
 
@@ -321,22 +337,22 @@ struct stCommand
 
 };
 
-//µç³ØÉêÇëÇé¿ö
+//ç”µæ± ç”³è¯·æƒ…å†µ
 struct stApplyInfo
 {
-	unsigned int myID;  //Êı¾İ¿âµÄID
-	bool bApply;	//±»ÉêÇëµÄ±íÊ¾
-	char iCount;   //³äµç´ÎÊı
-	bool bNeedCharge; //³¢ÊÔ³äµçµÄ±êÖ¾	
-	QTime timeLockUI;	//½ûÖ¹Ë¢ĞÂUIµÄ¼ÆÊ±Æ÷ 
-	bool bNeedStopCharge;  //Í£Ö¹³äµç
+	unsigned int myID;  //æ•°æ®åº“çš„ID
+	bool bApply;	//è¢«ç”³è¯·çš„è¡¨ç¤º
+	char iCount;   //å……ç”µæ¬¡æ•°
+	bool bNeedCharge; //å°è¯•å……ç”µçš„æ ‡å¿—	
+	QTime timeLockUI;	//ç¦æ­¢åˆ·æ–°UIçš„è®¡æ—¶å™¨ 
+	bool bNeedStopCharge;  //åœæ­¢å……ç”µ
 	stApplyInfo()
 	{
 		myID = 0; bApply = false; iCount = 0; bNeedCharge = false;	bNeedStopCharge = false; timeLockUI.start();
 	}
 };
 
-//ÉêÇëµç³ØÇÒÎ´³äµçµÄ½á¹¹Ìå
+//ç”³è¯·ç”µæ± ä¸”æœªå……ç”µçš„ç»“æ„ä½“
 struct stApplyBatteryDontCharge{
 	unsigned int nBatteryID;
 	QString strTime;
@@ -357,23 +373,23 @@ struct stApplyBatteryDontCharge{
 	}
 };
 
-//µ÷ÊÔĞÅÏ¢ÏÔÊ¾µÈ¼¶
+//è°ƒè¯•ä¿¡æ¯æ˜¾ç¤ºç­‰çº§
 enum enDebugInfoPriority{
-	DebugInfoClose = 0,	//0¹Ø±ÕÏÔÊ¾
-	DebugInfoLevelOne,  //1ÏÔÊ¾½á¹û
-	DebugInfoLevelTwo,  //2ÏÔÊ¾½á¹û¡¢¹ı³Ì
-	DebugInfoLevelThree,  //3ÏÔÊ¾½á¹û¡¢¹ı³Ì¡¢Ï¸½Ú
+	DebugInfoClose = 0,	//0å…³é—­æ˜¾ç¤º
+	DebugInfoLevelOne,  //1æ˜¾ç¤ºç»“æœ
+	DebugInfoLevelTwo,  //2æ˜¾ç¤ºç»“æœã€è¿‡ç¨‹
+	DebugInfoLevelThree,  //3æ˜¾ç¤ºç»“æœã€è¿‡ç¨‹ã€ç»†èŠ‚
 };
 
-//Ë¢ĞÂÀàĞÍ
+//åˆ·æ–°ç±»å‹
 enum enRefreshType{
-	ChargerState = 0,  //Ë¢ĞÂ³äµçÆ÷×´Ì¬
-	ChargerOnlineState,  //³äµçÆ÷ÔÚÏß×´Ì¬
-	BatteryState,		//µç³Ø×´Ì¬
-	BatteryVol,		//µç³ØµçÑ¹
+	ChargerState = 0,  //åˆ·æ–°å……ç”µå™¨çŠ¶æ€
+	ChargerOnlineState,  //å……ç”µå™¨åœ¨çº¿çŠ¶æ€
+	BatteryState,		//ç”µæ± çŠ¶æ€
+	BatteryVol,		//ç”µæ± ç”µå‹
 };
 
-//½ø³ÌÍ¨ĞÅ¼òÒ×Êı¾İ°ü
+//è¿›ç¨‹é€šä¿¡ç®€æ˜“æ•°æ®åŒ…
 struct stProcessSimpltData 
 {
 	char strInfo[256];
@@ -385,9 +401,9 @@ struct stProcessSimpltData
 	}
 };
 
-//³äµç¼ÇÂ¼ÀàĞÍ
+//å……ç”µè®°å½•ç±»å‹
 enum enChargeRecordStateType{
-	StateBegin = 0,  //¿ªÊ¼³äµç
-	StateEnd,		 //Í£Ö¹³äµç
+	StateBegin = 0,  //å¼€å§‹å……ç”µ
+	StateEnd,		 //åœæ­¢å……ç”µ
 	 
 };
