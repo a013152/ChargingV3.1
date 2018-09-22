@@ -44,8 +44,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\canDeviceTransmition;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\canDeviceTransmition;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\x64\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -61,6 +62,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(SolutionDir)\x64\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -106,6 +108,7 @@
   <ItemGroup>
     <ClInclude Include="ChargingOption001.h" />
     <ClInclude Include="ChargingOption001Dlg.h" />
+    <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="Page1_General.h" />
     <ClInclude Include="Page2_SetAddress.h" />
     <ClInclude Include="Page3_SetAddressCAN.h" />
@@ -117,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="ChargingOption001.cpp" />
     <ClCompile Include="ChargingOption001Dlg.cpp" />
+    <ClCompile Include="CommonFunction.cpp" />
     <ClCompile Include="Page1_General.cpp" />
     <ClCompile Include="Page2_SetAddress.cpp" />
     <ClCompile Include="Page3_SetAddressCAN.cpp" />

@@ -18,7 +18,7 @@ bool COperatoreDBFile::onOpenDbFile()
 	if (m_database.isOpen() == false)
 	{
 		
-		m_database.setDatabaseName(g_AppPath+"\\chargedRecord.db");
+		m_database.setDatabaseName(QString(g_AppPath) + "\\chargedRecord.db");
 		bResult = m_database.open();
 	}
 	QSqlError error1 = m_database.lastError();

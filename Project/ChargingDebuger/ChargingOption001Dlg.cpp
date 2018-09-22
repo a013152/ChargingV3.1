@@ -95,7 +95,7 @@ BOOL CChargingOption001Dlg::OnInitDialog()
 	m_ppage3->setStateRect(rs);
 	m_ppage1->setSendFun(SendFunc);
 	m_ppage2->setSendFun(SendFunc);
-	m_ppage3->setSendFun(PrintfFunc);
+	m_ppage3->setprintfFun(PrintfFunc);
 	m_ppage1->ShowWindow(SW_SHOW);//默认打开第一个子窗体
 	m_tab.SetCurSel(0);//选项卡默认选中第一个
 

@@ -1,13 +1,16 @@
 #ifndef H_COMMON
 #define H_COMMON
+ 
 
-#pragma execution_character_set("utf-8")
-#include <QString>
-
-extern QString g_AppPath;  //exe路径 
+extern char g_AppPath[256];  //exe路径 
 
 #define  MAIN_WINDOW_TITLE "未读取标题"
 #define  SETING_WINDOW_TITLE "系统参数设置"
+
+#define DBHOSTNAME "119.23.48.100"
+#define CHARGINGOPTIONPROCESS  "chargingOption.exe"  //设置程序名称（修改电池电压……的进程）
+#define CANDEVICETRANSMITION "canDeviceTransmition.exe" //can 设备通讯进程
+#define PIPE_NAME "\\\\.\\Pipe\\canDevicePipe" //管道名称
 
 #define TIMER_INTERVAL 100  //关闭定时器时间间隔 100毫秒
 
@@ -19,7 +22,7 @@ extern QString g_AppPath;  //exe路径
 #define MAX_CHARGER 48  //每个柜子最大充电器数量
 
  
-	#define MAX_BATTERY 15  //每个柜子最大电池数量
+#define MAX_BATTERY 15  //每个柜子最大电池数量
 
 #define ONE_PAGE_CLOSET 5  //每页柜子数量
 #define ONE_CLOSET_SCAN_COMMAND 14 //每柜子扫描命令数量 3个M 8个G 3个D 一共14个

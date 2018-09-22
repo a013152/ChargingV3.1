@@ -45,6 +45,9 @@
     <ClInclude Include="Page3_SetAddressCAN.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CommonFunction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChargingOption001.cpp">
@@ -66,6 +69,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Page3_SetAddressCAN.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonFunction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

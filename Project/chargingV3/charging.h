@@ -49,11 +49,9 @@ const ULONG_PTR CUSTOM_TYPE = 10000;
 
 extern QString g_winTitle;
 
-extern QString g_AppPath;
+extern char g_AppPath[256];
 
-#define DBHOSTNAME "119.23.48.100"
-#define CHARGINGOPTIONPROCESS  "chargingOption.exe"  //设置程序名称（修改电池电压……的进程）
-#define CANDEVICETRANSMITION "canDeviceTransmition.exe" //can 设备通讯进程
+
 
 
 //设置窗口置顶

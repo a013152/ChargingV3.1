@@ -62,14 +62,10 @@ private:
 	void readChargerInfo(MAP_CHARGER& mapCharger, int* iError); //读取充电器信息
 
 	//void readRelayInfo(MAP_RELAY& mapRelay, int* iError); //读取继电器信息
-
-	void matchingBattery(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery); //匹配电池，保存到充电柜中
-
+	
 	QString getContent(QString);
 
-	void transitionContent1(QString strSource, QString strTemp1, QByteArray baTemp1, char* szTemp);
-
-	
+	void transitionContent1(QString strSource, QString strTemp1, QByteArray baTemp1, char* szTemp);	
 
 	QString m_strAppPath;
 

@@ -361,12 +361,12 @@ void charging::show_temperature(float ftemp, bool high)
 {
 	QString message; message.sprintf("%5.2f", ftemp);
 	if(ftemp < 5)
-		ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + g_AppPath + "/img/temperature_disenable.png);}");
+		ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/temperature_disenable.png);}");
 	else{
 		if (high || ftemp >=40)
-			ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + g_AppPath + "/img/temperature_high.png);}");
+			ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/temperature_high.png);}");
 		else
-			ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + g_AppPath + "/img/temperature_normal.png);}");
+			ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/temperature_normal.png);}");
 	}
 	
 	ui.lab_temperature_number->setText(message);

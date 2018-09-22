@@ -8,7 +8,7 @@
 #include "common.h"
 #include "DoubleClickedButton.h"
 #pragma execution_character_set("utf-8")
-extern QString g_AppPath;  //exe路径 
+extern char g_AppPath[256];  //exe路径 
 //QGroupBox 样式表
 //QGroupBox{
 //	border - width:1px;   //线的粗细

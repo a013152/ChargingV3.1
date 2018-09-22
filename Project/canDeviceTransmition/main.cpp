@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <string>
 #include "Common.h"
+#include "../common/common.h"
 #include "Protocol.h"
 #include "Transmit.h"
 #include <cstdlib>     
@@ -212,7 +213,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	DWORD rlen = 0;
 	//创建管道
 	hPipe = CreateNamedPipe(
-		TEXT("\\\\.\\Pipe\\canDevicePipe"),						//管道名
+		TEXT(PIPE_NAME),						//管道名
 		PIPE_ACCESS_DUPLEX,									//管道类型 
 		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,	//管道参数，双向通信 
 		PIPE_UNLIMITED_INSTANCES,							//管道能创建的最大实例数量
@@ -226,7 +227,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		system("PAUSE");
 	}
 	else{
-		printf("创建管道完成，等待主进程连接管道\n");
+		printf("创建管道完成，等待调用进程连接管道\n");
 		//等待客户端连接管道
 		ConnectNamedPipe(hPipe, NULL);
 		printf("主进程接入管道\n");
@@ -240,13 +241,41 @@ int _tmain(int argc, _TCHAR* argv[])
 				
 				if (strcmp(rbuf, "0xff") == 0)
 				{
-					sprintf_s(wbuf, 256 ,"CAN device Process will exit！\n");
-					
+					GET_T->closeCanDev();
+					sprintf_s(wbuf, 256 ,"CAN通讯进程推出！\n");					
 					WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
 					Sleep(1000);
 					break;
 				}
-				strcpy_s(wbuf, 256, rbuf);
+				else if (strcmp(rbuf, "0xf1") == 0)
+				{
+					//打开设备
+					int result = GET_T->openCanDev();
+					if (result == 0){
+						printf("打开设备成功。\n");
+						strcpy_s(wbuf, 256, "打开设备成功。\n"); 
+					}
+					else if (result == -1)
+					{
+						printf("open failed\n");
+						strcpy_s(wbuf, 256, "打开设备失败。\n");
+					}
+					else if (result == -2){
+						printf("Init-CAN failed!\n");
+						strcpy_s(wbuf, 256, "初始化设备库失败。\n");
+					}
+					else if (result != -3)
+					{
+						printf("Start-CAN failed!\n");
+						strcpy_s(wbuf, 256, "启动CAN设备库失败。\n");
+					}
+				}
+				else if (strcmp(rbuf, "0xf2") == 0)
+				{
+					GET_T->closeCanDev();
+					strcpy_s(wbuf, 256, "CAN设备已经关闭。\n");
+				}
+				
 
 				WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
 

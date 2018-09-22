@@ -48,9 +48,6 @@ void COperatorFile::readAllConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery
 	//读取充电器信息
 	readChargerInfo(mapCharger, iError);
 
-	//匹配电池，保存到充电柜中
-	matchingBattery(mapCloset, mapBattery);
-
 	return;
 }
 
@@ -251,14 +248,7 @@ void COperatorFile::readChargerInfo(MAP_CHARGER& mapCharger, int* iError)
 //	}
 //}
 
-//匹配电池，保存到充电柜中
-void COperatorFile::matchingBattery(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery)
-{
-
-
-}
-
-//获取内容“”之间的内容
+//获取内容""之间的内容
 QString COperatorFile::getContent(QString strSource)
 {
 	int posL = strSource.indexOf("\"");

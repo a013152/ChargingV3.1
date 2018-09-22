@@ -113,14 +113,14 @@
     <CustomBuild Include="GeneratedFiles\ui_chargingoption.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\chargingV2\operatorfile.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\chargingV2\ReadIniFile.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\chargingV2\charging.vcxproj" />
-    <CustomBuild Include="..\chargingV2\operatoreDBFile.h">
+    <CustomBuild Include="..\chargingV3\operatoreDBFile.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\chargingV3\operatorfile.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\chargingV3\ReadIniFile.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -14,8 +14,11 @@ public:
 // 对话框数据
 	enum { IDD = IDD_DIALOG3 };
 	void setStateRect(CRect &rect);//设置group边框
-	void setSendFun(SENDCOMMAND fun){ m_pPrintfFun = fun; }//设置发送函数指针
+	void setprintfFun(SENDCOMMAND fun){ m_pPrintfFun = fun; }//设置函数指针\
 
+	int receiveFromCanDeviceProcess(char * szData);
+	int sendToCanDeviceProcess(char * szData, int nLength);
+	
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
@@ -28,6 +31,9 @@ public:
 private:
 	SENDCOMMAND m_pPrintfFun = NULL; //发送函数
 	CWnd* m_pParent;
+	DWORD m_canDeviceProcessId ;  //进程id
+	HANDLE m_hPipe ;//管道句柄
+
 public:
 	afx_msg void OnBnClickedBtnOpenCan();
 	afx_msg void OnBnClickedBtnCloseCan();

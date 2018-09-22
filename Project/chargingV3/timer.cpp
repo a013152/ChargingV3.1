@@ -447,6 +447,7 @@ void charging::addChargerScanTime()
 			itCharger->second.nScanWatchDog++;	
 			if (itCharger->second.nScanWatchDog > 2)
 			{
+				//不在线判断。
 				itCharger->second.bOnline = false;  //充电器不在线
 				//itCharger->second.fTemperature = 0;
 				//itCharger->second.fVoltage = 0;
@@ -454,23 +455,25 @@ void charging::addChargerScanTime()
 				if (itCharger->second.nScanWatchDog == 5)
 				{					
 					MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.find(itCharger->first);
-					int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
-					itBattery->second.timeLockUI.restart();
+					if (itBattery != itCloset->second.mapBattery.end()){
+						int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
+						itBattery->second.timeLockUI.restart();
 						
-					charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
+						charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
 				
-					emit RefreshState(enRefreshType::ChargerState, indexArray);
+						emit RefreshState(enRefreshType::ChargerState, indexArray);
 
-					//通知ui刷新充电器在线状态						
-					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-					//电压
-					battery_voltage[indexArray] = "0";
-					emit RefreshState(enRefreshType::BatteryVol, indexArray);
-					//电池状态
-					battery_state[indexArray] = "未放置电池"; 
-					emit RefreshState(enRefreshType::BatteryState, indexArray);
-					//温度
-					show_temperature(0); 
+						//通知ui刷新充电器在线状态						
+						emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+						//电压
+						battery_voltage[indexArray] = "0";
+						emit RefreshState(enRefreshType::BatteryVol, indexArray);
+						//电池状态
+						battery_state[indexArray] = "未放置电池"; 
+						emit RefreshState(enRefreshType::BatteryState, indexArray);
+						//温度
+						show_temperature(0); 
+					}					
 				}
 			}
 		} 

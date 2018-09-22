@@ -5,7 +5,7 @@
 #include <windows.h> 
 
 
-QString g_AppPath;
+extern char g_AppPath[256] = { 0 };
 QString g_winTitle ;
 BOOL IsAlreadyRunning(char *_szAppName);
 int main(int argc, char *argv[])
@@ -17,11 +17,12 @@ int main(int argc, char *argv[])
 	QApplication::addLibraryPath("./plugins/platforms");	 
 
 	QApplication a(argc, argv);
-	g_AppPath = a.applicationDirPath();
+	QByteArray ba = a.applicationDirPath().toLatin1();
+	strcpy_s(g_AppPath, 256, ba.data());
 
-	COperatorFile::GetInstance()->setAppPath(g_AppPath);
+	COperatorFile::GetInstance()->setAppPath(QString(g_AppPath));
 	int iError = 0;
-	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", g_AppPath + "\\set.ini", &iError);
+	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", QString(g_AppPath) + "\\set.ini", &iError);
 	if (iError != 0)
 		g_winTitle = MAIN_WINDOW_TITLE;
 	char szName[256] = { 0 }; sprintf_s(szName, "%s", (g_winTitle.toLocal8Bit()).data());
