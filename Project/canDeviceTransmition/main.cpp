@@ -9,6 +9,7 @@
 #include <cstdlib>  
 static char rbuf[256] = "";
 static char wbuf[MAX_BUF_SIZE] = "";
+static bool s_sendFlg = false;
 HANDLE hPipe = 0;	DWORD wlen = 0;	DWORD rlen = 0;
 
 void displayOption(){
@@ -41,7 +42,7 @@ static void _callbackPrintf(int nType, bool bSend2Clint = true)
 	if (bSend2Clint)
 	{
 		//displayOption();
-		sendToClint();
+		s_sendFlg = true;
 	}
 }
 
@@ -245,7 +246,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			if (ReadFile(hPipe, rbuf, sizeof(rbuf), &rlen, 0) != FALSE)	//接受服务发送过来的内容
 			{
-				
+				memset(rbuf, 256 , 0 );
 				printf("接收主进程信息: data = %s, length = %d\n", rbuf, rlen);
 
 				//转换数据到命令结构体
@@ -272,21 +273,27 @@ int _tmain(int argc, _TCHAR* argv[])
 					printf("openCAN 函数进入%d次\n", ++count);
 					//打开设备
 					openCAN(wbuf);
-					sendToClint();
+					s_sendFlg = true;
+					
 				}
 				else if (GET_T->isOpenCanDev() == false)
 				{
+					s_sendFlg = true;
 					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDeviErrorCode::DetailError, "CAN设备未打开.\n");
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F2") == 0)
 				{
 					//关闭设备
 					closeCAN(wbuf);
+					s_sendFlg = true;
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F3") == 0)
 				{
 					//读取/设置CAN ID
-					readOrWriteCANID(vtStrCommand, wbuf);
+					if(readOrWriteCANID(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F4") == 0)
 				{
@@ -300,13 +307,17 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 
 				}
-				if (strcmp(wbuf, "") != 0)
+				while (s_sendFlg == false)
 				{
+					Sleep(10);
+				} 
+				//if(strcmp(wbuf, "") != 0)
+				//{
 					//wbuf 不等与"" 代表有
 					//printf("wbuf 不为空！\n");
 					//sendToClint();
-					
-				}
+					sendToClint();
+				//}
 			}
 		}
 	}

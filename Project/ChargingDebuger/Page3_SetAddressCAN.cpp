@@ -225,7 +225,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan()
 		return;
 	sprintf_s(g_szSendBuff, 256, "%s,%s,R", C2S, "F3");
 	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
-	Sleep(500);
+	Sleep(200);
 	receiveFromCanDeviceProcess(g_szReceBuff);
 }
 
@@ -245,7 +245,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan()
 	}
 	sprintf_s(g_szSendBuff, 256, "%s,%s,W,%s", C2S, "F3", COM_F::WStringToMBytes(strCanId).c_str());
 	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
-	Sleep(500);
+	Sleep(200);
 	receiveFromCanDeviceProcess(g_szReceBuff);
 
 

@@ -24,5 +24,5 @@ void openCAN(char * resultString);
 //πÿ±’CAN…Ë±∏
 void closeCAN(char * resultString);
 
-void readOrWriteCANID(VT_STR vtStrCommand, char* resultString);
+bool readOrWriteCANID(VT_STR vtStrCommand, char* resultString);
 
