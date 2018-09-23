@@ -154,14 +154,14 @@ std::wstring CommonFunction::getAppDir()
 
 //·Ö¸î×Ö·û
 void CommonFunction::split(std::string strtem, char a, std::vector<std::string>& vtStrCommand)
-{ 
-	std::vector<std::string> strvec;
+{  
+	vtStrCommand.clear();
 	std::string::size_type pos1, pos2;
 	pos2 = strtem.find(a);
 	pos1 = 0;
 	while (std::string::npos != pos2)
 	{
-		strvec.push_back(strtem.substr(pos1, pos2 - pos1));
+		vtStrCommand.push_back(strtem.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + 1;
 		pos2 = strtem.find(a, pos1);
 	}

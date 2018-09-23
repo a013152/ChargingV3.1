@@ -11,6 +11,15 @@ extern char g_AppPath[256];  //exe路径
 #define CHARGINGOPTIONPROCESS  "chargingOption.exe"  //设置程序名称（修改电池电压……的进程）
 #define CANDEVICETRANSMITION "canDeviceTransmition.exe" //can 设备通讯进程
 #define PIPE_NAME "\\\\.\\Pipe\\canDevicePipe" //管道名称
+#define S2C "S2C" //进程方向： 服务端向客户端
+#define C2S "C2S" //进程方向： 客户端向服务端
+#define SPILTE_CHAR ','  //分割字符','
+enum enCANDeviErrorCode{	//CAN进程返回的错误码
+	Success = 0,
+	DeviceNotOpen,
+	DetailError,
+};
+#define MAX_BUF_SIZE 1024 //缓冲区
 
 #define TIMER_INTERVAL 100  //关闭定时器时间间隔 100毫秒
 

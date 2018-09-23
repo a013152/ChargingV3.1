@@ -4,14 +4,13 @@
 #include "stdafx.h"
 #include <string>
 #include "Common.h"
-#include "../common/common.h"
-#include "Protocol.h"
-#include "Transmit.h"
-#include <cstdlib>     
-#define GET_T CTransmit::GetInstance()
-#define GET_P CProtocol::GetInstance()
-#include <string>
-#include <vector>
+#include "../common/common.h" 
+#include "functionLayer.h"
+#include <cstdlib>  
+static char rbuf[256] = "";
+static char wbuf[MAX_BUF_SIZE] = "";
+HANDLE hPipe = 0;	DWORD wlen = 0;	DWORD rlen = 0;
+
 void displayOption(){
 	printf("\n请输入指令: \n\t0 退出\t1 打开can设备\t2 读取canid指令\
 		   \n\t3 设置canid指令\t4 认证\t5 读取起始模式\
@@ -19,53 +18,49 @@ void displayOption(){
 		   \n\t9 读取总静态数据\t10 读取动态数据\t11 读取放电开关\
 		   \n");
 }
+void sendToClint()
+{
+	printf("向有名管道句柄%d，发送:%s",hPipe, wbuf);
+	WriteFile(hPipe, wbuf, MAX_BUF_SIZE, &wlen, 0);
+	memset(wbuf, MAX_BUF_SIZE, 0);
+}
 //回调函数，打印操作结果
-static void _callbackPrintf(int nType, bool bDisplayOption)
+static void _callbackPrintf(int nType, bool bSend2Clint = true)
 {
 	if (nType == 1)
+	{
 		printf("%s\n", GET_P->getDebugData().c_str());
+		sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDeviErrorCode::Success, GET_P->getDebugData().c_str());
+	}
 	if (nType == 2)
+	{
 		printf("%s\n", GET_T->getDebugData().c_str());
-	if (bDisplayOption)
-		displayOption();
+		if (bSend2Clint)
+			sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDeviErrorCode::DetailError, GET_T->getDebugData().c_str());
+	}
+	if (bSend2Clint)
+	{
+		//displayOption();
+		sendToClint();
+	}
 }
 
-//分割字符
-void split(std::string strtem, char a, std::vector<std::string>& vtStrCommand)
+//分割字符，参数1 原字符串（输入）， 参数2 分割字符（输入）， 参数3 字符串向量的引用（输出）
+void split(std::string strtem, char a, VT_STR vtStrCommand)
 {
-	std::vector<std::string> strvec;
+	vtStrCommand.clear(); 
 	std::string::size_type pos1, pos2;
 	pos2 = strtem.find(a);
 	pos1 = 0;
 	while (std::string::npos != pos2)
 	{
-		strvec.push_back(strtem.substr(pos1, pos2 - pos1));
+		vtStrCommand.push_back(strtem.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + 1;
 		pos2 = strtem.find(a, pos1);
 	}
 	vtStrCommand.push_back(strtem.substr(pos1));
 }
 
-void openCAN()
-{
-	//打开设备
-	int result = GET_T->openCanDev();
-	if (result == 0){
-		printf("打开设备成功。\n");
-		displayOption();
-	}
-	else if (result == -1)
-	{
-		printf("open failed\n");
-	}
-	else if (result == -2){
-		printf("Init-CAN failed!\n");
-	}
-	else if (result != -3)
-	{
-		printf("Start-CAN failed!\n");
-	}
-}
 
 void readCanId()
 {
@@ -219,13 +214,10 @@ void readOrWriteDisC()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	system("mode con cols=100 ");    //调整窗口大小
+	//system("mode con cols=100 ");    //调整窗口大小
 	GET_P->m_pPrintfFun = _callbackPrintf;
-	GET_T->m_pPrintfFun = _callbackPrintf;
-	//创建有名管道
-	HANDLE hPipe = 0;
-	DWORD wlen = 0;
-	DWORD rlen = 0;
+	GET_T->m_pPrintfFun = _callbackPrintf;	
+	
 	//创建管道
 	hPipe = CreateNamedPipe(
 		TEXT(PIPE_NAME),						//管道名
@@ -248,66 +240,77 @@ int _tmain(int argc, _TCHAR* argv[])
 		printf("主进程接入管道\n");
 
 		std::vector<std::string> vtStrCommand;
+		
 		while (true)
 		{
-			char rbuf[256] = "";
-			char wbuf[256] = "";
 			if (ReadFile(hPipe, rbuf, sizeof(rbuf), &rlen, 0) != FALSE)	//接受服务发送过来的内容
 			{
-				printf("接收主进程信息: data = %s, size = %d\n", rbuf, rlen);
+				
+				printf("接收主进程信息: data = %s, length = %d\n", rbuf, rlen);
 
-				vtStrCommand.clear();
 				//转换数据到命令结构体
-				printf("接收主进程信息: data = %s, size = %d\n", rbuf, rlen);
 				split(rbuf, ',', vtStrCommand);
 
-
-				if (strcmp(vtStrCommand[1].c_str(), "ff") == 0)
+				//判断第一元素是否为C2S
+				if (vtStrCommand[0].compare(C2S))
+				{
+					printf("第一元素不能解析，丢弃数据\n");
+					continue;
+				}
+				//命令分析，派发处理。
+				if (strcmp(vtStrCommand[1].c_str(), "FF") == 0)
 				{
 					GET_T->closeCanDev();
-					sprintf_s(wbuf, 256 ,"CAN通讯进程推出！\n");					
-					WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
+					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDeviErrorCode::Success, "CAN通讯进程即将退出。\n");
+					sendToClint();
 					Sleep(1000);
 					break;
 				}
-				else if (strcmp(vtStrCommand[1].c_str(), "0xf1") == 0)
+				else if (vtStrCommand[1].compare("F1") == 0)
 				{
+					static int count = 0;
+					printf("openCAN 函数进入%d次\n", ++count);
 					//打开设备
-					int result = GET_T->openCanDev();
-					if (result == 0){
-						printf("打开设备成功。\n");
-						strcpy_s(wbuf, 256, "打开设备成功。\n"); 
-					}
-					else if (result == -1)
-					{
-						printf("open failed\n");
-						strcpy_s(wbuf, 256, "打开设备失败。\n");
-					}
-					else if (result == -2){
-						printf("Init-CAN failed!\n");
-						strcpy_s(wbuf, 256, "初始化设备库失败。\n");
-					}
-					else if (result != -3)
-					{
-						printf("Start-CAN failed!\n");
-						strcpy_s(wbuf, 256, "启动CAN设备库失败。\n");
-					}
+					openCAN(wbuf);
+					sendToClint();
 				}
-				else if (strcmp(rbuf, "0xf2") == 0)
+				else if (GET_T->isOpenCanDev() == false)
 				{
-					GET_T->closeCanDev();
-					strcpy_s(wbuf, 256, "CAN设备已经关闭。\n");
+					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDeviErrorCode::DetailError, "CAN设备未打开.\n");
 				}
-				
+				else if (strcmp(vtStrCommand[1].c_str(), "F2") == 0)
+				{
+					//关闭设备
+					closeCAN(wbuf);
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F3") == 0)
+				{
+					//读取/设置CAN ID
+					readOrWriteCANID(vtStrCommand, wbuf);
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F4") == 0)
+				{
 
-				WriteFile(hPipe, wbuf, strlen(wbuf), &wlen, 0);
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F5") == 0)
+				{
 
-				 
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
+				{
+
+				}
+				if (strcmp(wbuf, "") != 0)
+				{
+					//wbuf 不等与"" 代表有
+					//printf("wbuf 不为空！\n");
+					//sendToClint();
+					
+				}
 			}
 		}
 	}
 	CloseHandle(hPipe);
-
 	return 0;
 
 
@@ -323,7 +326,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			return 0;
 			break;
 		case  1:
-			openCAN();
+			//openCAN();
 			break;
 		case  2:
 			readCanId();

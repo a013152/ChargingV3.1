@@ -7,6 +7,9 @@
 #include "CommonFunction.h"
 #include "common.h"
 extern char g_AppPath[256] = { 0 };
+char g_szSendBuff[256] = { 0 };
+char g_szReceBuff[MAX_BUF_SIZE] = { 0 };
+#define MAX_SIZE 1024
 
 // CPage3_SetAddressCAN 对话框
 
@@ -42,6 +45,8 @@ BEGIN_MESSAGE_MAP(CPage3_SetAddressCAN, CDialogEx)
 	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_BTN_OPEN_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnOpenCan)
 	ON_BN_CLICKED(IDC_BTN_CLOSE_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnCloseCan)
+	ON_BN_CLICKED(IDC_BTN_R_ADRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan)
+	ON_BN_CLICKED(IDC_BTN_W_ADDRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan)
 END_MESSAGE_MAP()
 
 
@@ -74,6 +79,21 @@ void CPage3_SetAddressCAN::OnPaint()
 	dc.FillSolidRect(rect, RGB(202, 12, 22));
 }
 
+
+bool CPage3_SetAddressCAN::isPrepareToSendCAN()
+{
+	if (m_canDeviceProcessId == 0)
+	{
+		m_pPrintfFun(CString(L"错误CAN进程未打开，不能通讯!\n"));
+		return false;
+	}
+	if (m_hPipe == 0)
+	{
+		m_pPrintfFun(CString(L"错误CAN进程有名通道未打开，不能通讯!\n"));
+		return false;
+	}
+	return true;
+}
 
 void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 {
@@ -127,19 +147,12 @@ void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 	}
 
 	//打开设备
-	char szSend[256] = { 0 };   sprintf_s(szSend, 256, "0xf1");  //0xff ： 退出   // 0xf1 ： 打开设备 // 0xf2 ：关闭设备
-	sendToCanDeviceProcess(szSend, 5);
+	sprintf_s(g_szSendBuff, 256, "%s,F1", C2S);  
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
 	::Sleep(100);
-	char szReceive[256] = { 0 };
+	char szReceive[MAX_SIZE] = { 0 };
 	receiveFromCanDeviceProcess(szReceive);
-	if (strcmp(szReceive, "") == 0)
-		m_pPrintfFun(L"打开CAN设备失败!\n");
-	else{
-		m_pPrintfFun(CString(COM_F::MBytesToWString(szReceive).c_str()) );
-
-	}
-
-
+	
 	//设置父窗口焦点
 	GetParent()->SetFocus();
 
@@ -156,10 +169,10 @@ void CPage3_SetAddressCAN::OnBnClickedBtnCloseCan()
 		if (m_hPipe > 0)
 		{
 			//发送进程推出报文
-			char szExit[256] = { 0 };   sprintf_s(szExit, 256, "0xff");
-			sendToCanDeviceProcess(szExit, 5);
-			char szTemp[256] = { 0 };
-			receiveFromCanDeviceProcess(szTemp);
+			sprintf_s(g_szSendBuff, 256, "%s,%s", C2S, "FF");
+			sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+			
+			receiveFromCanDeviceProcess(g_szReceBuff);
 			//m_canDeviceProcessId = 0;
 			//CloseHandle(m_hPipe);
 			//m_hPipe = 0;
@@ -170,6 +183,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnCloseCan()
 			m_canDeviceProcessId = 0;
 			m_hPipe = 0;
 		}
+		m_pPrintfFun(CString(L"结束了CAN通讯进程\n"));
 	}
 }
 
@@ -180,7 +194,7 @@ int CPage3_SetAddressCAN::sendToCanDeviceProcess(char * szData, int nLength)
 	if (m_hPipe > 0)
 	{
 		DWORD wlen = 0;
-		WriteFile(m_hPipe, szData, strlen(szData), &wlen, 0);//向CAN进程送内容
+		WriteFile(m_hPipe, szData, nLength, &wlen, 0);//向CAN进程送内容
 		CString str = L"发送："; str += szData; str += L"\n";
 		m_pPrintfFun(str);
 		Sleep(10);
@@ -196,9 +210,43 @@ int CPage3_SetAddressCAN::receiveFromCanDeviceProcess(char * szData)
 	if (m_hPipe > 0)
 	{
 		DWORD rlen = 0;
-		ReadFile(m_hPipe, szData, 256, &rlen, NULL); //接受CAN进程发送过来的内容
+		ReadFile(m_hPipe, szData, MAX_SIZE, &rlen, NULL); //接受CAN进程发送过来的内容
 		CString str = L"接收："; str += CString(szData);
 		m_pPrintfFun(str);
 	}
 	return 0;
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!isPrepareToSendCAN())
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,R", C2S, "F3");
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	Sleep(500);
+	receiveFromCanDeviceProcess(g_szReceBuff);
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!isPrepareToSendCAN())
+		return;
+
+	CString strCanId; 
+	GetDlgItem(IDC_EDIT_CANID)->GetWindowText(strCanId);
+	if (strCanId.IsEmpty())
+	{
+		m_pPrintfFun(L"错误：CAN ID 不能为空。\n"); 
+		return;
+	}
+	sprintf_s(g_szSendBuff, 256, "%s,%s,W,%s", C2S, "F3", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	Sleep(500);
+	receiveFromCanDeviceProcess(g_szReceBuff);
+
+
 }

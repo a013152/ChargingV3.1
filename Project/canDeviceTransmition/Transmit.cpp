@@ -138,7 +138,7 @@ void CTransmit::CAN_Receive()
 			m_strDebugData = "收到数据：" + str + "\n";
 		else
 			m_strDebugData = "收到数据：空\n";
-		if (m_pPrintfFun) m_pPrintfFun(2,( NumValue != 0?false:true));
+		if (m_pPrintfFun) m_pPrintfFun(2,( NumValue == 0 ? true:false));//NumValue 等于0 ，则打印
 		
 		//把数据转交协议类处理
 		GET_P->analyzeReceiveData(m_bufRecive, Len);

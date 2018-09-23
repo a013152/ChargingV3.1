@@ -48,6 +48,6 @@ public:
 
 	static std::wstring getAppDir();
 
-	static std::vector<std::string> split(std::string strtem, char a);
+	static void split(std::string strtem, char splitChar, std::vector<std::string>& vtStrCommand);
 };
 

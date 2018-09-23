@@ -4,7 +4,7 @@
 #include <stdint.h> 
 #include <string>
 #include <windows.h>
-#define MAX_BUF_SIZE 1024 //»º³åÇø
+#include "../common/common.h"
 
 #define TIMER_WATCHUI  1
 #define APP_TITLE "ÖÇÄÜ³äµç¹ñ2.1"

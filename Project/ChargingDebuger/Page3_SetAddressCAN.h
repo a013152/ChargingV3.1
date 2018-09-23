@@ -30,6 +30,7 @@ public:
 
 private:
 	SENDCOMMAND m_pPrintfFun = NULL; //发送函数
+	bool isPrepareToSendCAN();
 	CWnd* m_pParent;
 	DWORD m_canDeviceProcessId ;  //进程id
 	HANDLE m_hPipe ;//管道句柄
@@ -37,4 +38,6 @@ private:
 public:
 	afx_msg void OnBnClickedBtnOpenCan();
 	afx_msg void OnBnClickedBtnCloseCan();
+	afx_msg void OnBnClickedBtnRAdressCan();
+	afx_msg void OnBnClickedBtnWAddressCan();
 };
