@@ -15,6 +15,7 @@ date£º 20180922
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <vector>
 #include <TLHELP32.H>
 
 #define COM_F CommonFunction 
@@ -46,5 +47,7 @@ public:
 	static void closeNamePipe(HANDLE hPipe);
 
 	static std::wstring getAppDir();
+
+	static std::vector<std::string> split(std::string strtem, char a);
 };
 

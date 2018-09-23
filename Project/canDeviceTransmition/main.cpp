@@ -10,7 +10,8 @@
 #include <cstdlib>     
 #define GET_T CTransmit::GetInstance()
 #define GET_P CProtocol::GetInstance()
-
+#include <string>
+#include <vector>
 void displayOption(){
 	printf("\n请输入指令: \n\t0 退出\t1 打开can设备\t2 读取canid指令\
 		   \n\t3 设置canid指令\t4 认证\t5 读取起始模式\
@@ -29,7 +30,21 @@ static void _callbackPrintf(int nType, bool bDisplayOption)
 		displayOption();
 }
 
-
+//分割字符
+void split(std::string strtem, char a, std::vector<std::string>& vtStrCommand)
+{
+	std::vector<std::string> strvec;
+	std::string::size_type pos1, pos2;
+	pos2 = strtem.find(a);
+	pos1 = 0;
+	while (std::string::npos != pos2)
+	{
+		strvec.push_back(strtem.substr(pos1, pos2 - pos1));
+		pos1 = pos2 + 1;
+		pos2 = strtem.find(a, pos1);
+	}
+	vtStrCommand.push_back(strtem.substr(pos1));
+}
 
 void openCAN()
 {
@@ -231,6 +246,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		//等待客户端连接管道
 		ConnectNamedPipe(hPipe, NULL);
 		printf("主进程接入管道\n");
+
+		std::vector<std::string> vtStrCommand;
 		while (true)
 		{
 			char rbuf[256] = "";
@@ -238,8 +255,14 @@ int _tmain(int argc, _TCHAR* argv[])
 			if (ReadFile(hPipe, rbuf, sizeof(rbuf), &rlen, 0) != FALSE)	//接受服务发送过来的内容
 			{
 				printf("接收主进程信息: data = %s, size = %d\n", rbuf, rlen);
-				
-				if (strcmp(rbuf, "0xff") == 0)
+
+				vtStrCommand.clear();
+				//转换数据到命令结构体
+				printf("接收主进程信息: data = %s, size = %d\n", rbuf, rlen);
+				split(rbuf, ',', vtStrCommand);
+
+
+				if (strcmp(vtStrCommand[1].c_str(), "ff") == 0)
 				{
 					GET_T->closeCanDev();
 					sprintf_s(wbuf, 256 ,"CAN通讯进程推出！\n");					
@@ -247,7 +270,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					Sleep(1000);
 					break;
 				}
-				else if (strcmp(rbuf, "0xf1") == 0)
+				else if (strcmp(vtStrCommand[1].c_str(), "0xf1") == 0)
 				{
 					//打开设备
 					int result = GET_T->openCanDev();
