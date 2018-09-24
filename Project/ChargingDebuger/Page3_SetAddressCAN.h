@@ -40,4 +40,6 @@ public:
 	afx_msg void OnBnClickedBtnCloseCan();
 	afx_msg void OnBnClickedBtnRAdressCan();
 	afx_msg void OnBnClickedBtnWAddressCan();
+	afx_msg void OnEnChangeEditCanid();
+	afx_msg void OnBnClickedBtnVerify();
 };

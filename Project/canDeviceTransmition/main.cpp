@@ -9,7 +9,7 @@
 #include <cstdlib>  
 static char rbuf[256] = "";
 static char wbuf[MAX_BUF_SIZE] = "";
-static bool s_sendFlg = false;
+static bool s_sendFlg = false; //发送到调用进程的标志（在执行错误或者线程返回结果为true)
 HANDLE hPipe = 0;	DWORD wlen = 0;	DWORD rlen = 0;
 
 void displayOption(){
@@ -21,7 +21,7 @@ void displayOption(){
 }
 void sendToClint()
 {
-	printf("向有名管道句柄%d，发送:%s",hPipe, wbuf);
+	//printf("向有名管道句柄%d，发送:%s",hPipe, wbuf);
 	WriteFile(hPipe, wbuf, MAX_BUF_SIZE, &wlen, 0);
 	memset(wbuf, MAX_BUF_SIZE, 0);
 }
@@ -31,13 +31,13 @@ static void _callbackPrintf(int nType, bool bSend2Clint = true)
 	if (nType == 1)
 	{
 		printf("%s\n", GET_P->getDebugData().c_str());
-		sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDeviErrorCode::Success, GET_P->getDebugData().c_str());
+		sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDevieErrorCode::Success, GET_P->getDebugData().c_str());
 	}
 	if (nType == 2)
 	{
 		printf("%s\n", GET_T->getDebugData().c_str());
 		if (bSend2Clint)
-			sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDeviErrorCode::DetailError, GET_T->getDebugData().c_str());
+			sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDevieErrorCode::DetailError, GET_T->getDebugData().c_str());
 	}
 	if (bSend2Clint)
 	{
@@ -62,20 +62,6 @@ void split(std::string strtem, char a, VT_STR vtStrCommand)
 	vtStrCommand.push_back(strtem.substr(pos1));
 }
 
-
-void readCanId()
-{
-	stCAN_DevData dataObj;
-	GET_P->getCommandReadCanId(dataObj);
-	GET_T->sendCanData(dataObj, Uint8ToUint16(g_CAN_ID_Common));
-}
-
-void writeCanId()
-{
-	stCAN_DevData dataObj;
-	GET_P->getCommandWriteCanId(dataObj, g_CAN_ID_Default);
-	GET_T->sendCanData(dataObj, Uint8ToUint16(g_CAN_ID_Common));
-}
 
 void sendVerify()
 {
@@ -222,23 +208,37 @@ int _tmain(int argc, _TCHAR* argv[])
 	//创建管道
 	hPipe = CreateNamedPipe(
 		TEXT(PIPE_NAME),						//管道名
-		PIPE_ACCESS_DUPLEX,									//管道类型 
+		PIPE_ACCESS_DUPLEX /*| FILE_FLAG_OVERLAPPED*/,			//管道类型 、使用重叠IO
 		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,	//管道参数，双向通信 
 		PIPE_UNLIMITED_INSTANCES,							//管道能创建的最大实例数量
 		0,													//输出缓冲区长度 0表示默认
 		0,													//输入缓冲区长度 0表示默认
-		NMPWAIT_WAIT_FOREVER,								//超时时间,NMPWAIT_WAIT_FOREVER为不限时等待
+		1000,												//超时时间,设置1秒，NMPWAIT_WAIT_FOREVER为不限时等待
 		NULL);
 	if (INVALID_HANDLE_VALUE == hPipe)
 	{
-		printf("创建管道失败:%d ", GetLastError());
-		system("PAUSE");
+		printf("创建管道失败，错误码:%d ，即将退出。", GetLastError());
+		Sleep(3000);
+		return 0;
 	}
 	else{
-		printf("创建管道完成，等待调用进程连接管道\n");
+		printf("创建管道完成，等待《调用进程》连接管道。\n");
 		//等待客户端连接管道
-		ConnectNamedPipe(hPipe, NULL);
-		printf("主进程接入管道\n");
+
+
+		//OVERLAPPED tagOver;		memset(&tagOver, 0x0, sizeof(tagOver)); 		
+		//tagOver.hEvent = CreateEvent(NULL,
+		//	TRUE,//手工reset		
+		//	TRUE,//初始状态signaled		
+		//	NULL);//未命名
+		BOOL nRet = ConnectNamedPipe(hPipe, NULL);
+		if (nRet == FALSE)
+		{
+			printf("连接有名管道失败，错误码:%d ，即将退出。", GetLastError());
+			Sleep(3000);
+			return 0;
+		}
+		printf("《调用进程》接入管道。\n");
 
 		std::vector<std::string> vtStrCommand;
 		
@@ -246,11 +246,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			if (ReadFile(hPipe, rbuf, sizeof(rbuf), &rlen, 0) != FALSE)	//接受服务发送过来的内容
 			{
-				memset(rbuf, 256 , 0 );
-				printf("接收主进程信息: data = %s, length = %d\n", rbuf, rlen);
-
 				//转换数据到命令结构体
 				split(rbuf, ',', vtStrCommand);
+				printf("接收主进程信息: data = %s  length = %d\n", rbuf, rlen);
+				//清空缓冲区				
+				memset(rbuf, 0, 256);
 
 				//判断第一元素是否为C2S
 				if (vtStrCommand[0].compare(C2S))
@@ -262,7 +262,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (strcmp(vtStrCommand[1].c_str(), "FF") == 0)
 				{
 					GET_T->closeCanDev();
-					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDeviErrorCode::Success, "CAN通讯进程即将退出。\n");
+					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDevieErrorCode::Success, "CAN通讯进程即将退出。\n");
 					sendToClint();
 					Sleep(1000);
 					break;
@@ -279,7 +279,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				else if (GET_T->isOpenCanDev() == false)
 				{
 					s_sendFlg = true;
-					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDeviErrorCode::DetailError, "CAN设备未打开.\n");
+					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDevieErrorCode::DetailError, "CAN设备未打开.\n");
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F2") == 0)
 				{
@@ -297,27 +297,32 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F4") == 0)
 				{
-
+					//认证
+					if (verifyDevice(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F5") == 0)
 				{
-
+					
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
 				{
 
 				}
-				while (s_sendFlg == false)
+				static char waitTime = 0; waitTime = 0;
+				bool flag = true;
+				while (flag )
 				{
+					waitTime++;
 					Sleep(10);
-				} 
-				//if(strcmp(wbuf, "") != 0)
-				//{
-					//wbuf 不等与"" 代表有
-					//printf("wbuf 不为空！\n");
-					//sendToClint();
-					sendToClint();
-				//}
+					flag = (s_sendFlg == false && waitTime < 30);  //回收线程有相应，或者超时300ms退出循环。					
+				}  
+				if (waitTime >=30)
+					sprintf_s(wbuf, 256, "%s,%d,%s%s", S2C, enCANDevieErrorCode::DetailError, vtStrCommand[1].c_str(),"命令等待超时。\n");
+				 
+				sendToClint(); 
 			}
 		}
 	}
@@ -340,10 +345,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			//openCAN();
 			break;
 		case  2:
-			readCanId();
+			//readCanId();
 			break;
 		case  3:
-			writeCanId();
+			//writeCanId();
 			break; 
 		case  4:
 				sendVerify();

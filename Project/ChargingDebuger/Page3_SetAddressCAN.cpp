@@ -20,6 +20,7 @@ CPage3_SetAddressCAN::CPage3_SetAddressCAN(CWnd* pParent /*=NULL*/)
 {
 	m_canDeviceProcessId = 0;
 	m_hPipe = 0;
+	m_pParent = pParent;
 }
 
 CPage3_SetAddressCAN::~CPage3_SetAddressCAN()
@@ -47,6 +48,8 @@ BEGIN_MESSAGE_MAP(CPage3_SetAddressCAN, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_CLOSE_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnCloseCan)
 	ON_BN_CLICKED(IDC_BTN_R_ADRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan)
 	ON_BN_CLICKED(IDC_BTN_W_ADDRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan)
+	ON_EN_CHANGE(IDC_EDIT_CANID, &CPage3_SetAddressCAN::OnEnChangeEditCanid)
+	ON_BN_CLICKED(IDC_BTN_Verify, &CPage3_SetAddressCAN::OnBnClickedBtnVerify)
 END_MESSAGE_MAP()
 
 
@@ -138,7 +141,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 		m_pPrintfFun(CString("启动CAN通讯进程失败!"));
 		return;
 	}
-		//3 连接有名管道
+		//3 连接有名管道， 使用重叠io 方式读取
 	m_hPipe = COM_F::connectServerNamePipe(TEXT(PIPE_NAME));
 	if (INVALID_HANDLE_VALUE == m_hPipe)
 	{
@@ -154,7 +157,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 	receiveFromCanDeviceProcess(szReceive);
 	
 	//设置父窗口焦点
-	GetParent()->SetFocus();
+	m_pParent->SetFocus();
 
 }
 
@@ -185,6 +188,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnCloseCan()
 		}
 		m_pPrintfFun(CString(L"结束了CAN通讯进程\n"));
 	}
+	m_pParent->SetFocus();
 }
 
 
@@ -227,6 +231,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan()
 	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
 	Sleep(200);
 	receiveFromCanDeviceProcess(g_szReceBuff);
+	m_pParent->SetFocus();
 }
 
 
@@ -248,5 +253,41 @@ void CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan()
 	Sleep(200);
 	receiveFromCanDeviceProcess(g_szReceBuff);
 
+	m_pParent->SetFocus();
+}
 
+
+void CPage3_SetAddressCAN::OnEnChangeEditCanid()
+{
+	// TODO:  如果该控件是 RICHEDIT 控件，它将不
+	// 发送此通知，除非重写 CDialogEx::OnInitDialog()
+	// 函数并调用 CRichEditCtrl().SetEventMask()，
+	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
+
+	// TODO:  在此添加控件通知处理程序代码
+
+	//m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnVerify()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	GetDlgItem(IDC_EDIT_CANID)->GetWindowText(strCanId);
+	if (strCanId.IsEmpty())
+	{
+		m_pPrintfFun(L"错误：CAN ID 不能为空。\n");
+		return;
+	}
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s", C2S, "F4", COM_F::WStringToMBytes(strCanId).c_str());
+	int len =strlen(g_szSendBuff);
+	sendToCanDeviceProcess(g_szSendBuff, len);
+	Sleep(200);
+	receiveFromCanDeviceProcess(g_szReceBuff);
+
+	m_pParent->SetFocus();
 }

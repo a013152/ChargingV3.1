@@ -14,7 +14,7 @@ extern char g_AppPath[256];  //exe路径
 #define S2C "S2C" //进程方向： 服务端向客户端
 #define C2S "C2S" //进程方向： 客户端向服务端
 #define SPILTE_CHAR ','  //分割字符','
-enum enCANDeviErrorCode{	//CAN进程返回的错误码
+enum enCANDevieErrorCode{	//CAN进程返回的错误码
 	Success = 0,
 	DeviceNotOpen,
 	DetailError,

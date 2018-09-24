@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <time.h>
 #include "Transmit.h"
 #include "Protocol.h"
 #define GET_P CProtocol::GetInstance()
@@ -134,18 +135,36 @@ void CTransmit::CAN_Receive()
 			sprintf_s(szTemp, 256, "%02X ", m_bufRecive[i]);
 			str += szTemp;
 		}
+		//判断是否出现返回多次的情况
+		/*time_t curtime = time(NULL);
+		tm *ptm = localtime(&curtime);
+		char buf[64];
+		sprintf(buf, "%d/%02d/%02d %02d:%02d:%02d", ptm->tm_year + 1900, ptm->tm_mon + 1,
+			ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);*/
+
+		static DWORD dwTimePre, dwTimeNow;
+		static bool bShortInervert = false;
+		dwTimeNow = GetTickCount();//从操作系统启动所经过（elapsed）的毫秒数，它的返回值是DWORD。
+		if (dwTimeNow - dwTimePre > 30){
+
+			dwTimePre = dwTimeNow;
+			bShortInervert = true;
+		}
+
 		if (NumValue != 0)
 			m_strDebugData = "收到数据：" + str + "\n";
 		else
-			m_strDebugData = "收到数据：空\n";
-		if (m_pPrintfFun) m_pPrintfFun(2,( NumValue == 0 ? true:false));//NumValue 等于0 ，则打印
-		
+			m_strDebugData = "收到数据：空";
+		if (m_pPrintfFun) m_pPrintfFun(2, ((NumValue == 0 && bShortInervert==true) ? true : false));//NumValue 等于0 ，则打印
+		bShortInervert = false;
+
 		//把数据转交协议类处理
 		GET_P->analyzeReceiveData(m_bufRecive, Len);
 
 		
 	}
 }
+
 
 int CTransmit::sendCanData(stCAN_DevData &dataObj, UINT canID)
 {
@@ -202,7 +221,11 @@ int CTransmit::sendCanData(stCAN_DevData &dataObj, UINT canID)
 			result_ = -2;
 	}
 	if (result_ == 0)
+	{
+		if (dataObj.CMD_ == 0x00)
+			Sleep(300);
 		SetEvent(m_hReadEventArray[1]);
+	}
 	delete[] byteTemp;
 	return result_;
 }

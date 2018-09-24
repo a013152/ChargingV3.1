@@ -3,7 +3,7 @@
 #include "Transmit.h"
 #define GET_T CTransmit::GetInstance()
 
-BYTE g_CAN_ID_Default[2] = { 0x11, 0x01 };//临时的CAN ID 写入与读取;  //当前的CAN ID  0x111
+BYTE g_CAN_ID_Default[2] = { 0};//临时的CAN ID 写入与读取;  //如果CAN ID =0x111设置 { 0x11, 0x01 }
 BYTE g_CAN_ID_Common[2] = { 0xff, 0x07 };//通用的CAN ID 设置DJI 充电槽的can id时使用
 
 BYTE g_DefaultKey = 0xff; //默认密匙 0xff
@@ -303,7 +303,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 	int i = 0, Len = 0;stCAN_DevData dataObj;
 	dataObj.packetUp(szData, Length);
 	uint16_t datalen = dataObj.getLen();
-	if (dataObj.Data_[0] != 0x00 && dataObj.CMD_ != 0x00 && dataObj.CMD_ != 0x01){
+	if (dataObj.Data_[0] != 0x00 /*&& dataObj.CMD_ != 0x00*/ && dataObj.CMD_ != 0x01){
 		if (dataObj.Data_[0] == 0x01){ m_strDebugData = "升级一般错误，请重试。"; }
 		if (dataObj.Data_[0] == 0x02){ m_strDebugData = "升级Flash不够，请重试。"; }
 		if (dataObj.Data_[0] == 0x03){ m_strDebugData = "升级Flash写失败，请重试。"; }
@@ -325,10 +325,11 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 	}
 	
 	if (dataObj.CMD_ == 0x00){
+
 		//设置can id
 		Len = dataObj.getLen() - 7;
 		if (dataObj.Data_[0] == 0x00){
-			m_strDebugData = "设置Can ID成功\n";
+			m_strDebugData = "设置Can ID成功";
 		}
 		else{
 			sprintf_s(szTemp, 256, "设置Can ID失败，返回码：%02X", dataObj.Data_[0]);
@@ -342,12 +343,14 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			//解密
 			Len = dataObj.getLen() - 7 - 2;
 			asc256_deCode(getKey(), dataObj.Data_, Len);
-			str = "";
-			for (i = 0; i < Len; i++)	//数据信息
-			{
-				sprintf_s(szTemp, 256, "%02X ", dataObj.Data_[i]); 
-				str += szTemp;
-			}
+			
+			////for (i = 0; i < Len; i++)	//数据信息
+			//{
+			//	sprintf_s(szTemp, 256, "%02X ", dataObj.Data_[i]); 
+			//	str += szTemp;
+			//}
+			sprintf_s(szTemp, 256, "%X%02X ", dataObj.Data_[2], dataObj.Data_[1]);
+			str = szTemp;
 			m_strDebugData = "读取的CAN ID:" + str;
 			if (m_pPrintfFun) m_pPrintfFun(1, true);
 		}

@@ -118,7 +118,7 @@ HANDLE CommonFunction::connectServerNamePipe(LPCTSTR pipeName)
 		0,                              //是否共享  
 		NULL,                           //指向一个SECURITY_ATTRIBUTES结构的指针  
 		OPEN_EXISTING,                  //创建参数  
-		FILE_ATTRIBUTE_NORMAL,          //文件属性，NORMAL为默认属性  
+		FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_OVERLAPPED*/,          //文件属性，使用重叠IO  
 		NULL);                          //模板创建文件的句柄  
 	if (INVALID_HANDLE_VALUE == hPipe)
 	{

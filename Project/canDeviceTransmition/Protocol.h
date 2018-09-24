@@ -15,10 +15,18 @@ extern "C"{
 
 struct stCAN_DevData;
 union UnionCRC;
-
+extern BYTE g_CAN_ID_Default[2];
 UINT  Uint8ToUint16(uint8_t * canID);
 
 
+struct stDebugData 
+{
+	std::string strDebug; //转译后的字符
+	BYTE byteData_[MAX_BUF_SIZE]; //解码后的字节内容
+	stDebugData(){
+		memset(byteData_, 0, 1024);
+	}
+};
 
 //电池 信息
 struct stBatteryInfo
@@ -164,10 +172,10 @@ public:
 	//返回值：
 	void analyzeReceiveData(BYTE* szData, int Length);
 
-	//函数：getDebugData
+	//函数：std::string
 	//功能：获取接收到的数据，用于通知窗口显示接收到的数据
 	//参数：   
-	//返回值：std::string
+	//返回值：stDebugData*
 	std::string getDebugData(){ return m_strDebugData; }
 
 protected:
@@ -229,7 +237,7 @@ private:
 
 	uint8_t m_szKeyDefault[32];
 	HWND    m_AppWnd = NULL;  //窗口
-	std::string m_strDebugData, str1, str;
+	std::string m_strDebugData, str1, str; 
 	char szTemp[256]; ;
 	bool m_bVerify = false; //认证标志
 	bool m_bReadChargeState = false;  //读取充电状态标志 0x07
