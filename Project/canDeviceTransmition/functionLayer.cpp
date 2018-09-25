@@ -12,6 +12,21 @@ bool isGoodCANID(const char* szCANID)
 	char pattern_[] = "[0-9a-fA-F]{3,3}";
 	return regex_match(szCANID, std::regex(pattern_));
 }
+bool decideCANID(VT_STR  vtStrCommand ,char* resultString)
+{
+	printf("判断CAN ID%s 是否符合规律", vtStrCommand[2].c_str());
+	if (isGoodCANID(vtStrCommand[2].c_str()))
+	{
+		printf("->符合\n");
+		return true;
+	}
+	else{
+		printf("->不符合\n");
+		sprintf_s(resultString, 256, "%s,%s,%d,%s", S2C, vtStrCommand[1].c_str(), enCANDevieErrorCode::DetailError, "认证错误，CAN_ID不符合规格(3位十六进制数例如：201 、7FE).\n");
+		return false;
+	}
+	return true;
+}
 //CANID 字符转换十六进制数
 void str_to_hex(const std::string& str , BYTE * szCanId)
 {
@@ -102,12 +117,16 @@ bool readOrWriteCANID(VT_STR vtStrCommand, char* resultString)
 	return true;
 }
 
+
+
 bool verifyDevice(VT_STR vtStrCommand, char* resultString)
 {
-	printf("判断CAN ID%s 是否符合规律",vtStrCommand[2].c_str());
-	if (isGoodCANID(vtStrCommand[2].c_str()))
+	if (false == decideCANID(vtStrCommand, resultString))
 	{
-		printf("->符合\n");
+		return false;
+	}
+	else
+	{
 		str_to_hex(vtStrCommand[2], szTempCanID);
 		g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
 		stCAN_DevData dataObj;
@@ -116,11 +135,32 @@ bool verifyDevice(VT_STR vtStrCommand, char* resultString)
 		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
 		printf("转换后的CAN ID:%04X\n",uintTempCanID);
 		GET_T->sendCanData(dataObj, uintTempCanID);
-	}
-	else{
-		printf("->不符合\n");
-		sprintf_s(resultString, 256, "%s,%s,%d,%s", S2C, vtStrCommand[1].c_str(), enCANDevieErrorCode::DetailError, "认证错误，CAN_ID不符合规格(3位十六进制数例如：201 、7FE).\n");
+	}	
+	return true;
+}
+
+bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString)
+{
+	if (false == decideCANID(vtStrCommand, resultString))
+	{
 		return false;
+	}
+	else
+	{
+		str_to_hex(vtStrCommand[2], szTempCanID);g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
+		stCAN_DevData dataObj;
+		GET_P->getCommandVerify(dataObj);
+		
+		bool bReadOrWrite = vtStrCommand[3].compare("R") == 0 ? false : true;
+		BYTE mode = 0;
+		if (bReadOrWrite)
+			mode = vtStrCommand[4].compare("0x01") == 0 ? 0x01 : 0xff;
+		printf("mode%02X\n", (BYTE)mode);
+		GET_P->getCommandBeginMode(dataObj,  bReadOrWrite, mode);
+		uintTempCanID = Uint8ToUint16(szTempCanID);
+		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
+		printf("转换后的CAN ID:%04X\n", uintTempCanID);
+		GET_T->sendCanData(dataObj, uintTempCanID);
 	}
 	return true;
 }

@@ -110,9 +110,9 @@ public:
 
 	//函数：getCommandBeginMode
 	//功能：获取起始模式的命令
-	//参数： dataObj引用,  
+	//参数： dataObj引用,   bReadOrWrite 读取或者设置充电模式, mode（只有1/ff两种模式，1代表50%，0xff代表 100%）
 	//返回值：
-	void getCommandBeginMode(stCAN_DevData& dataObj);
+	void getCommandBeginMode(stCAN_DevData& dataObj, bool bReadOrWrite, BYTE mode);
 
 	//函数：getCommandMaxCharge
 	//功能：获取最大充电数的命令

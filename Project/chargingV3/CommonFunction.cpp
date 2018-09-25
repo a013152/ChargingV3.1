@@ -82,7 +82,7 @@ bool CommonFunction::closeProcessFromId(DWORD dwTH32ProcessID)
 
 
 //启动进程
-bool CommonFunction::startProcessFromPath(LPCTSTR szPath)
+bool CommonFunction::startProcessFromPath(LPCTSTR szPath, int showMode)
 {
 	if (wcscmp(szPath,L"") == 0)
 		return false;
@@ -95,7 +95,10 @@ bool CommonFunction::startProcessFromPath(LPCTSTR szPath)
 	ShExecInfo.lpFile = szPath;        // 执行的程序名 
 	ShExecInfo.lpParameters = L"test start process with param.";//参数
 	ShExecInfo.lpDirectory = NULL;
-	ShExecInfo.nShow = SW_SHOWNORMAL;                // 显示这个程序 
+	if (showMode)
+		ShExecInfo.nShow = SW_HIDE;                // 隐藏运行这个程序 
+	else if (showMode == 1)	
+		ShExecInfo.nShow = SW_SHOWNORMAL;                // 显示这个程序 
 	ShExecInfo.hInstApp = NULL;
 	return ShellExecuteEx(&ShExecInfo);
 }

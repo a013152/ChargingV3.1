@@ -95,24 +95,33 @@ void CProtocol::getCommandVerify(stCAN_DevData& dataObj)
 
 }
 
-void CProtocol::getCommandBeginMode(stCAN_DevData& dataObj)
+void CProtocol::getCommandBeginMode(stCAN_DevData& dataObj, bool bReadOrWrite, BYTE mode)
 {
 	dataObj.Header = 0x55;
-	dataObj.LEN[0] = 7 + 1 + 2;
+	if (false == bReadOrWrite)
+		dataObj.LEN[0] = 7 + 1 + 2;
+	else
+		dataObj.LEN[0] = 7 + 2 + 2;
 	dataObj.LEN[1] = 0x00;
 	dataObj.CMD_ = 0x05;
 	dataObj.Enc = 0;
 	dataObj.Seq_ = 5;
 	dataObj.CRC8_ = calulataCRC8(dataObj);
-
-	dataObj.Data_[0] = 0x00;
-	//dataObj.Data_[1] = 0x01;
+	if (false == bReadOrWrite)
+		dataObj.Data_[0] = 0x00;
+	else{
+		dataObj.Data_[0] = 0x01;
+		if (mode == 0x01)
+			dataObj.Data_[1] = 0x01;//0x01 50%充电起始模式，
+		else if (mode == 0xff)
+			dataObj.Data_[1] = 0xff;//0xff 100%充电起始模式
+	}
 
 	UnionCRC unionObj = calulataCRC16(dataObj);
 	dataObj.CRC16_[0] = unionObj.crcArray[0];
 	dataObj.CRC16_[1] = unionObj.crcArray[1];
 	//dataObj.Data_[0] = 0x00; // 0x0 读取， 0x01 设置
-	////dataObj.Data_[1] = 0x01; //0x01 50%充电起始模式，0xff 100%充电起始模式
+	//dataObj.Data_[1] = 0x01; 
 }
 
 void CProtocol::getCommandMaxCharge(stCAN_DevData& dataObj)

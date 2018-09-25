@@ -38,7 +38,7 @@ public:
 	static bool closeProcessFromId(DWORD dwTH32ProcessID);
 	
 	//启动进程， 参数：推荐使用绝对路径
-	static bool startProcessFromPath(LPCTSTR szPath);
+	static bool startProcessFromPath(LPCTSTR szPath, int showMode);
 
 	//连接服务端的有名管道
 	static HANDLE connectServerNamePipe(LPCTSTR pipeName);

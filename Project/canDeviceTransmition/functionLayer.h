@@ -30,3 +30,6 @@ bool readOrWriteCANID(VT_STR vtStrCommand, char* resultString);
 //认证设备
 bool verifyDevice(VT_STR vtStrCommand, char* resultString);
 
+//认证设备
+bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString);
+

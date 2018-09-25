@@ -44,12 +44,14 @@ void CPage3_SetAddressCAN::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPage3_SetAddressCAN, CDialogEx)
 	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_BTN_OPEN_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnOpenCan)
-	ON_BN_CLICKED(IDC_BTN_CLOSE_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnCloseCan)
+	ON_BN_CLICKED(IDC_BTN_OPEN_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnOpenCan)	 
 	ON_BN_CLICKED(IDC_BTN_R_ADRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnRAdressCan)
 	ON_BN_CLICKED(IDC_BTN_W_ADDRESS_CAN, &CPage3_SetAddressCAN::OnBnClickedBtnWAddressCan)
 	ON_EN_CHANGE(IDC_EDIT_CANID, &CPage3_SetAddressCAN::OnEnChangeEditCanid)
 	ON_BN_CLICKED(IDC_BTN_Verify, &CPage3_SetAddressCAN::OnBnClickedBtnVerify)
+	ON_BN_CLICKED(IDC_BTN_RBM, &CPage3_SetAddressCAN::OnBnClickedBtnRbm)
+	ON_BN_CLICKED(IDC_BTN_WBM50, &CPage3_SetAddressCAN::OnBnClickedBtnWbm50)
+	ON_BN_CLICKED(IDC_BTN_WBM100, &CPage3_SetAddressCAN::OnBnClickedBtnWbm100)
 END_MESSAGE_MAP()
 
 
@@ -97,100 +99,116 @@ bool CPage3_SetAddressCAN::isPrepareToSendCAN()
 	}
 	return true;
 }
+ 
+
+bool CPage3_SetAddressCAN::isPrepareCANID(CString & strCanId)
+{
+	GetDlgItem(IDC_EDIT_CANID)->GetWindowText(strCanId);
+	if (strCanId.IsEmpty())
+	{
+		m_pPrintfFun(L"错误：CAN ID 不能为空。\n");
+		return false;
+	}
+	return true;
+}
 
 void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	CString strPrintf;
-	//1 查询充电柜主是否存在进程
-	strcpy_s(g_AppPath ,256, COM_F::WStringToMBytes( COM_F::getAppDir().c_str()).c_str());
-	std::wstring strPath = COM_F::getAppDir(); strPath += L"\\set.ini";
-	wchar_t szMainCharingProcessName[256] = { 0 };
-	DWORD result = GetPrivateProfileStringW(
-		L"SET",        // INI文件中的一个字段名[节名]可以有很多个节名
-		L"windowTitle",        // lpAppName 下的一个键名，也就是里面具体的变量名
-		L"",					// 如果为空,则把个变量赋给lpReturnedString
-		szMainCharingProcessName,  // 存放键值的指针变量,用于接收INI文件中键值(数据)的接收缓冲区
-		256,            // lpReturnedString的缓冲区大小
-		strPath.c_str()        // INI文件的路径
-		);
-	if (wcslen(szMainCharingProcessName) != 0)
+	CString strOpenOrClose;
+	GetDlgItem(IDC_BTN_OPEN_CAN)->GetWindowText(strOpenOrClose);
+	if (strOpenOrClose.Compare(L"打开CAN设备") == 0)
 	{
-		DWORD pid = COM_F::GetProcessidFromName(szMainCharingProcessName);
-		if (pid){
-			strPrintf.Format(L"进程《%s》 已经存在，请先关闭。\n",szMainCharingProcessName);
-			m_pPrintfFun(strPrintf);
+		CString strPrintf;
+		//1 查询充电柜主是否存在进程
+		strcpy_s(g_AppPath, 256, COM_F::WStringToMBytes(COM_F::getAppDir().c_str()).c_str());
+		std::wstring strPath = COM_F::getAppDir(); strPath += L"set.ini";
+		wchar_t szMainCharingProcessName[256] = { 0 };
+		DWORD result = GetPrivateProfileStringW(L"SET",  L"windowTitle", L"",szMainCharingProcessName, 256,  strPath.c_str()  );
+		if (wcslen(szMainCharingProcessName) != 0)
+		{
+			DWORD pid = COM_F::GetProcessidFromName(szMainCharingProcessName);
+			if (pid){
+				strPrintf.Format(L"进程《%s》 已经存在，请先关闭。\n", szMainCharingProcessName);
+				m_pPrintfFun(strPrintf);
+				return;
+			}
+		}
+
+		int showMode = GetPrivateProfileIntW(L"SET", L"canDeviceProcessShowMode", 0, strPath.c_str()); // 显示模式 0 隐藏，1 显示
+
+		//2 查找can通讯进程id， 如果存在先强制关闭， 在启动can通讯进程，	
+		m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
+		if (m_canDeviceProcessId)
+			COM_F::closeProcessFromId(m_canDeviceProcessId);
+
+		//启动
+		char szServerPath[256] = { 0 };
+		sprintf_s(szServerPath, 256, "%s/%s", (g_AppPath), CANDEVICETRANSMITION);
+		COM_F::startProcessFromPath(COM_F::MBytesToWString(szServerPath).c_str(), showMode);
+		::Sleep(500);
+		m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
+
+		if (m_canDeviceProcessId <= 0)
+		{
+			m_pPrintfFun(CString("启动CAN通讯进程失败!"));
 			return;
 		}
-	}
-
-	//2 查找can通讯进程id， 如果存在先强制关闭， 在启动can通讯进程，	
-	m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
-	if (m_canDeviceProcessId)
-		COM_F::closeProcessFromId(m_canDeviceProcessId);
-
-	//启动
-	char szServerPath[256] = { 0 };
-	sprintf_s(szServerPath, 256, "%s/%s", (g_AppPath), CANDEVICETRANSMITION);
-	COM_F::startProcessFromPath(COM_F::MBytesToWString(szServerPath).c_str());
-	::Sleep(500);
-	m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
-
-	if (m_canDeviceProcessId <= 0)
-	{
-		m_pPrintfFun(CString("启动CAN通讯进程失败!"));
-		return;
-	}
 		//3 连接有名管道， 使用重叠io 方式读取
-	m_hPipe = COM_F::connectServerNamePipe(TEXT(PIPE_NAME));
-	if (INVALID_HANDLE_VALUE == m_hPipe)
-	{
-		m_pPrintfFun(CString("连接有名通道失败!"));
-		return ;
-	}
+		m_hPipe = COM_F::connectServerNamePipe(TEXT(PIPE_NAME));
+		if (INVALID_HANDLE_VALUE == m_hPipe)
+		{
+			m_pPrintfFun(CString("连接有名通道失败!"));
+			return;
+		}
 
-	//打开设备
-	sprintf_s(g_szSendBuff, 256, "%s,F1", C2S);  
-	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
-	::Sleep(100);
-	char szReceive[MAX_SIZE] = { 0 };
-	receiveFromCanDeviceProcess(szReceive);
+		//打开设备
+		sprintf_s(g_szSendBuff, 256, "%s,F1", C2S);
+		sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+		::Sleep(100);
+		char szReceive[MAX_SIZE] = { 0 };
+		receiveFromCanDeviceProcess(szReceive);
+
+		//
+		GetDlgItem(IDC_BTN_OPEN_CAN)->SetWindowText(L"关闭CAN设备");
+	}
+	else if (strOpenOrClose.Compare(L"关闭CAN设备") == 0)
+	{
+		//判断进程id
+		if (m_canDeviceProcessId > 0)
+		{
+			//判断有名通道句柄
+			if (m_hPipe > 0)
+			{
+				//发送进程推出报文
+				sprintf_s(g_szSendBuff, 256, "%s,%s", C2S, "FF");
+				sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+				receiveFromCanDeviceProcess(g_szReceBuff);				
+				CloseHandle(m_hPipe);
+				//m_canDeviceProcessId = 0;
+				m_hPipe = 0;				
+			}
+			else if (COM_F::closeProcessFromId(m_canDeviceProcessId))
+			{
+				m_canDeviceProcessId = 0;
+				m_hPipe = 0;
+			}
+			while (m_canDeviceProcessId)
+			{
+				Sleep(100);
+				m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
+			}
+			m_pPrintfFun(CString(L"CAN通讯进程\n\n"));
+		}
+		GetDlgItem(IDC_BTN_OPEN_CAN)->SetWindowText(L"打开CAN设备");
+	}	
 	
 	//设置父窗口焦点
 	m_pParent->SetFocus();
 
 }
 
-
-void CPage3_SetAddressCAN::OnBnClickedBtnCloseCan()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	//判断进程id
-	if (m_canDeviceProcessId > 0)
-	{
-		//判断有名通道句柄
-		if (m_hPipe > 0)
-		{
-			//发送进程推出报文
-			sprintf_s(g_szSendBuff, 256, "%s,%s", C2S, "FF");
-			sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
-			
-			receiveFromCanDeviceProcess(g_szReceBuff);
-			//m_canDeviceProcessId = 0;
-			//CloseHandle(m_hPipe);
-			//m_hPipe = 0;
-			return ;
-		}
-		if (COM_F::closeProcessFromId(m_canDeviceProcessId))
-		{
-			m_canDeviceProcessId = 0;
-			m_hPipe = 0;
-		}
-		m_pPrintfFun(CString(L"结束了CAN通讯进程\n"));
-	}
-	m_pParent->SetFocus();
-}
-
+ 
 
 //发送
 int CPage3_SetAddressCAN::sendToCanDeviceProcess(char * szData, int nLength)
@@ -277,17 +295,60 @@ void CPage3_SetAddressCAN::OnBnClickedBtnVerify()
 	if (!isPrepareToSendCAN())
 		return;
 	CString strCanId;
-	GetDlgItem(IDC_EDIT_CANID)->GetWindowText(strCanId);
-	if (strCanId.IsEmpty())
-	{
-		m_pPrintfFun(L"错误：CAN ID 不能为空。\n");
-		return;
-	}
+	if (!isPrepareCANID(strCanId))
+		return;	 
 	sprintf_s(g_szSendBuff, 256, "%s,%s,%s", C2S, "F4", COM_F::WStringToMBytes(strCanId).c_str());
 	int len =strlen(g_szSendBuff);
 	sendToCanDeviceProcess(g_szSendBuff, len);
 	Sleep(200);
 	receiveFromCanDeviceProcess(g_szReceBuff);
 
+	m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnRbm()
+{
+	// TODO:  在此添加控件通知处理程序代码
+
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	if (!isPrepareCANID(strCanId))
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,R", C2S, "F5", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	receiveFromCanDeviceProcess(g_szReceBuff);
+	m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnWbm50()
+{
+	// TODO:  在此添加控件通知处理程序代码
+
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	if (!isPrepareCANID(strCanId))
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,W,0x01", C2S, "F5", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	receiveFromCanDeviceProcess(g_szReceBuff);
+	m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnWbm100()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	if (!isPrepareCANID(strCanId))
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,W,0xff", C2S, "F5", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	receiveFromCanDeviceProcess(g_szReceBuff);
 	m_pParent->SetFocus();
 }

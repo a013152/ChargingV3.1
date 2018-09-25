@@ -35,11 +35,14 @@ private:
 	DWORD m_canDeviceProcessId ;  //进程id
 	HANDLE m_hPipe ;//管道句柄
 
+	bool isPrepareCANID(CString & strID);
 public:
-	afx_msg void OnBnClickedBtnOpenCan();
-	afx_msg void OnBnClickedBtnCloseCan();
+	afx_msg void OnBnClickedBtnOpenCan();	
 	afx_msg void OnBnClickedBtnRAdressCan();
 	afx_msg void OnBnClickedBtnWAddressCan();
 	afx_msg void OnEnChangeEditCanid();
 	afx_msg void OnBnClickedBtnVerify();
+	afx_msg void OnBnClickedBtnRbm();
+	afx_msg void OnBnClickedBtnWbm50();
+	afx_msg void OnBnClickedBtnWbm100();
 };

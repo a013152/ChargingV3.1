@@ -62,24 +62,9 @@ void split(std::string strtem, char a, VT_STR vtStrCommand)
 	vtStrCommand.push_back(strtem.substr(pos1));
 }
 
-
-void sendVerify()
-{
-	stCAN_DevData dataObj;
-	GET_P->getCommandVerify(dataObj);
-	UINT canID = Uint8ToUint16(g_CAN_ID_Default); 
-	canID |= 0x400;   //v1.3can id需要或上0x400
-	GET_T->sendCanData(dataObj, canID);
-}
-
-
 void readBeginMode()
 {
-	stCAN_DevData dataObj;
-	GET_P->getCommandBeginMode(dataObj);
-	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
-	canID |= 0x400;   //v1.3can id需要或上0x400
-	GET_T->sendCanData(dataObj, canID);
+	
 }
 
 void readMaxCharge()
@@ -305,7 +290,13 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F5") == 0)
 				{
-					
+					//读取/设置起始充电状态
+					if (readOrWriteBeginMode(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
+
+
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
 				{
@@ -351,7 +342,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			//writeCanId();
 			break; 
 		case  4:
-				sendVerify();
+				//sendVerify();
 				break;
 		case  5:
 			readBeginMode();
