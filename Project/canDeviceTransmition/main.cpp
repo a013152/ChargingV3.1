@@ -31,7 +31,7 @@ static void _callbackPrintf(int nType, bool bSend2Clint = true)
 	if (nType == 1)
 	{
 		printf("%s\n", GET_P->getDebugData().c_str());
-		sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDevieErrorCode::Success, GET_P->getDebugData().c_str());
+		sprintf_s(wbuf, MAX_BUF_SIZE, "%s\n", GET_P->getDebugData().c_str());
 	}
 	if (nType == 2)
 	{

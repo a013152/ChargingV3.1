@@ -97,7 +97,7 @@ bool CommonFunction::startProcessFromPath(LPCTSTR szPath, int showMode)
 	ShExecInfo.lpParameters = L"test start process with param.";//参数
 	ShExecInfo.lpDirectory = NULL;
 	if (showMode == 0)
-		ShExecInfo.nShow = SW_HIDE;                // 显示这个程序 
+		ShExecInfo.nShow = SW_HIDE;                // 隐藏这个程序 
 	else if (showMode == 1)
 		ShExecInfo.nShow = SW_SHOWNORMAL;                // 显示这个程序 
 	ShExecInfo.hInstApp = NULL;

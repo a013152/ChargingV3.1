@@ -38,7 +38,7 @@ bool charging::startCanDeviceProcess()
 	if (s_canDeviceProcessId == 0){
 
 		//启动进程
-		COM_F::startProcessFromPath(s_strTemp.c_str());		
+		COM_F::startProcessFromPath(s_strTemp.c_str(),1);		
 		::Sleep(1000);
 		s_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
 
@@ -67,20 +67,27 @@ bool charging::clossCanDeviceProcess()
 		if (s_hPipe> 0)
 		{
 			//发送进程推出报文
-			char szExit[256] = { 0 };   sprintf_s(szExit, 256, "0xff");
-			sendToCanDeviceProcess(szExit, 5);
-			char szTemp[256] = { 0 }; 
+			char szExit[256] = { 0 };   
+			sprintf_s(szExit, 256, "%s,FF", C2S);
+			sendToCanDeviceProcess(szExit,strlen(szExit));
+			char szTemp[MAX_BUF_SIZE] = { 0 }; 
 			receiveFromCanDeviceProcess(szTemp);
-			s_canDeviceProcessId = 0;
+			//s_canDeviceProcessId = 0;
 			CloseHandle(s_hPipe);
 			s_hPipe = 0;
-			return 0;
+		 
 		}
-		if (COM_F::closeProcessFromId(s_canDeviceProcessId))
+		else if (COM_F::closeProcessFromId(s_canDeviceProcessId))
 		{
-			s_canDeviceProcessId = 0;
+			s_canDeviceProcessId = 0;		
 			s_hPipe = 0;
 		}
+		while (s_canDeviceProcessId)
+		{
+			Sleep(100);
+			s_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
+		}
+		printfDebugInfo(QString("CAN通讯进程\n"), enDebugInfoPriority::DebugInfoLevelOne); 
 	}
 	return 0;
 }
@@ -107,8 +114,8 @@ int charging::receiveFromCanDeviceProcess(char * szData)
 	if (s_hPipe > 0)
 	{
 		DWORD rlen = 0;
-		ReadFile(s_hPipe, szData, 256, &rlen, NULL); //接受CAN进程发送过来的内容
-		QString strQ = "接收："; strQ += QString(szData);  
+		ReadFile(s_hPipe, szData, MAX_BUF_SIZE, &rlen, NULL); //接受CAN进程发送过来的内容
+		QString strQ = "接收："; strQ += QString::fromLocal8Bit(szData);  
 		printfDebugInfo(strQ, enDebugInfoPriority::DebugInfoLevelOne);
 	}
 	return 0;
@@ -120,27 +127,17 @@ void charging::onOpenCanDevice(bool checked)
 {
 	if (checked)	//打开 
 	{
-		//startCanDeviceProcess();
+		startCanDeviceProcess();
+		::Sleep(100);
+		char sztemp[256] = { 0 };
+		sprintf_s(sztemp, 256, "%s,F1", C2S);
+		sendToCanDeviceProcess(sztemp, 256);
+		::Sleep(100);
+		char szReceive[MAX_BUF_SIZE] = { 0 };
+		receiveFromCanDeviceProcess(szReceive);
 	}
 	else{  //关闭
-		
+		clossCanDeviceProcess(); 
 	}
-	static int i = 0;
-	char szTemp[256] = { 0 };
-	if (i == 0){
-		startCanDeviceProcess();
-	}
-	if (++i > 2)
-	{
-		clossCanDeviceProcess();
-		i = 0;
-
-	}
-	else{
-		char sztemp[256] = { 0 };
-		sprintf_s(sztemp, "%d", i-1);
-		sendToCanDeviceProcess(sztemp, 256);
-		receiveFromCanDeviceProcess(szTemp);
-
-	}
+	
 }

@@ -338,10 +338,11 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		//设置can id
 		Len = dataObj.getLen() - 7;
 		if (dataObj.Data_[0] == 0x00){
-			m_strDebugData = "设置Can ID成功";
+			sprintf_s(szTemp, 256, "%s,F3,W,%d,设置Can ID成功", S2C, enCANDevieErrorCode::Success );
+			m_strDebugData = szTemp;
 		}
 		else{
-			sprintf_s(szTemp, 256, "设置Can ID失败，返回码：%02X", dataObj.Data_[0]);
+			sprintf_s(szTemp, 256, "%s,F3,W,%d,设置Can ID失败，返回码：%02X", S2C, enCANDevieErrorCode::DetailError, dataObj.Data_[0]);
 			m_strDebugData = szTemp;
 		}
 		if (m_pPrintfFun) m_pPrintfFun(1, true);
@@ -360,7 +361,8 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			//}
 			sprintf_s(szTemp, 256, "%X%02X ", dataObj.Data_[2], dataObj.Data_[1]);
 			str = szTemp;
-			m_strDebugData = "读取的CAN ID:" + str;
+			sprintf_s(szTemp, 256, "%s,F3,R,%d,读取Can ID:%s", S2C, enCANDevieErrorCode::Success, str.c_str());
+			m_strDebugData = szTemp;
 			if (m_pPrintfFun) m_pPrintfFun(1, true);
 		}
 	}
@@ -382,17 +384,24 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		if (dataObj.Data_[0] == 0x00){
 			if (0x00 == dataObj.Data_[1]){
 				sprintf_s(szTemp, 256, "读取的起始模式:%s", (dataObj.Data_[2] == 0x01 ? "50%存储模式" : "100%存储模式"));
+				str = szTemp;
+				sprintf_s(szTemp, 256, "%s,F5,R,%d,%s", S2C, enCANDevieErrorCode::Success, str.c_str());
 				m_strDebugData = szTemp;
-
 				if (m_pPrintfFun){
 					m_pPrintfFun(1, true);
 				}
 			}
 			else if (0x01 == dataObj.Data_[1]){
 				if (dataObj.Data_[0] == 0)
-					m_strDebugData = "设置起始模式成功\n";
+				{
+					sprintf_s(szTemp, 256, "%s,F5,W,%d,设置起始模式成功", S2C, enCANDevieErrorCode::Success);
+					m_strDebugData = szTemp;
+				}
 				else
-					m_strDebugData = "设置起始模式失败\n";
+				{
+					sprintf_s(szTemp, 256, "%s,F5,W,%d,设置起始模式失败,返回码：%02X", S2C, enCANDevieErrorCode::DetailError, dataObj.Data_[0]);
+					m_strDebugData = szTemp;
+				}
 				if (m_pPrintfFun){	m_pPrintfFun(1, true);	}
 			}
 		}
@@ -402,12 +411,15 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		if (dataObj.Data_[0] == 0x00){
 			if (0x00 == dataObj.Data_[1]){
 				sprintf_s(szTemp, 256, "读取的最大充电数量:%d", dataObj.Data_[2]);
+				str = szTemp;
+				sprintf_s(szTemp, 256, "%s,F6,R,%d,%s", S2C, enCANDevieErrorCode::Success, str.c_str());
 				m_strDebugData = szTemp;
 				if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 				 
 			}
-			else if (0x01 == dataObj.Data_[1]){				
-					m_strDebugData = "设置最大充电数量完成。";	
+			else if (0x01 == dataObj.Data_[1]){		
+				sprintf_s(szTemp, 256, "%s,F6,W,%d,设置最大充电数量完成。", S2C, enCANDevieErrorCode::Success);
+				m_strDebugData = szTemp;
 				if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 			}
 		}
@@ -497,7 +509,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			//if (m_AppWnd && dataObj.Data_[2] != 0x00) { ::PostMessage(m_AppWnd, WM_MSG_DISPLAY_DATA, 0, 1); }
 			
 			//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
-			int  dataDynaLength = dataObj.getLen() - 7 - 5 -2;
+			int  dataDynaLength = dataObj.getLen() - 7 - 5 -2; //数据头长度7，数据体前5（返回码+操作类型+电池1~15在位信息），数据CRC16长度2
 			if (dataDynaLength >0 && dataDynaLength % 19 ==0){
 				int loop = dataDynaLength / 19;
 				for (int i = 0; i < loop; i++){
@@ -673,11 +685,16 @@ void CProtocol::verifyStepOne(stCAN_DevData& dataObj)
 void CProtocol::verifyStepTwo(stCAN_DevData& dataObj)
 {
 	if (dataObj.Data_[0] == 0){
-		m_strDebugData = "认证成功。\n";
+		str = "认证成功。\n";
+		sprintf_s(szTemp, 256, "%s,F4,%d,%s", S2C, enCANDevieErrorCode::Success, str.c_str());
+		m_strDebugData = szTemp;
 		m_bVerify = true;
 	}
 	else{
 		sprintf_s(szTemp, 256, "认证失败。返回码:%02X\n ", dataObj.Data_[0]);
+		str = szTemp;
+		sprintf_s(szTemp, 256, "%s,F4,%d,%s", S2C, enCANDevieErrorCode::DetailError, str.c_str());
+
 		m_strDebugData = szTemp;
 	}
 	if (m_pPrintfFun)m_pPrintfFun(1, true);

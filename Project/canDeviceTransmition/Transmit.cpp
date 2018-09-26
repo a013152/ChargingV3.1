@@ -224,8 +224,8 @@ int CTransmit::sendCanData(stCAN_DevData &dataObj, UINT canID)
 	{
 		if (dataObj.CMD_ == 0x00 || dataObj.CMD_ == 0x05)
 			Sleep(300);
-		//else //if ()
-		//	Sleep(150);
+		else //if ()
+			Sleep(100);
 		SetEvent(m_hReadEventArray[1]);
 	}
 	delete[] byteTemp;

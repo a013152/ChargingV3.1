@@ -635,7 +635,7 @@ void charging::adjustUI()
 	setWindowIcon(QIcon(QString(g_AppPath) + "/ICon/MainWindow.ico"));
 
 	//设置 电池组区域 尺寸
-	m_groupBox->setGeometry(QRect(100, 100, 698, 507));
+	m_groupBox->setGeometry(QRect(120, 70, 698, 507));
 	m_groupBox->setStyleSheet("QGroupBox{border: 0px }");
 	
 
