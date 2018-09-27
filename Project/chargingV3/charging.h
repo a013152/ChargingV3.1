@@ -300,6 +300,10 @@ private slots :
 	//接收到放电
 	void OnBtnDisChargingOrStop1();
 
+	//层级按钮： 切换层级
+	void OnBtnLevel();
+
+
 	void updateTextEdit(QString);
 	
 	void detectTextEdit();  //测检textEdit 文本是否过长
@@ -406,6 +410,8 @@ private:
 	bool m_bConnectServerIsSeccuss = false;//连接服务器数据库成功标志 
 
 	float m_fOverHeatTemperature = DEFAUT_OVERHEATTEMPERATURE; //过热温度默认45
+
+	unsigned int m_nCurrentLevel = 1; //当前层级
 private:
 	//读取的文件配置
 	MAP_CLOSET m_mapCloset;  MAP_BATTERY_MODEL m_mapBatteryModel; MAP_BATTERY m_mapBattery;
@@ -448,5 +454,10 @@ private:
 private:
 		QProcess *m_pProcess = NULL;
 };
-
+class levelBtnData: public QObjectUserData{
+public:
+	unsigned int nlevel;
+	~levelBtnData(){}
+	levelBtnData(){ nlevel = 0; }
+};
 #endif // CHARGING_H

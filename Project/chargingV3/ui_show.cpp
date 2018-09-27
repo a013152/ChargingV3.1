@@ -341,6 +341,56 @@ void charging::OnBtnDisChargingOrStop1()
 	}
 }
 
+//切换层级
+void charging::OnBtnLevel()
+{
+	QPushButton *pBtn = (QPushButton*)sender();
+	QString str = pBtn->text(), tmp;
+	for (int j = 0; j < str.length(); j++)
+	{
+		if (str[j] > '0' && str[j] < '9')
+			tmp.append(str[j]);
+	}
+	unsigned int nLevel = tmp.toUInt();
+	if (nLevel == m_nCurrentLevel)
+		return;
+	else{
+		m_nCurrentLevel = nLevel;
+		//更新层级按钮的样式
+		int tempLevel = 1;
+		for (auto itpBtnLevel : m_vtUiLevelBtn)
+		{		
+
+			levelBtnData* pData = (levelBtnData*)itpBtnLevel->userData(tempLevel++);
+			if (pData->nlevel == m_nCurrentLevel)  //选中的层级
+			{
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:20px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+					"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
+					"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
+			}
+			else
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}" //
+				"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"
+				"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
+		}
+
+		//更新充电格区域:是否隐藏，电压、电流、充电状态、在位状态
+
+		MAP_LEVEL_IT itLevel = m_mapLevel.find(m_nCurrentLevel);
+		if (itLevel != m_mapLevel.end())
+		{
+			for (int i = 0; i < MAX_BATTERY; i++){
+				bool flag = i < itLevel->second.mapBattery.size();
+				m_vtUiChargGrid[i]->setVisible(flag);
+				QString strTitle; strTitle.sprintf("%02d%02d", m_nCurrentLevel, i + 1);
+				m_vtUiChargGrid[i]->setTitle(strTitle);
+
+				//待添加：电压、电流、充电状态、在位状态
+
+			} 
+		}
+	}
+}
 
 //刷新UI
 void charging::onRefreshUI(QString strID)
@@ -498,13 +548,14 @@ void charging::createChargGrid()
 
 	QString strID; 
 	int nBatteryNumber = MAX_BATTERY;
+	
 	for (int i = 0; i < nBatteryNumber; i++)
 	{
 		strID.sprintf("ui_chage_item%d", i + 1);
 		ui_charg_grid *p_charge_grid = new ui_charg_grid(this, strID);
 		QString strTitle; strTitle.sprintf("%02d%02d", m_iCurrentCloset, i + 1);
 		p_charge_grid->setTitle(strTitle);
-		p_charge_grid->setBalence(i < 41);
+		//p_charge_grid->setBalence(i < 41);
 		MAP_BATTERY_IT itBattery = m_mapBattery.find(strTitle.toInt());
 		if (itBattery != m_mapBattery.end()){
 			MAP_BATTERY_MODEL_IT itBatteryModel = m_mapBatteryModel.find(itBattery->second.modelId);
@@ -521,8 +572,17 @@ void charging::createChargGrid()
 		QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::doubleClicked, this, &charging::OnBtnDisChargingOrStop1);
 
 		p_charge_grid->setChargerState(STATE_OFFLINE);
-	}
 
+		
+	}
+	MAP_LEVEL_IT itLevel = m_mapLevel.find(m_nCurrentLevel);
+	if (itLevel != m_mapLevel.end())
+	{
+		for (int i = 0; i < MAX_BATTERY; i++){
+			bool flag = i < itLevel->second.mapBattery.size();
+			m_vtUiChargGrid[i]->setVisible(flag);
+		}
+	}
 	 
 	// 设置水平间距
 	m_gridLayout->setHorizontalSpacing(1);
@@ -574,11 +634,24 @@ void charging::createChargGrid()
 		strPushButton = QString("%1层").arg(itLevel.first);
 		QPushButton* pushButton = new QPushButton(strPushButton, this);
 		//设置位置
-		rect_.setLeft(20);
-		rect_.setTop(50 + 50 * count++);
-		rect_.setWidth(90);
-		rect_.setHeight(30);
+		rect_.setLeft(10);
+		rect_.setTop(70 + 65 * count++);
+		rect_.setWidth(110);
+		rect_.setHeight(40);
 		pushButton->setGeometry(rect_);
+		if (itLevel.first == m_nCurrentLevel)  //选中的层级
+		{
+			pushButton->setStyleSheet("QPushButton{font-size:20px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+				"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
+				"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
+		}else
+		pushButton->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}" //
+			"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"
+			"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
+		levelBtnData * pData = new levelBtnData; pData->nlevel = itLevel.first;
+		pushButton->setUserData(itLevel.first, pData);
+
+		QObject::connect(pushButton, &QPushButton::clicked, this, &charging::OnBtnLevel);
 
 		m_vtUiLevelBtn.append(pushButton);
 	}

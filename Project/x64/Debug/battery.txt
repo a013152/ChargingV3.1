@@ -1,3 +1,6 @@
+dbid="673",id="0101",online="1",model="1004",user="super",relatedCharger="101"
+dbid="674",id="0102",online="1",model="1004",user="super",relatedCharger="102"
+dbid="675",id="0103",online="1",model="1004",user="super",relatedCharger="103"
 dbid="676",id="0104",online="1",model="1004",user="super",relatedCharger="104"
 dbid="677",id="0105",online="1",model="1004",user="super",relatedCharger="105"
 dbid="678",id="0106",online="1",model="1004",user="super",relatedCharger="106"

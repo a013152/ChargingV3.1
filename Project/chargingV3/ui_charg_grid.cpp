@@ -300,7 +300,7 @@ void ui_charg_grid::setBorderColor(int iState)
 	if (iState == 0){ 
 		//this->setStyleSheet("QGroupBox{border: 2px solid red;}QGroupBox:title{font: bold 14px;color:white;}");
 		QString str = this->styleSheet();
-		this->setStyleSheet("QGroupBox{font-size:20px;font-weight:bold;border: 0px solid gray;border-radius:8px;margin-top:6px;}\
+		this->setStyleSheet("QGroupBox{font-size:16px;font-weight:bold;border: 0px solid gray;border-radius:8px;margin-top:6px;}\
 						QGroupBox:title{color:white;subcontrol-origin: margin;left: 0px;}");
 		str = this->styleSheet();
 	}
