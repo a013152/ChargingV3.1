@@ -172,11 +172,18 @@ public:
 	//返回值：
 	void analyzeReceiveData(BYTE* szData, int Length);
 
-	//函数：std::string
+	//函数：getDebugData
 	//功能：获取接收到的数据，用于通知窗口显示接收到的数据
 	//参数：   
-	//返回值：stDebugData*
+	//返回值：std::string
 	std::string getDebugData(){ return m_strDebugData; }
+
+
+	//函数：setCurrentCANID
+	//功能：设置当前的CAN  
+	//参数：   std::string 
+	//返回值：
+	void setCurrentCANID(std::string& strCanID){ m_strCurrentCanID = strCanID; }
 
 protected:
 	//函数：calulataCRC8
@@ -237,12 +244,13 @@ private:
 
 	uint8_t m_szKeyDefault[32];
 	HWND    m_AppWnd = NULL;  //窗口
-	std::string m_strDebugData, str1, str; 
+	std::string m_strDebugData, str1, str, m_strCurrentCanID; 
 	char szTemp[256]; ;
 	bool m_bVerify = false; //认证标志
 	bool m_bReadChargeState = false;  //读取充电状态标志 0x07
 	bool m_bReadOnlineState = false;  //读取电池在位标志 0x09 0x0a
 	stBatteryInfo m_BatteryArray[30];
+
 };
 
 //结构体：can 设备的数据包

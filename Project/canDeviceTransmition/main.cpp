@@ -234,6 +234,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//转换数据到命令结构体
 				split(rbuf, ',', vtStrCommand);
 				printf("接收主进程信息: data = %s  length = %d\n", rbuf, rlen);
+				
 				//清空缓冲区				
 				memset(rbuf, 0, 256);
 
@@ -266,6 +267,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					s_sendFlg = true;
 					sprintf_s(wbuf, 256, "%s,%d,%s", S2C, enCANDevieErrorCode::DetailError, "CAN设备未打开.\n");
 				}
+				
 				else if (strcmp(vtStrCommand[1].c_str(), "F2") == 0)
 				{
 					//关闭设备
@@ -295,12 +297,33 @@ int _tmain(int argc, _TCHAR* argv[])
 						s_sendFlg = false;
 					else
 						s_sendFlg = true;
-
+					
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
+				{
 
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
 				{
 
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F8") == 0)
+				{
+					//读取电池信息
+					if (readBatteryInfo(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
+
+					GET_P->setCurrentCANID(vtStrCommand[2]);
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F9") == 0)
+				{
+					GET_P->setCurrentCANID(vtStrCommand[2]);
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F10") == 0)
+				{
+					GET_P->setCurrentCANID(vtStrCommand[2]);
 				}
 				static char waitTime = 0; waitTime = 0;
 				bool flag = true;

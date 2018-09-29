@@ -1,6 +1,7 @@
 #include "CommandQueue.h"
 #include <QDebug>
 #include "errorCode.h"
+#pragma execution_character_set("utf-8")
 
 static int countQueueSize = 0;
 CCommandQueue::CCommandQueue() :stopped(false) 
@@ -153,122 +154,126 @@ int CCommandQueue::countCommand(unsigned int nClosetId) const
 //发送命令到串口
 void CCommandQueue::sendCommand(stCommand stcommand)
 {
-	if (SERIAL_PORT->isOpen()/*m_pSerial*/)
-	{ 
-		QByteArray baTemp;
-		QString command, ls_temp, strReceiveContent, strReceiveContent2;
-		int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
-		bool bSendRet = false;
-		//清空 数据
-		//ls_temp  = m_pSerial->serialRead().data();
-		char szWriteData[256] = { 0 }, szReadData[256] = { 0 };
+	if (stcommand.chargerType ==  NF_Charger)
+	{
+		if (SERIAL_PORT->isOpen()/*m_pSerial*/)
+		{ 
+			QByteArray baTemp;
+			QString command, ls_temp, strReceiveContent, strReceiveContent2;
+			int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
+			bool bSendRet = false;
+			//清空 数据
+			//ls_temp  = m_pSerial->serialRead().data();
+			char szWriteData[256] = { 0 }, szReadData[256] = { 0 };
 		
-		command = stcommand.m_strCommand;
+			command = stcommand.m_strCommand;
 
-		//判断新扫描 *NF,G,101,,新的柜子扫描
-		if (command.at(4) == QChar('G') && (command.at(7) == QChar('0') && command.at(8) == QChar('1')))
-		{
-			Sleep(1000);
-			emit printfed("\r\n");
-		}
+			//判断新扫描 *NF,G,101,,新的柜子扫描
+			if (command.at(4) == QChar('G') && (command.at(7) == QChar('0') && command.at(8) == QChar('1')))
+			{
+				Sleep(1000);
+				emit printfed("\r\n");
+			}
 
 
-		//向串口发送数据 
+			//向串口发送数据 
 		 
-		//command.replace("%","0");
-		//m_pSerial->serialWrite(command.toLatin1()); //写入 
-		auto pSendFun = [&]()->bool{
-			bool bSendSuccess = false;
-			QTime me_time;
-			SERIAL_PORT->ReadData(szReadData); ls_temp = QString("%1").arg(szReadData);
-			if (ls_temp.size() != 0){
-				ls_temp = "I discard: " + ls_temp;  //打印抛弃数据
-				emit printfed(ls_temp);
-			}
-
-			ls_temp = "I write: "; ls_temp += command.left(command.indexOf("\r\n"));
-			emit printfed(ls_temp);
-			ls_temp.clear();
-			baTemp = command.toLocal8Bit();
-			iLength = baTemp.size();
-			if (iLength < 256)			{
-				strncpy(szWriteData, baTemp.data(), iLength);
-			}
-			else{
-				strncpy(szWriteData, baTemp.data(), 256); iLength = 256;
-			}
-			SERIAL_PORT->WriteData((unsigned char*)szWriteData, iLength);//写入
-			//接收返回的数据
-			me_time.start();
-
-			while (me_time.elapsed() < 100)
-			{
-				Sleep(10);
-				//QApplication::processEvents();
-				memset(szReadData, 0, 256);
-				SERIAL_PORT->ReadData(szReadData);
-				strReceiveContent += QString("%1").arg(szReadData);// m_pSerial->serialRead().data(); //读取数据
-				iPosBegin = strReceiveContent.lastIndexOf("*NF");
-				iPosEnd = strReceiveContent.lastIndexOf("\r\n");
-				if (iPosBegin != -1 && iPosEnd != -1 && iPosBegin < iPosEnd)
-				{
-					strReceiveContent2 = strReceiveContent.mid(iPosBegin, iPosEnd + 2);
-					bSendSuccess = true;
-					break;
+			//command.replace("%","0");
+			//m_pSerial->serialWrite(command.toLatin1()); //写入 
+			auto pSendFun = [&]()->bool{
+				bool bSendSuccess = false;
+				QTime me_time;
+				SERIAL_PORT->ReadData(szReadData); ls_temp = QString("%1").arg(szReadData);
+				if (ls_temp.size() != 0){
+					ls_temp = "I discard: " + ls_temp;  //打印抛弃数据
+					emit printfed(ls_temp);
 				}
-			}				
-			
-			//正常判断
-			//timeElapsed = me_time.elapsed();
-			if (/*timeElapsed <= 100 &&*/ bSendSuccess)
-			{
-				//发送 收取数据测信号，通知readSerial() 处理
-				int iError = ChargingClosetError::noError;
-				emit readed(command.mid(4, 1), strReceiveContent2, iError);
-			}			 
-			return bSendSuccess;
-		};
-		//重发3次
-		while (sendLoop < 3 && bSendRet == false)
-		{
-			sendLoop++;
-			strReceiveContent.clear();
-			bSendRet = pSendFun();
-		}
-		//bSendRet = pSendFun();
-		//if (bSendRet == false && stcommand.m_enPriority == stCommand::hight) 
-		//{ //高级命令需要从发 
-		//	strReceiveContent.clear();
-		//	bSendRet = pSendFun(); 
-		//}
-		if (bSendRet == false)
-		{
-			int iError = ChargingClosetError::recvTomeOut;
-			if (strReceiveContent.isEmpty() == false){
-				QString strInfo; strInfo = command.mid(4, 1) + " 接收超时,内存数据有：" + strReceiveContent;
-				if (iPosBegin == -1) strInfo += ",未找到*NF,";
-				if (iPosEnd == -1) strInfo += ",未找到\\r\\n,";
 
-				emit printfed(strInfo + "\r\n");
-				//COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strInfo + "\r\n");
+				ls_temp = "I write: "; ls_temp += command.left(command.indexOf("\r\n"));
+				emit printfed(ls_temp);
+				ls_temp.clear();
+				baTemp = command.toLocal8Bit();
+				iLength = baTemp.size();
+				if (iLength < 256)			{
+					strncpy(szWriteData, baTemp.data(), iLength);
+				}
+				else{
+					strncpy(szWriteData, baTemp.data(), 256); iLength = 256;
+				}
+				SERIAL_PORT->WriteData((unsigned char*)szWriteData, iLength);//写入
+				//接收返回的数据
+				me_time.start();
+
+				while (me_time.elapsed() < 100)
+				{
+					Sleep(10);
+					//QApplication::processEvents();
+					memset(szReadData, 0, 256);
+					SERIAL_PORT->ReadData(szReadData);
+					strReceiveContent += QString("%1").arg(szReadData);// m_pSerial->serialRead().data(); //读取数据
+					iPosBegin = strReceiveContent.lastIndexOf("*NF");
+					iPosEnd = strReceiveContent.lastIndexOf("\r\n");
+					if (iPosBegin != -1 && iPosEnd != -1 && iPosBegin < iPosEnd)
+					{
+						strReceiveContent2 = strReceiveContent.mid(iPosBegin, iPosEnd + 2);
+						bSendSuccess = true;
+						break;
+					}
+				}				
+			
+				//正常判断
+				//timeElapsed = me_time.elapsed();
+				if (/*timeElapsed <= 100 &&*/ bSendSuccess)
+				{
+					//发送 收取数据测信号，通知readSerial() 处理
+					int iError = ChargingClosetError::noError;
+					emit readed(command.mid(4, 1), strReceiveContent2, iError);
+				}			 
+				return bSendSuccess;
+			};
+			//重发3次
+			while (sendLoop < 3 && bSendRet == false)
+			{
+				sendLoop++;
+				strReceiveContent.clear();
+				bSendRet = pSendFun();
 			}
-			else{
-				emit printfed("I read: " +command.mid(4, 1) + "接收超时,内存未收到数据\r\n");
+			//bSendRet = pSendFun();
+			//if (bSendRet == false && stcommand.m_enPriority == stCommand::hight) 
+			//{ //高级命令需要从发 
+			//	strReceiveContent.clear();
+			//	bSendRet = pSendFun(); 
+			//}
+			if (bSendRet == false)
+			{
+				int iError = ChargingClosetError::recvTomeOut;
+				if (strReceiveContent.isEmpty() == false){
+					QString strInfo; strInfo = command.mid(4, 1) + " 接收超时,内存数据有：" + strReceiveContent;
+					if (iPosBegin == -1) strInfo += ",未找到*NF,";
+					if (iPosEnd == -1) strInfo += ",未找到\\r\\n,";
+
+					emit printfed(strInfo + "\r\n");
+					//COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strInfo + "\r\n");
+				}
+				else{
+					emit printfed("I read: " +command.mid(4, 1) + "接收超时,内存未收到数据\r\n");
+				}
 			}
 		}
 	}
+	else if (stcommand.chargerType == DJI_Charger)
+	{
+		//发送到大疆充电器设备
+
+
+	}
+	
 }
 
 //检测是否完成一个柜子的扫描
-void CCommandQueue::detectFinishOneCloset(QString strCom)
-{ 
-	QStringList strList = strCom.split(",");
-	if (strList.size() > 3){
-		int nBatteryId = strList[2].toInt();
-		if (MAX_BATTERY == nBatteryId % 100 && strList[1] == "G")
-		{
-			//emit printfed("当前命令队列：" + QString::number(m_queComman.size())); 
-			emit readyGetBatteryState(nBatteryId / 100); 
-		} 
+void CCommandQueue::detectFinishOneCloset(stCommand currentCommand)
+{ 	 
+	if (currentCommand.lastCommandFlag == true ){		  
+		emit readyGetBatteryState(1);  //当前改动：只有1个柜子		
 	} 
 }

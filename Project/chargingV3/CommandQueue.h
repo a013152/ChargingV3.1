@@ -47,7 +47,7 @@ public:
 protected: 
 	void sendCommand(stCommand); //发送命令到串口 
 	
-	void detectFinishOneCloset(QString strCom); //检测是否完成一个柜子的扫描 
+	void detectFinishOneCloset(stCommand currentCommand); //检测是否完成一个柜子的扫描 
 
 private:
 	QQueue<stCommand> m_queComman;  //A负责接收

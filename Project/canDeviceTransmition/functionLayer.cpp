@@ -148,15 +148,32 @@ bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString)
 	else
 	{
 		str_to_hex(vtStrCommand[2], szTempCanID);g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
-		stCAN_DevData dataObj;
-		GET_P->getCommandVerify(dataObj);
-		
+		stCAN_DevData dataObj;		
 		bool bReadOrWrite = vtStrCommand[3].compare("R") == 0 ? false : true;
 		BYTE mode = 0;
 		if (bReadOrWrite)
 			mode = vtStrCommand[4].compare("0x01") == 0 ? 0x01 : 0xff;
 		printf("mode%02X\n", (BYTE)mode);
 		GET_P->getCommandBeginMode(dataObj,  bReadOrWrite, mode);
+		uintTempCanID = Uint8ToUint16(szTempCanID);
+		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
+		printf("转换后的CAN ID:%04X\n", uintTempCanID);
+		GET_T->sendCanData(dataObj, uintTempCanID);
+	}
+	return true;
+}
+
+bool readBatteryInfo(VT_STR vtStrCommand, char* resultString)
+{
+	if (false == decideCANID(vtStrCommand, resultString))
+	{
+		return false;
+	}
+	else
+	{
+		str_to_hex(vtStrCommand[2], szTempCanID); g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
+		stCAN_DevData dataObj;		
+		GET_P->getCommandDynaData(dataObj);
 		uintTempCanID = Uint8ToUint16(szTempCanID);
 		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
 		printf("转换后的CAN ID:%04X\n", uintTempCanID);

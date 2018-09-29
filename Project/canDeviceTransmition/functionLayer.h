@@ -33,3 +33,8 @@ bool verifyDevice(VT_STR vtStrCommand, char* resultString);
 //认证设备
 bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString);
 
+
+//读取电池信息
+
+bool readBatteryInfo(VT_STR vtStrCommand, char* resultString);
+

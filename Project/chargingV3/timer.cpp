@@ -88,8 +88,19 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 	{  
 		for (itCharger = itCloset->second.mapCharger.begin(); \
 			itCharger != itCloset->second.mapCharger.end(); itCharger++){
-			//GÃüÁî¶ÁÈ¡µç³Ø´æÔÚ×´Ì¬ÒÔ¼°»ØÂ·±ÕºÏ×´Ì¬ 
-			stCommand stComm(packageCommand("G," + QString::number(itCharger->second.id) + ","), enPriority);
+			stCommand stComm("");
+			stComm.chargerType = itCharger->second.chargerType;
+			if (itCharger->second.chargerType == NF_Charger){
+				//GÃüÁî¶ÁÈ¡µç³Ø´æÔÚ×´Ì¬ 
+				stComm =stCommand(packageCommand("G," + QString::number(itCharger->second.id) + ","), enPriority);					
+			}
+			else{
+				//´ó½®³äµç²Û
+				QString strCommad; strCommad.sprintf("C2S,F8,%d,R", itCharger->second.id);
+
+				stComm = stCommand(strCommad, enPriority);
+
+			}
 			vtStCommand.append(stComm);
 		}
 		m_CommandQueue.addVtCommand(vtStCommand);

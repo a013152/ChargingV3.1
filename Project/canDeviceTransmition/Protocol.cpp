@@ -507,7 +507,10 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			if (temp2[3])
 				m_strDebugData = "电池柜单元风扇异常。";
 			//if (m_AppWnd && dataObj.Data_[2] != 0x00) { ::PostMessage(m_AppWnd, WM_MSG_DISPLAY_DATA, 0, 1); }
-			
+			//add 20180929 保存电池在线情况
+			sprintf_s(szTemp, 256, "%s,F8,%d,%s", S2C, enCANDevieErrorCode::Success, m_strCurrentCanID.c_str() ); 
+			m_strDebugData += szTemp;
+
 			//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
 			int  dataDynaLength = dataObj.getLen() - 7 - 5 -2; //数据头长度7，数据体前5（返回码+操作类型+电池1~15在位信息），数据CRC16长度2
 			if (dataDynaLength >0 && dataDynaLength % 19 ==0){
@@ -527,8 +530,13 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 					//大于0.2V更新ui
 				//	if(fabs(nPreVol - m_BatteryArray[stObj.position_ - 1].vol_) > 0.2 && m_AppWnd)
 					//	::PostMessage(m_AppWnd, WM_MSG_REFRESH_BATTERY, stObj.position_ - 1, 0);
-					sprintf_s(szTemp, 256, "电池号：%d , 状态：%s,电压:%3.1fV, 温度：%3.1f℃\n",\
-						stObj.position_,  stObj.getBatteryState(), volTemp / 4000.0f, stObj.temperater / 10.0f);
+					//sprintf_s(szTemp, 256, "电池号：%d , 状态：%s,电压:%3.1fV, 温度：%3.1f℃\n",\
+					//	stObj.position_,  stObj.getBatteryState(), volTemp / 4000.0f, stObj.temperater / 10.0f);
+
+
+					//add 20180929 
+					sprintf_s(szTemp, 256, ",{pos:%d state:%d vol:%3.1fV T:%3.1f}", \
+						stObj.position_, stObj.state_, volTemp / 4000.0f, stObj.temperater / 10.0f);
 					m_strDebugData += szTemp;
 				}
 			} 
@@ -549,6 +557,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 					m_BatteryArray[i].tempterator = 0;
 				}
 			}
+
 			if (m_pPrintfFun)m_pPrintfFun(1, true);
 		}
 	}

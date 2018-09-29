@@ -97,8 +97,8 @@ enum enChargerType
 struct stCharger
 {
 	unsigned int id;  //充电器编号
-	unsigned int nLevel;	//���ڲ���
-	enChargerType chargerType;  //���������
+	unsigned int nLevel;	//所属层级
+	enChargerType chargerType;  //充电器类型
 	//std::map<unsigned int, stBatteryInfo> mapBattery;//电池列表（映射）1个充电器最多带三个电池
 	QTime timeLockChargingState;   //2秒内禁止刷新充电器状态
 	QString beginChergeTime;       //充电开始时间 add20180521
@@ -324,14 +324,19 @@ struct stCommand
 		hight,		//高级命令 插入队列前，并且检测失败重发2次。
 	};
 	enPriority m_enPriority;
+	enChargerType chargerType; //充电器类型， 根据充电器类型区分命令发到串口或者CAN
 	QString m_strCommand;  //命令
+	bool lastCommandFlag;   //单次循环最后的命令，如果true，则抛出下次循环的命令。
+
 	stCommand(QString strCommand="", enPriority pri = normal) :\
-		m_strCommand(strCommand), m_enPriority(pri){
+		m_strCommand(strCommand), m_enPriority(pri), chargerType(NF_Charger),lastCommandFlag(false){
 
 		}
 	stCommand operator=(const stCommand & other){
 		this->m_enPriority = other.m_enPriority;
 		this->m_strCommand = other.m_strCommand;
+		this->chargerType = other.chargerType;
+		this->lastCommandFlag = other.lastCommandFlag;
 		return *this;
 	}
 

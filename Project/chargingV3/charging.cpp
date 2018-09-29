@@ -437,23 +437,24 @@ void charging::OnAddCommamdIntoQueue(stCommand strCommand)
 //完成读取一个柜子编号 ，发送下一个柜子读取信息命令
 void charging::OnReadyGetBatteryState(int nClosetId)  
 {
-	static QVector<unsigned int > vtClosetId;  vtClosetId.clear();
-	static int nLoopClosetId =1, nNextClosetId;
-	
-	for (MAP_CLOSET_IT itCloset = m_mapCloset.begin(); itCloset != m_mapCloset.end(); itCloset++){
-		vtClosetId.append(itCloset->first);
-	}
-	if (nClosetId == m_iCurrentCloset){
-		//读取下一个柜子		
-		nLoopClosetId++;
-		if (nLoopClosetId > vtClosetId.size())
-			nLoopClosetId = 1;
-		if (nLoopClosetId == m_iCurrentCloset &&  nLoopClosetId <= vtClosetId.size() -1)
-			nLoopClosetId++; 
-		nNextClosetId = vtClosetId[nLoopClosetId - 1];
-		scanOneBatteryState(nNextClosetId, stCommand::normal);
-	}
-	else{
+	//static QVector<unsigned int > vtClosetId;  vtClosetId.clear();
+	//static int nLoopClosetId =1, nNextClosetId;
+	//
+	//for (MAP_CLOSET_IT itCloset = m_mapCloset.begin(); itCloset != m_mapCloset.end(); itCloset++){
+	//	vtClosetId.append(itCloset->first);
+	//}
+	//if (nClosetId == m_iCurrentCloset){
+	//	//读取下一个柜子		
+	//	nLoopClosetId++;
+	//	if (nLoopClosetId > vtClosetId.size())
+	//		nLoopClosetId = 1;
+	//	if (nLoopClosetId == m_iCurrentCloset &&  nLoopClosetId <= vtClosetId.size() -1)
+	//		nLoopClosetId++; 
+	//	nNextClosetId = vtClosetId[nLoopClosetId - 1];
+	//	scanOneBatteryState(nNextClosetId, stCommand::normal);
+	//}
+	//else
+	{
 		//读取当前柜子 
 		scanOneBatteryState(m_iCurrentCloset, stCommand::normal);
 	}  
