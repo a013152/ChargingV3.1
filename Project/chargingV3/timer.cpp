@@ -86,8 +86,8 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 	itCloset = m_mapCloset.find(nClosetId);
 	if (itCloset != m_mapCloset.end())
 	{  
-		for (itCharger = itCloset->second.mapCharger.begin(); \
-			itCharger != itCloset->second.mapCharger.end(); itCharger++){
+		for (itCharger = itCloset->second.mapCharger.begin(); itCharger != itCloset->second.mapCharger.end(); )
+		{
 			stCommand stComm("");
 			stComm.chargerType = itCharger->second.chargerType;
 			if (itCharger->second.chargerType == NF_Charger){
@@ -100,6 +100,11 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 
 				stComm = stCommand(strCommad, enPriority);
 
+			}
+			//判断最后一个充电器
+			if (++itCharger == itCloset->second.mapCharger.end())
+			{
+				stComm.lastCommandFlag = true;
 			}
 			vtStCommand.append(stComm);
 		}

@@ -1,7 +1,9 @@
 #include "CommandQueue.h"
 #include <QDebug>
 #include "errorCode.h"
+#include "CanProcess.h"
 #pragma execution_character_set("utf-8")
+static char szPrintf[256] = { 0 };
 
 static int countQueueSize = 0;
 CCommandQueue::CCommandQueue() :stopped(false) 
@@ -264,8 +266,15 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 	else if (stcommand.chargerType == DJI_Charger)
 	{
 		//发送到大疆充电器设备
+		static QByteArray ba; ba = stcommand.m_strCommand.toLocal8Bit();
+		static char szW[256] = { 0 }, szR[256] = { 0 };
+		strcpy_s(szW, ba.data());
+		GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
 
+		GET_CAN->receiveFromCanDeviceProcess(szR,  szPrintf);
+		//发送到charing分析解码
 
+		readedCAN(QString(szR),0);
 	}
 	
 }

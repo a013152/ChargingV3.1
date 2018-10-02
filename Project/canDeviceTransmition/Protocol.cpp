@@ -507,8 +507,20 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			if (temp2[3])
 				m_strDebugData = "电池柜单元风扇异常。";
 			//if (m_AppWnd && dataObj.Data_[2] != 0x00) { ::PostMessage(m_AppWnd, WM_MSG_DISPLAY_DATA, 0, 1); }
+			uint16_t batteryOnline = Uint8ToUint16(&dataObj.Data_[3]);
+			temp1 = 0x01;
+			char szTempOnline[16] = { 0 };
+			for (int i = 0; i < 15; i++)
+			{
+				static bool isPreOnline = false;
+				isPreOnline = m_BatteryArray[i].isOline_;
+				temp3 = (temp1 << i);
+				temp4 = (temp3 & batteryOnline);
+				szTempOnline[i] = (temp4 >> i == 0x01)?'1':'0';
+				
+			}
 			//add 20180929 保存电池在线情况
-			sprintf_s(szTemp, 256, "%s,F8,%d,%s", S2C, enCANDevieErrorCode::Success, m_strCurrentCanID.c_str() ); 
+			sprintf_s(szTemp, 256, "%s,F8,%d,%s,%s", S2C, enCANDevieErrorCode::Success, m_strCurrentCanID.c_str(), szTempOnline);
 			m_strDebugData += szTemp;
 
 			//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
@@ -542,7 +554,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			} 
 
 			//电池在线情况
-			uint16_t batteryOnline = Uint8ToUint16(&dataObj.Data_[3]);
+			
 			temp1 = 0x01;
 			for (int i = 0; i < 15; i++)
 			{

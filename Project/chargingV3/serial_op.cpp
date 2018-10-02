@@ -480,4 +480,40 @@ void charging::readSerial(QString type, QString strContent, int iError)
 	}
 }
 
+// 解析接收到的CAN的内容param 1 内容。
+void charging::readCAN(QString strContent)
+{
+	static QStringList strList;
+	strList = strContent.split(",");
+	if (strList.size() > 3)
+	{
+		//分析命令类型
+		if (strList[1].compare("F8") == 0){
+			//CAN ID
+			int CANID = strList[3].toInt();
+			//电池在位情况
+			bool bOnline[16] = { false }; QString strOnline = strList[4];
+			for (int i = 0; i < 15; i++){
+				bOnline[i] = (strOnline[i]==QChar('1'));
+			}  
+			//电池动态信息
+			if (strList.size() > 6){
+				for (int i = 5; i < strList.size(); i++){
+					QString strBattery = strList[i];
+					QStringList strList2 = strBattery.split(" ");
 
+				}
+			}
+
+		}
+		else if (strList[1].compare("F9") == 0)
+		{
+			//充电反馈
+		}
+		else if (strList[1].compare("F10") == 0)
+		{
+			//放电反馈
+		}
+
+	}
+}

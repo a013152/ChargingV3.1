@@ -87,6 +87,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CommonFunction.cpp" />
+    <ClCompile Include="CanProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="charging.qrc" />
@@ -179,5 +180,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonFunction.h" />
+    <ClInclude Include="CanProcess.h" />
   </ItemGroup>
 </Project>

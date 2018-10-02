@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CanProcess.cpp" />
     <ClCompile Include="CommonFunction.cpp" />
     <ClCompile Include="ToCanDeviceProcess.cpp" />
     <ClCompile Include="charging.cpp" />
@@ -844,6 +845,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CanProcess.h" />
     <ClInclude Include="CommonFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

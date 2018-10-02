@@ -294,6 +294,9 @@ private slots :
 	//接收到的串口的内容param 1 命令类型，param 2 内容； 3错误码
 	void readSerial(QString type, QString strContent, int iError);
 
+	//解析接收到的CAN的内容param 1 内容。
+	void readCAN( QString strContent);
+
 	
 	//接收到充电
 	void OnBtnChargingOrStopCharging1();

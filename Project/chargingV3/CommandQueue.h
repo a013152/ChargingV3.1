@@ -73,6 +73,13 @@ signals:
 	void printfed(  QString writContend); 
 
 	void readyGetBatteryState( int nClosetId);  //信号：完成读取一个柜子编号 
+
+	//接收到CAN设备数据的信号。
+	//param1  命令类型（类似G 、D、O...)
+	//param2  收到的内容（*NF,Y，...)
+	//param3  错误码 0 成功
+	void readedCAN( QString recvContend, int iError);
+
 };
 
 
