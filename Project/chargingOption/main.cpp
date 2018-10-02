@@ -1,6 +1,6 @@
 #include "chargingoption.h"
 #include <QtWidgets/QApplication>
-extern QString g_AppPath;
+extern char  g_AppPath[256] = { 0 };
 int main(int argc, char *argv[])
 {
 	QApplication::addLibraryPath("./plugins");
@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
 	QApplication::addLibraryPath("./plugins/platforms");
 
 	QApplication a(argc, argv);
-	g_AppPath = a.applicationDirPath();
+	QByteArray ba = a.applicationDirPath().toLatin1();
+	strcpy_s(g_AppPath, 256, ba.data());
 	chargingOption w;
 	w.show();
 	return a.exec();

@@ -28,7 +28,7 @@ const ULONG_PTR CUSTOM_TYPE = 10000;
 extern QString g_winTitle ;
 
 
-extern QString g_AppPath;
+extern char g_AppPath[256];
  
 class QTabWidget;
 class QVBoxLayout;

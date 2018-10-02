@@ -5,7 +5,7 @@
 #include <QScrollBar>
 #include "MyQComboBox.h"
 
-QString g_AppPath;
+extern char g_AppPath[256];
 QString g_winTitle;
 
 
@@ -21,23 +21,23 @@ chargingOption::chargingOption(QWidget *parent)
 	setWindowTitle(SETING_WINDOW_TITLE);
 
 
-	COperatorFile::GetInstance()->setAppPath(g_AppPath);
+	COperatorFile::GetInstance()->setAppPath(QString(g_AppPath));
 	COperatorFile::GetInstance()->readAllConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger, &m_iError);
 
 	//读取提交服务器时间间隔
-	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval", g_AppPath + "\\set.ini", &iError).toInt();
+	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval", QString(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_SubmitInterval == 0){
 		m_SubmitInterval = ONE_SUBMIT_TIME;
 	}
 
 	//读取充电时限
-	m_ChargeLimitTime = CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime", g_AppPath + "\\set.ini", &iError).toInt();
+	m_ChargeLimitTime = CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime", QString(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_ChargeLimitTime == 0){
 		m_ChargeLimitTime = CHARGING_LIMIT_TIME;
 	}
 
 	//过热温度
-	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature", g_AppPath + "\\set.ini", &iError).toInt();
+	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature", QString(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_fOverHeatTemperature == 0){
 		m_fOverHeatTemperature = DEFAUT_OVERHEATTEMPERATURE;
 	}
@@ -403,9 +403,9 @@ void chargingOption::OnBtnSave3()
 		m_fOverHeatTemperature = ftemp;
 	}
 
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "SubmitInterval",QString::number(m_SubmitInterval), g_AppPath + "\\set.ini", &iError);
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "ChargeLimitTime", QString::number(m_ChargeLimitTime), g_AppPath + "\\set.ini", &iError2);
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "OverHeatTemperature", QString("%1").arg(m_fOverHeatTemperature), g_AppPath + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "SubmitInterval", QString::number(m_SubmitInterval), QString(g_AppPath) + "\\set.ini", &iError);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "ChargeLimitTime", QString::number(m_ChargeLimitTime), QString(g_AppPath) + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "OverHeatTemperature", QString("%1").arg(m_fOverHeatTemperature), QString(g_AppPath) + "\\set.ini", &iError2);
 	if (iError2 == 0 && iError == 0){
 		QMessageBox::information(this, "提示", "保存完成");
 		//进程通信通知《智能充电保护箱》程序更新数据
@@ -531,7 +531,7 @@ void chargingOption::SendChargingProgramToReadConfig()
 {
 	HWND hwnd = NULL;
 	int iError = 0;
-	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", g_AppPath + "\\set.ini", &iError);
+	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", QString(g_AppPath) + "\\set.ini", &iError);
 	if (iError != 0)
 		g_winTitle = MAIN_WINDOW_TITLE;
 	LPWSTR path = (LPWSTR)g_winTitle.utf16();    
