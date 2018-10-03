@@ -547,10 +547,10 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 
 
 					//add 20180929 
-					sprintf_s(szTemp, 256, ",{pos:%d state:%d vol:%3.1fV T:%3.1f}", \
+					sprintf_s(szTemp, 256, ",%d %d %3.1fV %3.1f", \    //pos:%d state:%d vol:%3.1fV T:%3.1f
 						stObj.position_, stObj.state_, volTemp / 4000.0f, stObj.temperater / 10.0f);
 					m_strDebugData += szTemp;
-				}
+				} 
 			} 
 
 			//电池在线情况
