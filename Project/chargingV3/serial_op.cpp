@@ -502,8 +502,7 @@ void charging::readCAN(QString strContent)
 			if (itCharger != m_mapCharger.end()){
 				itLevel = m_mapLevel.find(itCharger->second.nLevel);	
 				itCharger->second.bOnline = true;
-				emit RefreshState(enRefreshType::ChargerOnlineState, \
-					batteryIDtoArrayIndex(QString::number(CANID)));
+				
 			}
 			if (itLevel != m_mapLevel.end())
 			{
@@ -514,6 +513,8 @@ void charging::readCAN(QString strContent)
 					itBattery != itLevel->second.mapBattery.end() && i < 15; itBattery++, i++)
 				{
 					itBattery->second.isExisted = (strOnline[i] == QChar('1'));
+					emit RefreshState(enRefreshType::ChargerOnlineState, \
+						batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id))); //更新在线状态
 				}						
 					 
 				
