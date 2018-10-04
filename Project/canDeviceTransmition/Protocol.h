@@ -185,6 +185,13 @@ public:
 	//返回值：
 	void setCurrentCANID(std::string& strCanID){ m_strCurrentCanID = strCanID; }
 
+
+	//函数：setCurrentCommandType
+	//功能：设置当前的命令类型 
+	//参数：   std::string 
+	//返回值：
+	void setCurrentCommandType(std::string& strComType){ m_strCurrentComType = strComType; }
+
 protected:
 	//函数：calulataCRC8
 	//功能：计算CRC校验值
@@ -244,7 +251,7 @@ private:
 
 	uint8_t m_szKeyDefault[32];
 	HWND    m_AppWnd = NULL;  //窗口
-	std::string m_strDebugData, str1, str, m_strCurrentCanID; 
+	std::string m_strDebugData, str1, str, m_strCurrentCanID, m_strCurrentComType;
 	char szTemp[256]; ;
 	bool m_bVerify = false; //认证标志
 	bool m_bReadChargeState = false;  //读取充电状态标志 0x07

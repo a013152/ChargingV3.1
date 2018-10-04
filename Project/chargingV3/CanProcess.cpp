@@ -106,7 +106,7 @@ bool CCanProcess::clossCanDeviceProcess(char * szPrintf)
 			Sleep(100);
 			s_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
 		}
-		sprintf_s(szPrintf, 256, "CAN通讯进程!\n");
+		sprintf_s(szPrintf, 256, "CAN通讯进程关闭!\n");
 	}
 	return 0;
 }
@@ -118,7 +118,8 @@ int CCanProcess::sendToCanDeviceProcess(char * szData, int nLength, char * szPri
 	{
 		DWORD wlen = 0;
 		WriteFile(s_hPipe, szData, strlen(szData), &wlen, 0);//向CAN进程送内容
-		sprintf_s(szPrintf, 256, "发送：%s\n", szData);
+		
+		sprintf_s(szPrintf, 256, "发送：%s %s\n", szData, (wlen==0)?"未返回":"");
 		Sleep(10);
 		return wlen;
 	}

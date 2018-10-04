@@ -520,7 +520,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 				
 			}
 			//add 20180929 保存电池在线情况
-			sprintf_s(szTemp, 256, "%s,F8,%d,%s,%s", S2C, enCANDevieErrorCode::Success, m_strCurrentCanID.c_str(), szTempOnline);
+			sprintf_s(szTemp, 256, "%s,F8,%s,%d,%s", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, szTempOnline);
 			m_strDebugData += szTemp;
 
 			//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
@@ -547,7 +547,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 
 
 					//add 20180929 
-					sprintf_s(szTemp, 256, ",%d %d %3.1fV %3.1f", \    //pos:%d state:%d vol:%3.1fV T:%3.1f
+					sprintf_s(szTemp, 256, ",%d %d %3.1fV %3.1f",     //pos:%d state:%d vol:%3.1fV T:%3.1f
 						stObj.position_, stObj.state_, volTemp / 4000.0f, stObj.temperater / 10.0f);
 					m_strDebugData += szTemp;
 				} 
@@ -707,14 +707,14 @@ void CProtocol::verifyStepTwo(stCAN_DevData& dataObj)
 {
 	if (dataObj.Data_[0] == 0){
 		str = "认证成功。\n";
-		sprintf_s(szTemp, 256, "%s,F4,%d,%s", S2C, enCANDevieErrorCode::Success, str.c_str());
+		sprintf_s(szTemp, 256, "%s,F4,%s,%d,%s", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, str.c_str());
 		m_strDebugData = szTemp;
 		m_bVerify = true;
 	}
 	else{
 		sprintf_s(szTemp, 256, "认证失败。返回码:%02X\n ", dataObj.Data_[0]);
 		str = szTemp;
-		sprintf_s(szTemp, 256, "%s,F4,%d,%s", S2C, enCANDevieErrorCode::DetailError, str.c_str());
+		sprintf_s(szTemp, 256, "%s,F4,%s,%d,%s", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::DetailError, str.c_str());
 
 		m_strDebugData = szTemp;
 	}

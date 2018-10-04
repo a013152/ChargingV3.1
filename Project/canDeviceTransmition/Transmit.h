@@ -65,12 +65,27 @@ public:
 	//返回值：
 	TYPEcallbackPrintf m_pPrintfFun = NULL;
 
+	//函数：setCurrentCANID
+	//功能：设置当前的CAN  
+	//参数：   std::string 
+	//返回值：
+	void setCurrentCANID(std::string& strCanID){ m_strCurrentCanID = strCanID; }
+	std::string getCurrentCANID(){ return m_strCurrentCanID; }
+
+
+	//函数：setCurrentCommandType
+	//功能：设置当前的命令类型 
+	//参数：   std::string 
+	//返回值：
+	void setCurrentCommandType(std::string& strComType){ m_strCurrentComType = strComType; }
+	std::string getCurrentCommandType(){ return m_strCurrentComType; }
+
 public:
 	HANDLE			m_hReadEventArray[2];				//读线程事件数组 0 退出， 1读取
 private:
 	CTransmit();
 	bool m_bOpen = false;
-	std::string m_strDebugData, str1, str;
+	std::string m_strDebugData, str1, str ,m_strCurrentCanID, m_strCurrentComType;
 	char szTemp[256];
 	HANDLE  m_hThread = NULL; //线程句柄
 	HWND    m_AppWnd = NULL;  //窗口

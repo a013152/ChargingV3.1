@@ -253,17 +253,7 @@ public:
 	void extractNumber(QString strSrouce, int& iNumber);  //提取数字
 
 
-	public:
-		//操作can设备进程函数
-		//开启进程 
-		bool startCanDeviceProcess();
-		//关闭进程
-		bool clossCanDeviceProcess();
-		//发送
-		int sendToCanDeviceProcess(char * szData, int nLength);
-		//接收
-		int receiveFromCanDeviceProcess(char * szData);
-
+	
 private:
 	bool m_LButtonPress = false; //按下标志
 	QPoint m_MousePrePoint;  //鼠标位置

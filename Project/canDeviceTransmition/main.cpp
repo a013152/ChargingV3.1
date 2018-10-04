@@ -35,9 +35,10 @@ static void _callbackPrintf(int nType, bool bSend2Clint = true)
 	}
 	if (nType == 2)
 	{
-		printf("%s\n", GET_T->getDebugData().c_str());
+		printf("DebugData:%s\n", GET_T->getDebugData().c_str()); 
 		if (bSend2Clint)
-			sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%d,%s\n", S2C, enCANDevieErrorCode::DetailError, GET_T->getDebugData().c_str());
+			sprintf_s(wbuf, MAX_BUF_SIZE, "%s,%s,%s,%d,%s\n", S2C, GET_T->getCurrentCommandType().c_str(),\
+				GET_T->getCurrentCANID().c_str(), enCANDevieErrorCode::DetailError, GET_T->getDebugData().c_str()); 
 	}
 	if (bSend2Clint)
 	{
@@ -284,6 +285,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F4") == 0)
 				{
+					GET_P->setCurrentCANID(vtStrCommand[2]);
+					GET_T->setCurrentCANID(vtStrCommand[2]);
+					GET_P->setCurrentCommandType(vtStrCommand[1]);
+					GET_T->setCurrentCommandType(vtStrCommand[1]);
 					//认证
 					if (verifyDevice(vtStrCommand, wbuf))
 						s_sendFlg = false;
@@ -292,6 +297,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F5") == 0)
 				{
+					GET_P->setCurrentCANID(vtStrCommand[2]);
+					GET_T->setCurrentCANID(vtStrCommand[2]);
+					GET_P->setCurrentCommandType(vtStrCommand[1]);
+					GET_T->setCurrentCommandType(vtStrCommand[1]);
 					//读取/设置起始充电状态
 					if (readOrWriteBeginMode(vtStrCommand, wbuf))
 						s_sendFlg = false;
@@ -309,6 +318,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F8") == 0)
 				{
+					GET_P->setCurrentCANID(vtStrCommand[2]);
+					GET_T->setCurrentCANID(vtStrCommand[2]);
+					GET_P->setCurrentCommandType(vtStrCommand[1]);
+					GET_T->setCurrentCommandType(vtStrCommand[1]);
 					//读取电池信息
 					if (readBatteryInfo(vtStrCommand, wbuf))
 						s_sendFlg = false;

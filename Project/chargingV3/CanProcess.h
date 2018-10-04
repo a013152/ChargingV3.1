@@ -32,5 +32,7 @@ public:
 
 	//接收 阻塞 ，成功则返回接收的长度
 	int receiveFromCanDeviceProcess(char * szData, char * szPrintf);
+
+
 };
 
