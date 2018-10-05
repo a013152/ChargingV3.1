@@ -483,6 +483,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 }
 int getCanDJIBattery(int CANID, int pos)
 {
+	
 	int temp1 = CANID / 100 * 100; //抹去个位十位数字
 	if (temp1){
 		temp1 += pos;
@@ -536,6 +537,7 @@ void charging::onReadCAN(QString strContent)
 				if (itCharger != itCloset->second.mapCharger.end()){
 					itLevel = m_mapLevel.find(itCharger->second.nLevel);
 					itCharger->second.bOnline = true;
+					itCharger->second.nScanWatchDog = 0;
 				}
 				if (itLevel != m_mapLevel.end())
 				{

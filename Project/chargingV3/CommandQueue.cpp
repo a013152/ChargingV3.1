@@ -156,6 +156,14 @@ int CCommandQueue::countCommand(unsigned int nClosetId) const
 //发送命令到串口
 void CCommandQueue::sendCommand(stCommand stcommand)
 {
+	QByteArray baTemp;
+	QString command, ls_temp, strReceiveContent, strReceiveContent2;
+	int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
+	bool bSendRet = false;
+	//清空 数据
+	//ls_temp  = m_pSerial->serialRead().data();
+	char szWriteData[256] = { 0 }, szReadData[256] = { 0 };
+
 	if (stcommand.chargerType == DJI_Charger)
 	{
 		if (GET_CAN->isPreareSendOrRead() == false || stcommand.m_strCommand.isEmpty()){
@@ -168,7 +176,13 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			static char szW[256] = { 0 }, szR[256] = { 0 };
 			strcpy_s(szW, ba.data());
 			GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
+			ls_temp = "I write: "; ls_temp += stcommand.m_strCommand +"\r\n";
+			emit printfed(ls_temp);
+
 			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
+
+			ls_temp = "I read: "; ls_temp += QString::fromLocal8Bit(szR) + "\r\n";
+			emit printfed(ls_temp);
 			//发送到charing分析解码
 			emit readedCAN(QString::fromLocal8Bit(szR));
 		}
@@ -177,13 +191,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 	{
 		if (SERIAL_PORT->isOpen()/*m_pSerial*/)
 		{ 
-			QByteArray baTemp;
-			QString command, ls_temp, strReceiveContent, strReceiveContent2;
-			int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
-			bool bSendRet = false;
-			//清空 数据
-			//ls_temp  = m_pSerial->serialRead().data();
-			char szWriteData[256] = { 0 }, szReadData[256] = { 0 };
+			
 		
 			command = stcommand.m_strCommand;
 

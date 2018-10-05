@@ -477,7 +477,7 @@ void charging::addChargerScanTime()
 		{
 			//增加扫描计数				
 			itCharger->second.nScanWatchDog++;	
-			if (itCharger->second.nScanWatchDog > 2)
+			if (itCharger->second.nScanWatchDog > 4)
 			{
 				//不在线判断。
 				itCharger->second.bOnline = false;  //充电器不在线
@@ -487,18 +487,15 @@ void charging::addChargerScanTime()
 				if (itCharger->second.nScanWatchDog == 5)
 				{					
 					//更新ui不在线状态 
-					
-					MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
-					if (itLevel != m_mapLevel.end())
-					{
-						//电池在位情况
-						for (auto itBattery : itLevel->second.mapBattery)
+					if (itCharger->second.chargerType == NF_Charger)
+					{						
+						//电池在位情况						 
 						{
-							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
+							MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.find(itCharger->second.id); //能飞充电器 一个充电器对应一个电池
+							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
 							charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
-							itBattery.second.timeLockUI.restart();
+							itBattery->second.timeLockUI.restart();
 							emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  
-
 							//电压
 							battery_voltage[indexArray] = "0";
 							emit RefreshState(enRefreshType::BatteryVol, indexArray);
@@ -506,7 +503,31 @@ void charging::addChargerScanTime()
 							battery_state[indexArray] = "未放置电池";
 							emit RefreshState(enRefreshType::BatteryState, indexArray);
 						}
-					}								
+							
+					}
+					else if (itCharger->second.chargerType == DJI_Charger)
+					{
+						MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
+						if (itLevel != m_mapLevel.end())
+						{
+							//电池在位情况
+							for (auto itBattery : itLevel->second.mapBattery)
+							{
+								int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
+								charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
+								itBattery.second.timeLockUI.restart();
+								emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+
+								//电压
+								battery_voltage[indexArray] = "0";
+								emit RefreshState(enRefreshType::BatteryVol, indexArray);
+								//电池状态
+								battery_state[indexArray] = "未放置电池";
+								emit RefreshState(enRefreshType::BatteryState, indexArray);
+							}
+						}
+					}
+									
 				}
 			}
 		} 

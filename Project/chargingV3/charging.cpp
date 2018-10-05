@@ -94,16 +94,9 @@ int charging::chargerIDtoBatteryId(int chargerId)
 	return nBatteryID;
 } 
 bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger, MAP_LEVEL_IT& itLevel)
-{
-	int nClosetId = 0;
-	if (strBatteryId.length() == 3){
-		nClosetId = strBatteryId.left(1).toInt();
-	}
-	else if (strBatteryId.length() == 4){
-		nClosetId = strBatteryId.left(2).toInt();
-	}
+{	
 	 
-	itCloset = m_mapCloset.find(nClosetId);
+	itCloset = m_mapCloset.find(1);
 	if (itCloset != m_mapCloset.end())
 	{
 		itBattery = itCloset->second.mapBattery.find(strBatteryId.toInt());
