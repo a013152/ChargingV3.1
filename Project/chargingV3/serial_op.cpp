@@ -103,6 +103,8 @@ void charging::OnClickMenuCom(QAction * action)
 				listAction[i]->setChecked(false);
 		}
 	}
+
+	//打开CAN设备进程                        
 } 
 
 QString temp_command;
@@ -233,7 +235,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 						itBattery->second.isChanged = strBatteryChanged == "1" ? true : false;
 						emit RefreshState(enRefreshType::BatteryState, indexArray);
 					}
-
+					
 					//保存充电器在线状态 
 					itCharger->second.bOnline = true;  
 					//通知ui刷新充电器在线状态
@@ -488,76 +490,112 @@ int getCanDJIBattery(int CANID, int pos)
 	return temp1;
 }
 // 解析接收到的CAN的内容param 1 内容。
-void charging::readCAN(QString strContent)
+void charging::onReadCAN(QString strContent)
 {
 	static QStringList strList;
 	strList = strContent.split(",");
 	if (strList.size() > 3)
 	{
 		//分析命令类型
-		if (strList[1].compare("F8") == 0){
-			//CAN ID
-			int CANID = strList[3].toInt();			
-			MAP_CHARGER_IT itCharger = m_mapCharger.find(CANID); MAP_LEVEL_IT itLevel;
-			if (itCharger != m_mapCharger.end()){
-				itLevel = m_mapLevel.find(itCharger->second.nLevel);	
-				itCharger->second.bOnline = true;
-				
-			}
-			if (itLevel != m_mapLevel.end())
+		if (strList[1].compare("F4") == 0)
+		{
+			//认证通过			
+			MAP_CLOSET_IT itCloset;; MAP_CHARGER_IT itCharger;
+			QVector<stCommand> vtStCommand;	itCloset = m_mapCloset.find(1);
+			if (itCloset != m_mapCloset.end())
 			{
-				//电池在位情况
-				QString strOnline = strList[4];
-				MAP_BATTERY_IT itBattery; int i;
-				for (itBattery = itLevel->second.mapBattery.begin(), i = 0;
-					itBattery != itLevel->second.mapBattery.end() && i < 15; itBattery++, i++)
+				itCharger = itCloset->second.mapCharger.find(strList[2].toInt());
+				if (itCharger != itCloset->second.mapCharger.end())
 				{
-					itBattery->second.isExisted = (strOnline[i] == QChar('1'));
-					emit RefreshState(enRefreshType::ChargerOnlineState, \
-						batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id))); //更新在线状态
-				}						
+					if (strList[3].toInt() == 0){
+
+						itCharger->second.bOnline = true;
+						MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
+						if (itLevel != m_mapLevel.end())
+						{
+							//电池在位情况
+							for (auto itBattery : itLevel->second.mapBattery)
+							{
+								int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
+								charger_state[indexArray] = STATE_FREE;//"充电中";
+								emit RefreshState(enRefreshType::ChargerOnlineState, \
+									batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id))); //更新在线状态
+							}
+						}
+					}					
+				}
+			}
+		}
+		else if (strList[1].compare("F8") == 0){
+			//CAN ID
+			int CANID = strList[2].toInt();	
+			MAP_CLOSET_IT itCloset; itCloset = m_mapCloset.find(1);
+			if (itCloset != m_mapCloset.end())
+			{
+				MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(CANID); MAP_LEVEL_IT itLevel;
+				if (itCharger != itCloset->second.mapCharger.end()){
+					itLevel = m_mapLevel.find(itCharger->second.nLevel);
+					itCharger->second.bOnline = true;
+				}
+				if (itLevel != m_mapLevel.end())
+				{
+					itCharger = itLevel->second.mapCharger.find(CANID); itCharger->second.bOnline = true; itCharger->second.nScanWatchDog = 0;
 					 
-				
-				//电池动态信息
-				if (strList.size() > 6 )
-				{					
-					for (int i = 5; i < strList.size(); i++){
-						QString strBattery = strList[i];
-						QStringList strList2 = strBattery.split(" ");
-						//[0]位置 [1]状态 [2]电压 [3]温度
-						//pos:%d state:%d vol:%3.1fV T:%3.1f
-						int pos = strList2[0].toInt();
-						int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
-						float vol = strList2[2].toFloat();//电压
-						float tem = strList2[3].toFloat();//温度
-						//赋值给内存中的电池映射
-						int nBatteryId = getCanDJIBattery(CANID, pos);
-						itBattery = itLevel->second.mapBattery.find(nBatteryId);
-						if (itBattery != itLevel->second.mapBattery.end()){
-							//赋值
-							int indexArray = batteryIDtoArrayIndex(itBattery->second.id);
-							battery_voltage[indexArray] = QString("%1").arg(vol);
-							//battery_current[indexArray] = QString("%1").arg(curr);
-							emit RefreshState(enRefreshType::BatteryVol, indexArray);
-							itCharger->second.saveVoltage(vol);
-							//itCharger->second.fCurrent = curr;
-							emit RefreshState(enRefreshType::BatteryState, indexArray);
-							 
-							if (state == 0 || state==3)// 满电/静默
-								charger_state[indexArray] = STATE_FREE;//"充电器闲置";
-							else if (state == 1)
-								charger_state[indexArray] = STATE_CHARGING;// "充电中";
-							else if (state == 2)
-								charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
-							emit RefreshState(enRefreshType::ChargerState, indexArray);
+					//电池在位情况
+					QString strOnline = strList[4];
+					MAP_BATTERY_IT itBattery; int i;
+					for (itBattery = itLevel->second.mapBattery.begin(), i = 0;
+						itBattery != itLevel->second.mapBattery.end() && i < 15; itBattery++, i++)
+					{
+						itBattery->second.isExisted = (strOnline[i] == QChar('1'));
+						int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit((itBattery->second.id)));
+						battery_state[indexArray] = itBattery->second.isExisted ? "电池在线" : "未放置电池";
+						emit RefreshState(enRefreshType::BatteryState, \
+							batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id))); //更新在线状态
+						indexArray = batteryIDtoArrayIndex(itBattery->second.id);
+						if (itBattery->second.isExisted == false){
+							charger_state[indexArray] = STATE_FREE;//"电池不在线，更新充电器闲置";
+						}
+					}
+
+					//电池动态信息
+					if (strList.size() >= 6)
+					{
+						for (int i = 5; i < strList.size(); i++){
+							QString strBattery = strList[i];
+							QStringList strList2 = strBattery.split(" ");
+							//[0]位置 [1]状态 [2]电压 [3]温度
+							//pos:%d state:%d vol:%3.1fV T:%3.1f
+							int pos = strList2[0].toInt();
+							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
+							float vol = strList2[2].toFloat();//电压
+							float tem = strList2[3].toFloat();//温度
+							//赋值给内存中的电池映射
+							int nBatteryId = getCanDJIBattery(CANID, pos);
+							itBattery = itLevel->second.mapBattery.find(nBatteryId);
+							if (itBattery != itLevel->second.mapBattery.end()){
+								//赋值
+								int indexArray = batteryIDtoArrayIndex(itBattery->second.id);
+								battery_voltage[indexArray] = QString("%1").arg(vol);
+								//battery_current[indexArray] = QString("%1").arg(curr);
+								emit RefreshState(enRefreshType::BatteryVol, indexArray);
+								itCharger->second.saveVoltage(vol);
+								//itCharger->second.fCurrent = curr;
+								emit RefreshState(enRefreshType::BatteryState, indexArray);
+
+								if (state == 0 || state == 3)// 满电/静默
+									charger_state[indexArray] = STATE_FREE;//"充电器闲置";
+								else if (state == 1)
+									charger_state[indexArray] = STATE_CHARGING;// "充电中";
+								else if (state == 2)
+									charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
+								emit RefreshState(enRefreshType::ChargerState, indexArray);
+							}
 						}
 					}
 				}
-
 			}
-
 			
-
 		}
 		else if (strList[1].compare("F9") == 0)
 		{

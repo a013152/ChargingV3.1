@@ -467,10 +467,11 @@ QAction * charging::createMenus()
 	connect(action10, SIGNAL(triggered()), this, SLOT(OnBtnShowDebugInfo()));
 	
 
-	QAction * action12 = new QAction("CAN设备", m_menuSys);
-	m_menuSys->addAction(action12);
-	action12->setCheckable(true);
-	connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOpenCanDevice(bool)));
+	m_menuItemCan = new QAction("CAN设备", m_menuSys);
+	m_menuSys->addAction(m_menuItemCan);
+	m_menuItemCan->setCheckable(true);
+	connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
+	//action12->setVisible(false);
 
 	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
 	QAction * action11 = new QAction("串口设备", m_menuSys);
@@ -890,6 +891,7 @@ void charging::OnBtnSysClose()
 		}
 		//my_Serial.serialClose();
 		SERIAL_PORT->ClosePort();
+		onOpenOrCloseCanDevice(false);
 		emit ExitApp();
 	}
 }

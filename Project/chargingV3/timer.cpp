@@ -1,4 +1,5 @@
 #include "charging.h"
+#include "CanProcess.h"
 #pragma execution_character_set("utf-8")
  
 void charging::timer_out()
@@ -81,28 +82,43 @@ void charging::beginScanBatteryState(bool reStart)
  //扫描单柜子的电池数据
 void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority enPriority)
 {
+	// 打开can进程
+	if (GET_CAN->isPreareSendOrRead()==false){
+		//打开can 设备
+		onOpenOrCloseCanDevice(true);
+	}
+
+
 	MAP_CLOSET_IT itCloset; ; MAP_CHARGER_IT itCharger;
 	QVector<stCommand> vtStCommand;
 	itCloset = m_mapCloset.find(nClosetId);
+	int nCount = 0;
 	if (itCloset != m_mapCloset.end())
 	{  
-		for (itCharger = itCloset->second.mapCharger.begin(); itCharger != itCloset->second.mapCharger.end(); )
+		
+		for (itCharger = itCloset->second.mapCharger.begin(); itCharger != itCloset->second.mapCharger.end();itCharger++ )
 		{
-			stCommand stComm("");
+			stCommand stComm("", enPriority);
 			stComm.chargerType = itCharger->second.chargerType;
 			if (itCharger->second.chargerType == NF_Charger){
 				//G命令读取电池存在状态 
-				stComm =stCommand(packageCommand("G," + QString::number(itCharger->second.id) + ","), enPriority);					
+				stComm.m_strCommand = packageCommand("G," + QString::number(itCharger->second.id) + ",");					
 			}
-			else{
-				//大疆充电槽
-				QString strCommad; strCommad.sprintf("C2S,F8,%d,R", itCharger->second.id);
-				if (itCharger->second.bOnline)   //不在线的话不发送查询命令
-					stComm = stCommand(strCommad, enPriority);
-
+			else if (itCharger->second.chargerType == DJI_Charger)
+			{
+				//大疆充电槽处理逻辑
+				if (GET_CAN->isPreareSendOrRead())  //判断进程、通道都已经准备好
+				{
+					QString strCommad;
+					if (itCharger->second.bOnline)
+						strCommad.sprintf("C2S,F8,%d,R", itCharger->second.id);  //在线的话发送查询命令
+					else
+						strCommad.sprintf("C2S,F4,%d", itCharger->second.id);    //不在线的话发送认证命令
+					stComm.m_strCommand = strCommad;
+				}		
 			}
 			//判断最后一个充电器
-			if (++itCharger == itCloset->second.mapCharger.end())
+			if (++nCount == itCloset->second.mapCharger.size())
 			{
 				stComm.lastCommandFlag = true;
 			}

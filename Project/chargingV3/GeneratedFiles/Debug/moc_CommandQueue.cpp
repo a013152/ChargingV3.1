@@ -64,13 +64,13 @@ static const uint qt_meta_data_CCommandQueue[] = {
        1,    3,   34,    2, 0x06 /* Public */,
        6,    1,   41,    2, 0x06 /* Public */,
        8,    1,   44,    2, 0x06 /* Public */,
-      10,    2,   47,    2, 0x06 /* Public */,
+      10,    1,   47,    2, 0x06 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::Int,    3,    4,    5,
     QMetaType::Void, QMetaType::QString,    7,
     QMetaType::Void, QMetaType::Int,    9,
-    QMetaType::Void, QMetaType::QString, QMetaType::Int,    4,    5,
+    QMetaType::Void, QMetaType::QString,    4,
 
        0        // eod
 };
@@ -83,7 +83,7 @@ void CCommandQueue::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 0: _t->readed((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
         case 1: _t->printfed((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 2: _t->readyGetBatteryState((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 3: _t->readedCAN((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 3: _t->readedCAN((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -108,7 +108,7 @@ void CCommandQueue::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
             }
         }
         {
-            typedef void (CCommandQueue::*_t)(QString , int );
+            typedef void (CCommandQueue::*_t)(QString );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&CCommandQueue::readedCAN)) {
                 *result = 3;
             }
@@ -174,9 +174,9 @@ void CCommandQueue::readyGetBatteryState(int _t1)
 }
 
 // SIGNAL 3
-void CCommandQueue::readedCAN(QString _t1, int _t2)
+void CCommandQueue::readedCAN(QString _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 QT_END_MOC_NAMESPACE

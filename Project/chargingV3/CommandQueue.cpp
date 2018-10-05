@@ -39,7 +39,7 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 				m_queComman.pop_front();
 				m_MutexA.unlock(); 
 				sendCommand(stCurrentCommand);//发送命令
-				detectFinishOneCloset(stCurrentCommand.m_strCommand); //检测一个柜子的命令是否发送完毕
+				detectFinishOneCloset(stCurrentCommand); //检测一个柜子的命令是否发送完毕
 				m_iSend++; //发送累加 
 				if (m_queComman.size() > m_iMaxLength)
 				{ 
@@ -156,7 +156,24 @@ int CCommandQueue::countCommand(unsigned int nClosetId) const
 //发送命令到串口
 void CCommandQueue::sendCommand(stCommand stcommand)
 {
-	if (stcommand.chargerType ==  NF_Charger)
+	if (stcommand.chargerType == DJI_Charger)
+	{
+		if (GET_CAN->isPreareSendOrRead() == false || stcommand.m_strCommand.isEmpty()){
+
+		}
+		else
+		{
+			//发送到大疆充电器设备
+			static QByteArray ba; ba = stcommand.m_strCommand.toLocal8Bit();
+			static char szW[256] = { 0 }, szR[256] = { 0 };
+			strcpy_s(szW, ba.data());
+			GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
+			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
+			//发送到charing分析解码
+			emit readedCAN(QString::fromLocal8Bit(szR));
+		}
+
+	}else if (stcommand.chargerType ==  NF_Charger)
 	{
 		if (SERIAL_PORT->isOpen()/*m_pSerial*/)
 		{ 
@@ -239,6 +256,8 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 				sendLoop++;
 				strReceiveContent.clear();
 				bSendRet = pSendFun();
+				
+				
 			}
 			//bSendRet = pSendFun();
 			//if (bSendRet == false && stcommand.m_enPriority == stCommand::hight) 
@@ -263,19 +282,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			}
 		}
 	}
-	else if (stcommand.chargerType == DJI_Charger)
-	{
-		//发送到大疆充电器设备
-		static QByteArray ba; ba = stcommand.m_strCommand.toLocal8Bit();
-		static char szW[256] = { 0 }, szR[256] = { 0 };
-		strcpy_s(szW, ba.data());
-		GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
-
-		GET_CAN->receiveFromCanDeviceProcess(szR,  szPrintf);
-		//发送到charing分析解码
-
-		readedCAN(QString(szR),0);
-	}
+	
 	
 }
 

@@ -243,6 +243,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (vtStrCommand[0].compare(C2S))
 				{
 					printf("第一元素不能解析，丢弃数据\n");
+					sprintf_s(wbuf, 256, "数据：%s 元素不能解析，丢弃数据", rbuf);
+					sendToClint();
 					continue;
 				}
 				//命令分析，派发处理。

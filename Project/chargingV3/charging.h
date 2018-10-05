@@ -257,7 +257,7 @@ public:
 private:
 	bool m_LButtonPress = false; //按下标志
 	QPoint m_MousePrePoint;  //鼠标位置
-private slots :
+public slots :
 
 	//改变柜子编号
 	void OnClickClosetNo();
@@ -285,7 +285,7 @@ private slots :
 	void readSerial(QString type, QString strContent, int iError);
 
 	//解析接收到的CAN的内容param 1 内容。
-	void readCAN( QString strContent);
+	void onReadCAN(QString strContent);
 
 	
 	//接收到充电
@@ -339,12 +339,15 @@ private slots :
 	void refreshCurrentUI();
 
 	void updateListviewBatteryModel(int indexMem = -1);  //更新详细电池数据
+
+	void onOpenOrCloseCanDevice(bool bOpenOrClose);
 public slots:
 	void allClosetCharging();
 	void oneClosetCharging();
 	void onPauseScand(bool checked);
 	void onPauseSubmit(bool checked);
-	void onOpenCanDevice(bool checked);
+	void onBtnCanDevice(bool checked);
+	
 signals:
 	void refreshUI(QString strID);  //刷新信号 ： 参数电池ID 
 
@@ -376,6 +379,8 @@ private:
 	QMenu* m_menuSys;	//系统菜单
 	QMenu* m_menuDebugInfoLevel;	//调试信息等级
 	QMenu* m_menuCom; //串口菜单
+
+	QAction * m_menuItemCan = nullptr; //can 设备 菜单项目
 
 	CMessageBoxCus* m_msgDlg = nullptr; //消息提示框
 	CLoginDialog* m_loginDlg = nullptr; //登录框

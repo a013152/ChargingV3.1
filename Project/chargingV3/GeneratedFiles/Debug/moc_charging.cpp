@@ -227,8 +227,8 @@ void CThreadShowOrHideDebugInfo::signalAdjustRect(QRect _t1)
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 struct qt_meta_stringdata_charging_t {
-    QByteArrayData data[85];
-    char stringdata[1196];
+    QByteArrayData data[87];
+    char stringdata[1233];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -271,57 +271,59 @@ QT_MOC_LITERAL(30, 406, 9),
 QT_MOC_LITERAL(31, 416, 10),
 QT_MOC_LITERAL(32, 427, 10),
 QT_MOC_LITERAL(33, 438, 6),
-QT_MOC_LITERAL(34, 445, 7),
-QT_MOC_LITERAL(35, 453, 28),
-QT_MOC_LITERAL(36, 482, 23),
-QT_MOC_LITERAL(37, 506, 10),
-QT_MOC_LITERAL(38, 517, 14),
-QT_MOC_LITERAL(39, 532, 14),
-QT_MOC_LITERAL(40, 547, 19),
-QT_MOC_LITERAL(41, 567, 13),
-QT_MOC_LITERAL(42, 581, 23),
-QT_MOC_LITERAL(43, 605, 12),
-QT_MOC_LITERAL(44, 618, 14),
-QT_MOC_LITERAL(45, 633, 8),
-QT_MOC_LITERAL(46, 642, 15),
-QT_MOC_LITERAL(47, 658, 9),
-QT_MOC_LITERAL(48, 668, 21),
-QT_MOC_LITERAL(49, 690, 14),
-QT_MOC_LITERAL(50, 705, 15),
-QT_MOC_LITERAL(51, 721, 9),
-QT_MOC_LITERAL(52, 731, 13),
-QT_MOC_LITERAL(53, 745, 7),
-QT_MOC_LITERAL(54, 753, 20),
-QT_MOC_LITERAL(55, 774, 9),
-QT_MOC_LITERAL(56, 784, 21),
-QT_MOC_LITERAL(57, 806, 11),
-QT_MOC_LITERAL(58, 818, 26),
-QT_MOC_LITERAL(59, 845, 17),
-QT_MOC_LITERAL(60, 863, 5),
-QT_MOC_LITERAL(61, 869, 4),
-QT_MOC_LITERAL(62, 874, 7),
-QT_MOC_LITERAL(63, 882, 13),
-QT_MOC_LITERAL(64, 896, 13),
-QT_MOC_LITERAL(65, 910, 17),
-QT_MOC_LITERAL(66, 928, 11),
-QT_MOC_LITERAL(67, 940, 11),
-QT_MOC_LITERAL(68, 952, 15),
-QT_MOC_LITERAL(69, 968, 17),
-QT_MOC_LITERAL(70, 986, 8),
-QT_MOC_LITERAL(71, 995, 15),
-QT_MOC_LITERAL(72, 1011, 12),
-QT_MOC_LITERAL(73, 1024, 18),
-QT_MOC_LITERAL(74, 1043, 5),
-QT_MOC_LITERAL(75, 1049, 6),
-QT_MOC_LITERAL(76, 1056, 16),
-QT_MOC_LITERAL(77, 1073, 26),
-QT_MOC_LITERAL(78, 1100, 8),
-QT_MOC_LITERAL(79, 1109, 17),
-QT_MOC_LITERAL(80, 1127, 17),
-QT_MOC_LITERAL(81, 1145, 12),
-QT_MOC_LITERAL(82, 1158, 7),
-QT_MOC_LITERAL(83, 1166, 13),
-QT_MOC_LITERAL(84, 1180, 15)
+QT_MOC_LITERAL(34, 445, 9),
+QT_MOC_LITERAL(35, 455, 28),
+QT_MOC_LITERAL(36, 484, 23),
+QT_MOC_LITERAL(37, 508, 10),
+QT_MOC_LITERAL(38, 519, 14),
+QT_MOC_LITERAL(39, 534, 14),
+QT_MOC_LITERAL(40, 549, 19),
+QT_MOC_LITERAL(41, 569, 13),
+QT_MOC_LITERAL(42, 583, 23),
+QT_MOC_LITERAL(43, 607, 12),
+QT_MOC_LITERAL(44, 620, 14),
+QT_MOC_LITERAL(45, 635, 8),
+QT_MOC_LITERAL(46, 644, 15),
+QT_MOC_LITERAL(47, 660, 9),
+QT_MOC_LITERAL(48, 670, 21),
+QT_MOC_LITERAL(49, 692, 14),
+QT_MOC_LITERAL(50, 707, 15),
+QT_MOC_LITERAL(51, 723, 9),
+QT_MOC_LITERAL(52, 733, 13),
+QT_MOC_LITERAL(53, 747, 7),
+QT_MOC_LITERAL(54, 755, 20),
+QT_MOC_LITERAL(55, 776, 9),
+QT_MOC_LITERAL(56, 786, 21),
+QT_MOC_LITERAL(57, 808, 11),
+QT_MOC_LITERAL(58, 820, 26),
+QT_MOC_LITERAL(59, 847, 17),
+QT_MOC_LITERAL(60, 865, 5),
+QT_MOC_LITERAL(61, 871, 4),
+QT_MOC_LITERAL(62, 876, 7),
+QT_MOC_LITERAL(63, 884, 13),
+QT_MOC_LITERAL(64, 898, 13),
+QT_MOC_LITERAL(65, 912, 17),
+QT_MOC_LITERAL(66, 930, 11),
+QT_MOC_LITERAL(67, 942, 11),
+QT_MOC_LITERAL(68, 954, 15),
+QT_MOC_LITERAL(69, 970, 17),
+QT_MOC_LITERAL(70, 988, 8),
+QT_MOC_LITERAL(71, 997, 15),
+QT_MOC_LITERAL(72, 1013, 12),
+QT_MOC_LITERAL(73, 1026, 18),
+QT_MOC_LITERAL(74, 1045, 5),
+QT_MOC_LITERAL(75, 1051, 6),
+QT_MOC_LITERAL(76, 1058, 16),
+QT_MOC_LITERAL(77, 1075, 26),
+QT_MOC_LITERAL(78, 1102, 8),
+QT_MOC_LITERAL(79, 1111, 22),
+QT_MOC_LITERAL(80, 1134, 12),
+QT_MOC_LITERAL(81, 1147, 17),
+QT_MOC_LITERAL(82, 1165, 17),
+QT_MOC_LITERAL(83, 1183, 12),
+QT_MOC_LITERAL(84, 1196, 7),
+QT_MOC_LITERAL(85, 1204, 13),
+QT_MOC_LITERAL(86, 1218, 14)
     },
     "charging\0ExitApp\0\0RefreshState\0"
     "enRefreshType\0type\0index\0AddCommamdIntoQueue\0"
@@ -334,7 +336,7 @@ QT_MOC_LITERAL(84, 1180, 15)
     "OnClickNextPage\0OnClickMenuCom\0QAction*\0"
     "action\0onOpenOptionWin\0OnClickMenuDebugInfoLeve\0"
     "onOpenLoginDialog\0timer_out\0readSerial\0"
-    "strContent\0iError\0readCAN\0"
+    "strContent\0iError\0onReadCAN\0"
     "OnBtnChargingOrStopCharging1\0"
     "OnBtnDisChargingOrStop1\0OnBtnLevel\0"
     "updateTextEdit\0detectTextEdit\0"
@@ -353,9 +355,10 @@ QT_MOC_LITERAL(84, 1180, 15)
     "adjustUI\0getBatteryState\0indexBattery\0"
     "showTipsMessagebox\0iType\0strMsg\0"
     "refreshCurrentUI\0updateListviewBatteryModel\0"
-    "indexMem\0allClosetCharging\0oneClosetCharging\0"
-    "onPauseScand\0checked\0onPauseSubmit\0"
-    "onOpenCanDevice"
+    "indexMem\0onOpenOrCloseCanDevice\0"
+    "bOpenOrClose\0allClosetCharging\0"
+    "oneClosetCharging\0onPauseScand\0checked\0"
+    "onPauseSubmit\0onBtnCanDevice"
 };
 #undef QT_MOC_LITERAL
 
@@ -365,7 +368,7 @@ static const uint qt_meta_data_charging[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      52,   14, // methods
+      53,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -373,60 +376,61 @@ static const uint qt_meta_data_charging[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  274,    2, 0x06 /* Public */,
-       3,    2,  275,    2, 0x06 /* Public */,
-       7,    1,  280,    2, 0x06 /* Public */,
-      10,    1,  283,    2, 0x06 /* Public */,
+       1,    0,  279,    2, 0x06 /* Public */,
+       3,    2,  280,    2, 0x06 /* Public */,
+       7,    1,  285,    2, 0x06 /* Public */,
+      10,    1,  288,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      12,    0,  286,    2, 0x0a /* Public */,
-      13,    0,  287,    2, 0x0a /* Public */,
-      14,    0,  288,    2, 0x0a /* Public */,
-      15,    1,  289,    2, 0x0a /* Public */,
-      17,    1,  292,    2, 0x0a /* Public */,
-      18,    1,  295,    2, 0x0a /* Public */,
-      19,    1,  298,    2, 0x0a /* Public */,
-      21,    0,  301,    2, 0x08 /* Private */,
-      22,    0,  302,    2, 0x08 /* Private */,
-      23,    0,  303,    2, 0x08 /* Private */,
-      24,    1,  304,    2, 0x08 /* Private */,
-      27,    0,  307,    2, 0x08 /* Private */,
-      28,    1,  308,    2, 0x08 /* Private */,
-      29,    0,  311,    2, 0x08 /* Private */,
-      30,    0,  312,    2, 0x08 /* Private */,
-      31,    3,  313,    2, 0x08 /* Private */,
-      34,    1,  320,    2, 0x08 /* Private */,
-      35,    0,  323,    2, 0x08 /* Private */,
-      36,    0,  324,    2, 0x08 /* Private */,
-      37,    0,  325,    2, 0x08 /* Private */,
-      38,    1,  326,    2, 0x08 /* Private */,
-      39,    0,  329,    2, 0x08 /* Private */,
-      40,    0,  330,    2, 0x08 /* Private */,
-      41,    1,  331,    2, 0x08 /* Private */,
-      42,    6,  334,    2, 0x08 /* Private */,
-      54,    1,  347,    2, 0x08 /* Private */,
-      56,    1,  350,    2, 0x08 /* Private */,
-      57,    1,  353,    2, 0x08 /* Private */,
-      58,    0,  356,    2, 0x08 /* Private */,
-      59,    3,  357,    2, 0x08 /* Private */,
-      59,    2,  364,    2, 0x28 /* Private | MethodCloned */,
-      64,    1,  369,    2, 0x08 /* Private */,
-      65,    0,  372,    2, 0x08 /* Private */,
-      66,    0,  373,    2, 0x08 /* Private */,
-      67,    1,  374,    2, 0x08 /* Private */,
-      68,    0,  377,    2, 0x08 /* Private */,
-      69,    0,  378,    2, 0x08 /* Private */,
-      70,    0,  379,    2, 0x08 /* Private */,
-      71,    1,  380,    2, 0x08 /* Private */,
-      73,    2,  383,    2, 0x08 /* Private */,
-      76,    0,  388,    2, 0x08 /* Private */,
-      77,    1,  389,    2, 0x08 /* Private */,
-      77,    0,  392,    2, 0x28 /* Private | MethodCloned */,
-      79,    0,  393,    2, 0x0a /* Public */,
-      80,    0,  394,    2, 0x0a /* Public */,
-      81,    1,  395,    2, 0x0a /* Public */,
-      83,    1,  398,    2, 0x0a /* Public */,
-      84,    1,  401,    2, 0x0a /* Public */,
+      12,    0,  291,    2, 0x0a /* Public */,
+      13,    0,  292,    2, 0x0a /* Public */,
+      14,    0,  293,    2, 0x0a /* Public */,
+      15,    1,  294,    2, 0x0a /* Public */,
+      17,    1,  297,    2, 0x0a /* Public */,
+      18,    1,  300,    2, 0x0a /* Public */,
+      19,    1,  303,    2, 0x0a /* Public */,
+      21,    0,  306,    2, 0x0a /* Public */,
+      22,    0,  307,    2, 0x0a /* Public */,
+      23,    0,  308,    2, 0x0a /* Public */,
+      24,    1,  309,    2, 0x0a /* Public */,
+      27,    0,  312,    2, 0x0a /* Public */,
+      28,    1,  313,    2, 0x0a /* Public */,
+      29,    0,  316,    2, 0x0a /* Public */,
+      30,    0,  317,    2, 0x0a /* Public */,
+      31,    3,  318,    2, 0x0a /* Public */,
+      34,    1,  325,    2, 0x0a /* Public */,
+      35,    0,  328,    2, 0x0a /* Public */,
+      36,    0,  329,    2, 0x0a /* Public */,
+      37,    0,  330,    2, 0x0a /* Public */,
+      38,    1,  331,    2, 0x0a /* Public */,
+      39,    0,  334,    2, 0x0a /* Public */,
+      40,    0,  335,    2, 0x0a /* Public */,
+      41,    1,  336,    2, 0x0a /* Public */,
+      42,    6,  339,    2, 0x0a /* Public */,
+      54,    1,  352,    2, 0x0a /* Public */,
+      56,    1,  355,    2, 0x0a /* Public */,
+      57,    1,  358,    2, 0x0a /* Public */,
+      58,    0,  361,    2, 0x0a /* Public */,
+      59,    3,  362,    2, 0x0a /* Public */,
+      59,    2,  369,    2, 0x2a /* Public | MethodCloned */,
+      64,    1,  374,    2, 0x0a /* Public */,
+      65,    0,  377,    2, 0x0a /* Public */,
+      66,    0,  378,    2, 0x0a /* Public */,
+      67,    1,  379,    2, 0x0a /* Public */,
+      68,    0,  382,    2, 0x0a /* Public */,
+      69,    0,  383,    2, 0x0a /* Public */,
+      70,    0,  384,    2, 0x0a /* Public */,
+      71,    1,  385,    2, 0x0a /* Public */,
+      73,    2,  388,    2, 0x0a /* Public */,
+      76,    0,  393,    2, 0x0a /* Public */,
+      77,    1,  394,    2, 0x0a /* Public */,
+      77,    0,  397,    2, 0x2a /* Public | MethodCloned */,
+      79,    1,  398,    2, 0x0a /* Public */,
+      81,    0,  401,    2, 0x0a /* Public */,
+      82,    0,  402,    2, 0x0a /* Public */,
+      83,    1,  403,    2, 0x0a /* Public */,
+      85,    1,  406,    2, 0x0a /* Public */,
+      86,    1,  409,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -478,11 +482,12 @@ static const uint qt_meta_data_charging[] = {
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   78,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,   80,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,   82,
-    QMetaType::Void, QMetaType::Bool,   82,
-    QMetaType::Void, QMetaType::Bool,   82,
+    QMetaType::Void, QMetaType::Bool,   84,
+    QMetaType::Void, QMetaType::Bool,   84,
+    QMetaType::Void, QMetaType::Bool,   84,
 
        0        // eod
 };
@@ -512,7 +517,7 @@ void charging::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 17: _t->onOpenLoginDialog(); break;
         case 18: _t->timer_out(); break;
         case 19: _t->readSerial((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
-        case 20: _t->readCAN((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 20: _t->onReadCAN((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 21: _t->OnBtnChargingOrStopCharging1(); break;
         case 22: _t->OnBtnDisChargingOrStop1(); break;
         case 23: _t->OnBtnLevel(); break;
@@ -549,11 +554,12 @@ void charging::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 44: _t->refreshCurrentUI(); break;
         case 45: _t->updateListviewBatteryModel((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 46: _t->updateListviewBatteryModel(); break;
-        case 47: _t->allClosetCharging(); break;
-        case 48: _t->oneClosetCharging(); break;
-        case 49: _t->onPauseScand((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 50: _t->onPauseSubmit((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 51: _t->onOpenCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 47: _t->onOpenOrCloseCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 48: _t->allClosetCharging(); break;
+        case 49: _t->oneClosetCharging(); break;
+        case 50: _t->onPauseScand((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 51: _t->onPauseSubmit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 52: _t->onBtnCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -636,13 +642,13 @@ int charging::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 52)
+        if (_id < 53)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 52;
+        _id -= 53;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 52)
+        if (_id < 53)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 52;
+        _id -= 53;
     }
     return _id;
 }

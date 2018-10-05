@@ -29,6 +29,11 @@ CCanProcess* CCanProcess::GetInstance()
 	return pThis;
 }
 
+bool CCanProcess::isPreareSendOrRead()
+{
+	return s_canDeviceProcessId != 0 && s_hPipe != 0;
+}
+
 //创建有名管道去连接
 
 

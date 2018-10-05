@@ -18,6 +18,9 @@ public:
 
 	static CCanProcess* GetInstance();
 
+	//是否准备好，发送、接收
+	bool isPreareSendOrRead();
+
 	//启动can通讯进程
 	bool startCanDeviceProcess(char * szPrintf);
 
