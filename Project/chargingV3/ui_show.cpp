@@ -255,8 +255,8 @@ void charging::OnBtnChargingOrStopCharging1()
 	QString strId = groupBox->title(); 
 
 	 
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{		
 		bool isCharging = itCharger->second.isCharging;
 		if (!isCharging)
@@ -310,8 +310,8 @@ void charging::OnBtnDisChargingOrStop1()
 	int iResult = 0;
 	if (detectDisChargingCondition(strId, &iResult))
 	{
-		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-		if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger))
+		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+		if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 		{
 			if (!(itCharger->second.isDisCharging))
 			{
@@ -379,15 +379,27 @@ void charging::OnBtnLevel()
 		MAP_LEVEL_IT itLevel = m_mapLevel.find(m_nCurrentLevel);
 		if (itLevel != m_mapLevel.end())
 		{
-			for (int i = 0; i < MAX_BATTERY; i++){
+			for (int i = 0; i < MAX_BATTERY; i++)
+			{
 				bool flag = i < itLevel->second.mapBattery.size();
 				m_vtUiChargGrid[i]->setVisible(flag);
 				QString strTitle; strTitle.sprintf("%02d%02d", m_nCurrentLevel, i + 1);
 				m_vtUiChargGrid[i]->setTitle(strTitle);
 
 				//待添加：电压、电流、充电状态、在位状态
-
-			} 
+				//电池在位情况
+				if (flag){
+					MAP_BATTERY_IT itBattery = itLevel->second.mapBattery.begin(); int k = 0;
+					for (; k < i; k++){ itBattery++;}					
+					int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
+					////充电器在线状态
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					//电压
+					emit RefreshState(enRefreshType::BatteryVol, indexArray);
+					//电池状态
+					emit RefreshState(enRefreshType::BatteryState, indexArray);					
+				}				
+			}
 		}
 	}
 }
@@ -941,19 +953,25 @@ void charging::OnRefreshState(enRefreshType type, int index)
 {
 	int uiIndex = 0;
 	QString strLocalId = battery_local_id[index];
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strLocalId, itCloset, itBattery, itBatteryModel, itCharger))
-	{
-		QString strTitle;
-		//比较是否对应当前柜子;防止申请别的柜子电池充电刷新到本柜
-		QString strClosetUiNo = m_iCurrentCloset < 10 ? "0" + QString::number(m_iCurrentCloset) : QString::number(m_iCurrentCloset);
-		if (strClosetUiNo == strLocalId.left(2) )
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strLocalId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
+	{ 
+		//比较是否对应当前层;防止申请别的层电池充电刷新到层
+		//QString strClosetUiNo = m_nCurrentLevel< 10 ? "0" + QString::number(m_nCurrentLevel) : QString::number(m_nCurrentLevel);
+		if (itCharger->second.nLevel == m_nCurrentLevel)
 		{
 			//strTitle = m_vtUiChargGrid[index2]->title();
-			if (index < MAX_BATTERY)
+			//映射到ui元素id
+			/*if (index < MAX_BATTERY)
 				uiIndex = index;
 			else if (index >= MAX_BATTERY)
-				uiIndex = index % MAX_BATTERY;
+				uiIndex = index % MAX_BATTERY;*/
+			for (auto itBattery_ : itLevel->second.mapBattery){   //找到当前层级对应的ui 元素id				
+				if (strLocalId.toInt() == itBattery_.first)
+					break;
+				uiIndex++;
+			}
+
 
 			if (type == enRefreshType::ChargerState && battery_state_enable_refresh[index])
 			{
@@ -1112,8 +1130,8 @@ void charging::updateListviewBatteryModel(int indexMem )
 	{
 		//更新index对应的数据
 		QString strBatteryId = battery_local_id[indexMem];
-		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-		if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+		if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 		{
 			int uiInsex = indexMem % MAX_BATTERY;
 			QModelIndex modelIndex = m_listview_Battery_model->index(uiInsex);

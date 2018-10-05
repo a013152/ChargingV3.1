@@ -430,8 +430,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 				if (indexArray != -1)
 				{
 					QString strBatteryId = QString::number(nBatteryId);
-					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-					if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+					if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger, itLevel))
 					{
 						QString strChargerState = get_back_message_at(strContent2, 2);
 						if (strChargerState == "1") //充电成功 记录充电标志，提交服务器
@@ -462,8 +462,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 				if (indexArray != -1){					
 					//停止充电后， 智能电池的充电电流强制设置为0a
 					battery_current[indexArray] = QString("%1").arg(0);
-					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-					if (getBatteryIdRelatedInfo(QString::number(nBatteryId), itCloset, itBattery, itBatteryModel, itCharger))
+					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+					if (getBatteryIdRelatedInfo(QString::number(nBatteryId), itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 					{
 						if(itBatteryModel->second.balance == true)
 							itCharger->second.fCurrent = 0;

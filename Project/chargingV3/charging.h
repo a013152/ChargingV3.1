@@ -306,7 +306,7 @@ private slots :
 	bool detectRecvXOR(QString strContent);  //测检收到的数据XOR
 
 	//获取电池id 关联信息
-	bool getBatteryIdRelatedInfo(QString strBatteryID, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger);
+	bool getBatteryIdRelatedInfo(QString strBatteryID, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger, MAP_LEVEL_IT& itLevel);
 
 	int chargerIDtoBatteryId(int chargerId);//充电器ID 查找对应电池ID
 

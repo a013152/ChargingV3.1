@@ -97,8 +97,8 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 			else{
 				//大疆充电槽
 				QString strCommad; strCommad.sprintf("C2S,F8,%d,R", itCharger->second.id);
-
-				stComm = stCommand(strCommad, enPriority);
+				if (itCharger->second.bOnline)   //不在线的话不发送查询命令
+					stComm = stCommand(strCommad, enPriority);
 
 			}
 			//判断最后一个充电器
@@ -253,8 +253,8 @@ void charging::processApplyBatteryToCharging()
 			battery_apply_charging[i] = item;
 			strId = battery_local_id[i];
 			 
-			MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-			if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger))
+			MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+			if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 			{
 				if (itCharger->second.bOnline)  
 				{
@@ -303,8 +303,8 @@ void charging::processApplyBatteryToCharging()
 		QString str;
 		for (int i = m_vtApplyDontCharge.size() - 1, indexArray = 0; i >= 0; i--){
 			str += " " + QString::number(m_vtApplyDontCharge[i].nBatteryID);
-			MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-			if (getBatteryIdRelatedInfo(QString::number(m_vtApplyDontCharge[i].nBatteryID), itCloset, itBattery, itBatteryModel, itCharger))
+			MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+			if (getBatteryIdRelatedInfo(QString::number(m_vtApplyDontCharge[i].nBatteryID), itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 			{
 				itBattery->second.isApplyCharging = true;
 				indexArray = batteryIDtoArrayIndex(QString::number(m_vtApplyDontCharge[i].nBatteryID));
@@ -470,26 +470,27 @@ void charging::addChargerScanTime()
 				//itCharger->second.fCurrent = 0;
 				if (itCharger->second.nScanWatchDog == 5)
 				{					
-					MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.find(itCharger->first);
-					if (itBattery != itCloset->second.mapBattery.end()){
-						int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
-						itBattery->second.timeLockUI.restart();
-						
-						charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
-				
-						emit RefreshState(enRefreshType::ChargerState, indexArray);
+					//更新ui不在线状态 
+					
+					MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
+					if (itLevel != m_mapLevel.end())
+					{
+						//电池在位情况
+						for (auto itBattery : itLevel->second.mapBattery)
+						{
+							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
+							charger_state[indexArray] = STATE_OFFLINE;//"充电器不在线";
+							itBattery.second.timeLockUI.restart();
+							emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  
 
-						//通知ui刷新充电器在线状态						
-						emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-						//电压
-						battery_voltage[indexArray] = "0";
-						emit RefreshState(enRefreshType::BatteryVol, indexArray);
-						//电池状态
-						battery_state[indexArray] = "未放置电池"; 
-						emit RefreshState(enRefreshType::BatteryState, indexArray);
-						//温度
-						show_temperature(0); 
-					}					
+							//电压
+							battery_voltage[indexArray] = "0";
+							emit RefreshState(enRefreshType::BatteryVol, indexArray);
+							//电池状态
+							battery_state[indexArray] = "未放置电池";
+							emit RefreshState(enRefreshType::BatteryState, indexArray);
+						}
+					}								
 				}
 			}
 		} 

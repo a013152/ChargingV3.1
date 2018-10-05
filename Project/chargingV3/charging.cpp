@@ -93,7 +93,7 @@ int charging::chargerIDtoBatteryId(int chargerId)
 	}
 	return nBatteryID;
 } 
-bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger)
+bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger, MAP_LEVEL_IT& itLevel)
 {
 	int nClosetId = 0;
 	if (strBatteryId.length() == 3){
@@ -115,6 +115,12 @@ bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCl
 				printfDebugInfo(strBatteryId + "电池未匹配充电器", enDebugInfoPriority::DebugInfoLevelOne, true);
 				return false;
 			}
+			itLevel = m_mapLevel.find(itCharger->second.nLevel);
+			if (itLevel == m_mapLevel.end()){
+				printfDebugInfo(strBatteryId + "电池未匹配层级", enDebugInfoPriority::DebugInfoLevelOne, true);
+				return false;
+			}
+
 			itBatteryModel = m_mapBatteryModel.find(itBattery->second.modelId);
 			if (itBatteryModel == m_mapBatteryModel.end())
 			{
@@ -147,8 +153,8 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 		*iResult = ERROR_DONT_OPEN_SERIAL;
 		return false;
 	}
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
 		if (false == itCharger->second.bOnline){
 			if (showDebugInfo)
@@ -217,8 +223,8 @@ bool charging::detectDisChargingCondition(QString strBatteryId, int* iResult, bo
 		*iResult = ERROR_DONT_OPEN_SERIAL;
 		return false;
 	}
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
 		if (false == itBattery->second.isExisted)
 		{
@@ -273,8 +279,8 @@ bool charging::detectDisChargingCondition(QString strBatteryId, int* iResult, bo
 bool charging::chargingByLocalID(QString strBatteryId, int *iResult, bool showDebugInfo)
 {
 
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
 		if (!detectChargingCondition(strBatteryId, iResult, showDebugInfo))
 		{
@@ -307,8 +313,8 @@ bool charging::chargingByLocalID(QString strBatteryId, int *iResult, bool showDe
 //根据电池ID，拼装停止命令，插入命令队列
 bool charging::stopByLocalID(QString strBatteryId)
 {
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
 		if (itCharger->second.isCharging == false){
 			return false;
@@ -332,8 +338,8 @@ QString charging::getBatteryState(int indexBattery)
 	QString strBState = battery_state[indexBattery];//"电池在线" : "未放置电池";
 	float fvol = battery_voltage[indexBattery].toFloat();  //电压
 	QString strBatteryId = battery_local_id[indexBattery];//电池id
-	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger))
+	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
 		if (itCharger->second.isCharging == true)//充电器 充电中
 		{
