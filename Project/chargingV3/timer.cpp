@@ -279,6 +279,8 @@ void charging::processApplyBatteryToCharging()
 						{
 							int indexArray = batteryIDtoArrayIndex(strId);
 							battery_state_enable_refresh[indexArray] = false;
+							itBattery->second.timeLockUI.restart();  //触发停止充电 ，则2秒内禁止刷新充电状态
+							itBattery = itLevel->second.mapBattery.find(itBattery->first);
 							itBattery->second.timeLockUI.restart();
 							charger_state[indexArray] = STATE_FREE;//"充电器闲置";
 							m_vtUiChargGrid[indexArray % MAX_BATTERY]->setChargerState(charger_state[indexArray]);
@@ -346,7 +348,7 @@ void charging::processApplyBatteryToCharging()
 			charger_state[indexArray] = STATE_CHARGING; //"充电中";
 			emit RefreshState(enRefreshType::ChargerState, indexArray); 
 			stApplyInfo item = battery_apply_charging[indexArray];
-			item.timeLockUI.restart();		//触发充电成功 ，则2秒内禁止刷新充电状态
+			item.timeLockUI.restart();		//触发申请充电 ，则2秒内禁止刷新充电状态
 		} 
 	}
 

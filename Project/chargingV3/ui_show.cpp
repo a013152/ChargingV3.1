@@ -271,6 +271,9 @@ void charging::OnBtnChargingOrStopCharging1()
 					int indexArray = batteryIDtoArrayIndex(strId);
 					battery_state_enable_refresh[indexArray] = false;
 					itBattery->second.timeLockUI.restart();
+					itBattery = itLevel->second.mapBattery.find(itBattery->first);
+					itBattery->second.timeLockUI.restart();
+
 					charger_state[indexArray] = STATE_CHARGING;//"充电中";
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
@@ -288,6 +291,9 @@ void charging::OnBtnChargingOrStopCharging1()
 					int indexArray = batteryIDtoArrayIndex(strId);
 					battery_state_enable_refresh[indexArray] = false;
 					itBattery->second.timeLockUI.restart();
+					itBattery = itLevel->second.mapBattery.find(itBattery->first);
+					itBattery->second.timeLockUI.restart();
+
 					charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
@@ -310,17 +316,20 @@ void charging::OnBtnChargingOrStopCharging1()
 				QVector<stCommand> vtStCommand;
 				QString strCommad;
 				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
-				stCommand stCommR = stCommand(strCommad);
+				stCommand stCommR = stCommand(strCommad,stCommand::hight); stCommR.chargerType = DJI_Charger;
 				vtStCommand.append(stCommR);
 				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt()%100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
-				stCommand stCommW = stCommand(strCommad);
+				stCommand stCommW = stCommand(strCommad,stCommand::hight); stCommW.chargerType = DJI_Charger;
 				vtStCommand.append(stCommW);
-				m_CommandQueue.addVtCommand(vtStCommand);
+				m_CommandQueue.addVtCommand(vtStCommand );
 
 				//处理ui
 				int indexArray = batteryIDtoArrayIndex(strId);
 				battery_state_enable_refresh[indexArray] = false;
 				itBattery->second.timeLockUI.restart();
+				itBattery = itLevel->second.mapBattery.find(itBattery->first);
+				itBattery->second.timeLockUI.restart();
+
 				if (groupBox->getCharging() == false){
 					charger_state[indexArray] = STATE_CHARGING;//"充电中";
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
