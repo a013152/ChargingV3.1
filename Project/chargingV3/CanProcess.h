@@ -10,6 +10,12 @@ class CCanProcess;
 
 class CCanProcess
 {
+	DWORD s_canDeviceProcessId = 0;  //进程id
+	HANDLE s_hPipe = 0;//管道句柄
+	std::wstring s_strTemp;
+	
+	char szPrintf[256] ;
+
 
 	CCanProcess();
 

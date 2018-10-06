@@ -82,7 +82,10 @@ void charging::beginScanBatteryState(bool reStart)
  //扫描单柜子的电池数据
 void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority enPriority)
 {
-	
+	/*if (GET_CAN->isPreareSendOrRead()== false){
+		char szPrintf[256] = { 0 };
+		GET_CAN->startCanDeviceProcess(szPrintf);
+	}*/
 
 
 	MAP_CLOSET_IT itCloset; ; MAP_CHARGER_IT itCharger;
@@ -473,14 +476,14 @@ void charging::addChargerScanTime()
 		{
 			//增加扫描计数				
 			itCharger->second.nScanWatchDog++;	
-			if (itCharger->second.nScanWatchDog > 4)
+			if (itCharger->second.nScanWatchDog > 2)
 			{
 				//不在线判断。
 				itCharger->second.bOnline = false;  //充电器不在线
 				//itCharger->second.fTemperature = 0;
 				//itCharger->second.fVoltage = 0;
 				//itCharger->second.fCurrent = 0;
-				if (itCharger->second.nScanWatchDog == 5)
+				if (itCharger->second.nScanWatchDog == 3)
 				{					
 					//更新ui不在线状态 
 					if (itCharger->second.chargerType == NF_Charger)

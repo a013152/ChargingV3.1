@@ -6,6 +6,8 @@
 static char szPrintf[256] = { 0 };
 
 static int countQueueSize = 0;
+char szW[256] = { 0 }, szR[MAX_BUF_SIZE] = { 0 };
+QString command, ls_temp, strReceiveContent, strReceiveContent2;
 CCommandQueue::CCommandQueue() :stopped(false) 
 {
 	//m_pSerial = nullptr;
@@ -26,23 +28,18 @@ void CCommandQueue::init( unsigned int iMaxLength)
 
 void CCommandQueue::run()  //处理队列 、并且发送数据
 {
-	// 打开can进程
-	//if (GET_CAN->isPreareSendOrRead() == false){
-	//	//打开can 设备
-	//	onOpenOrCloseCanDevice(true);
-	//}
+	// 打开can进程	
 	bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
 	emit printfed(QString::fromLocal8Bit(szPrintf));
-
 	::Sleep(100);
 	char sztemp[256] = { 0 }, szReceive[MAX_BUF_SIZE] = { 0 };
 	sprintf_s(sztemp, 256, "%s,F1", C2S);
-	if (GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf) == 0){
+	if (0 == GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf)){
 		emit printfed(QString::fromLocal8Bit(szPrintf));
 	}
 	else{
 		::Sleep(100);
-		if (0 == GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
+		if (0 != GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
 			emit printfed(QString::fromLocal8Bit(szPrintf));
 	}
 
@@ -185,7 +182,7 @@ int CCommandQueue::countCommand(unsigned int nClosetId) const
 void CCommandQueue::sendCommand(stCommand stcommand)
 {
 	QByteArray baTemp;
-	QString command, ls_temp, strReceiveContent, strReceiveContent2;
+	//QString command, ls_temp, strReceiveContent, strReceiveContent2;
 	int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
 	bool bSendRet = false;
 	//清空 数据
@@ -201,21 +198,23 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 		{
 			//发送到大疆充电器设备
 			static QByteArray ba; ba = stcommand.m_strCommand.toLocal8Bit();
-			static char szW[256] = { 0 }, szR[256] = { 0 };
+			//static char szW[256] = { 0 }, szR[256] = { 0 };
 			strcpy_s(szW, ba.data());
 			GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
-			ls_temp = "I write: "; ls_temp += stcommand.m_strCommand +"\r\n";
-			emit printfed(ls_temp);
-			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
+			m_strPrintf = "I write: "; m_strPrintf += stcommand.m_strCommand + "\r\n";
+			emit printfed(m_strPrintf); 
 
-			ls_temp = "I read: "; ls_temp += QString::fromLocal8Bit(szR) + "\r\n";
-			//emit printfed(ls_temp);
+			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
+			m_strPrintf = "I read: "; m_strPrintf += QString::fromLocal8Bit(szR) + "\r\n";
+			emit printfed(m_strPrintf);
+			 
 			//发送到charing分析解码
-			emit readedCAN(QString::fromLocal8Bit(szR));
+			ls_temp = QString::fromLocal8Bit(szR);
+			emit readedCAN(ls_temp);
 		}
 
 	}else if (stcommand.chargerType ==  NF_Charger)
-	{
+	{		
 		if (SERIAL_PORT->isOpen()/*m_pSerial*/)
 		{ 
 			

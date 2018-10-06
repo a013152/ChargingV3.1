@@ -531,8 +531,8 @@ void charging::onReadCAN(QString strContent)
 			//CAN ID
 			int CANID = strList[2].toInt();	
 			MAP_CLOSET_IT itCloset; itCloset = m_mapCloset.find(1);
-			if (itCloset != m_mapCloset.end())
-			{
+			if (itCloset != m_mapCloset.end() && strList[3].toInt() == 0)  //·µ»Ø³É¹¦
+			{ 
 				MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(CANID); MAP_LEVEL_IT itLevel;
 				if (itCharger != itCloset->second.mapCharger.end()){
 					itLevel = m_mapLevel.find(itCharger->second.nLevel);

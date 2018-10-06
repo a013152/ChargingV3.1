@@ -464,7 +464,7 @@ void charging::onRefreshUI(QString strID)
 void charging::updateTextEdit(QString strContent)
 { 
 	printfDebugInfo(strContent, enDebugInfoPriority::DebugInfoLevelThree); 
-}
+} 
 
 //刷新解锁：允许所有刷新
 void charging::releaseBatteryStateRefresh()

@@ -3,16 +3,12 @@
 #include "CommonFunction.h"
 
 
-static DWORD s_canDeviceProcessId = 0;  //进程id
-static HANDLE s_hPipe = 0;//管道句柄
-static std::wstring s_strTemp;
-static CCanProcess* pThis = nullptr;
-static char szPrintf[256] = { 0 };
+CCanProcess* pThis = nullptr;
 
 
 CCanProcess::CCanProcess()
 {
-	
+	memset(szPrintf, 0, 256);
 }
 
 

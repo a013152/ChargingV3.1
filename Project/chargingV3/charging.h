@@ -297,7 +297,7 @@ public slots :
 	void OnBtnLevel();
 
 
-	void updateTextEdit(QString);
+	void updateTextEdit(QString); 
 	
 	void detectTextEdit();  //测检textEdit 文本是否过长
 

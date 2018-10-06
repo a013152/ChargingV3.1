@@ -93,6 +93,9 @@ int charging::chargerIDtoBatteryId(int chargerId)
 	}
 	return nBatteryID;
 } 
+
+
+
 bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger, MAP_LEVEL_IT& itLevel)
 {	
 	 

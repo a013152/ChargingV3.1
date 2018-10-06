@@ -44,6 +44,9 @@ public:
 	int countCommand(unsigned int nClosetId = 0) const; //检测属于柜子命令数量; 0 代表所有命令数， 1 代表一号柜命令数 ，2 代表二号柜命令
 
 	void setPause(bool flag){ m_bContinueRun = flag; }
+
+	QString getReceiveContent() { return  m_strReceiveContent; }
+	QString getStrPrintf() { return  m_strPrintf; }
 protected: 
 	void sendCommand(stCommand); //发送命令到串口 
 	
@@ -55,6 +58,8 @@ private:
 	unsigned int m_iSend = 0; //发送次数
 
 	bool m_bContinueRun = true;  //继续运行
+
+	QString m_strReceiveContent,m_strPrintf;
 
 private:
 	volatile bool stopped;  //线程停止标志
@@ -70,7 +75,8 @@ signals:
 	//param3  错误码 0 成功
 	void readed(QString strType, QString recvContend ,int iError );  
 
-	void printfed(  QString writContend); 
+	void printfed(QString writContend);
+	
 
 	void readyGetBatteryState( int nClosetId);  //信号：完成读取一个柜子编号 
 
