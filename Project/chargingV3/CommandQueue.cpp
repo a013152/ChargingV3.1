@@ -26,9 +26,31 @@ void CCommandQueue::init( unsigned int iMaxLength)
 
 void CCommandQueue::run()  //处理队列 、并且发送数据
 {
+	// 打开can进程
+	//if (GET_CAN->isPreareSendOrRead() == false){
+	//	//打开can 设备
+	//	onOpenOrCloseCanDevice(true);
+	//}
+	bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
+	emit printfed(QString::fromLocal8Bit(szPrintf));
+
+	::Sleep(100);
+	char sztemp[256] = { 0 }, szReceive[MAX_BUF_SIZE] = { 0 };
+	sprintf_s(sztemp, 256, "%s,F1", C2S);
+	if (GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf) == 0){
+		emit printfed(QString::fromLocal8Bit(szPrintf));
+	}
+	else{
+		::Sleep(100);
+		if (0 == GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
+			emit printfed(QString::fromLocal8Bit(szPrintf));
+	}
+
 	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;
 	while (!stopped)
 	{ 
+		
+
 		while (!m_queComman.isEmpty() && SERIAL_PORT->isOpen())
 		{ 
 			if (!m_bContinueRun)
@@ -56,6 +78,12 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 		}    
 		Sleep(30);
 	}
+
+	//尝试关闭can
+	GET_CAN->clossCanDeviceProcess(szPrintf);
+	SERIAL_PORT->ClosePort();
+
+
 	stopped = false;
 }
  
@@ -167,7 +195,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 	if (stcommand.chargerType == DJI_Charger)
 	{
 		if (GET_CAN->isPreareSendOrRead() == false || stcommand.m_strCommand.isEmpty()){
-
+			//can进程未准备或者空命令，不处理。
 		}
 		else
 		{
@@ -178,11 +206,10 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
 			ls_temp = "I write: "; ls_temp += stcommand.m_strCommand +"\r\n";
 			emit printfed(ls_temp);
-
 			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
 
 			ls_temp = "I read: "; ls_temp += QString::fromLocal8Bit(szR) + "\r\n";
-			emit printfed(ls_temp);
+			//emit printfed(ls_temp);
 			//发送到charing分析解码
 			emit readedCAN(QString::fromLocal8Bit(szR));
 		}

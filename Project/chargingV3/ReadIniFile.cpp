@@ -1,6 +1,6 @@
 #include "ReadIniFile.h"
 #include "ReadIniFile.h"
-
+#pragma execution_character_set("utf-8")
 static CReadIniFile* s_this = nullptr;
 CReadIniFile::CReadIniFile()
 {

@@ -77,46 +77,46 @@ void readMaxCharge()
 	GET_T->sendCanData(dataObj, canID);
 }
 
-void readOrWriteCharge()
-{
-	printf("请输入(0读取充电/1设置充电):\n");
-	int nReadOrWrite = 0, chargeId = 0;
-	stCAN_DevData dataObj;
-	scanf_s("%d", &nReadOrWrite);
-	switch (nReadOrWrite)
-	{
-	case 0:
-		GET_P->getCommandCharge(dataObj, false, 0);
-		break;
-	case 1:
-	{
-			  printf("请输入充电号(1-15):");
-			  scanf_s("%d", &chargeId);
-			  if (chargeId>0 && chargeId <=15  )
-			  {
-				  GET_P->getCommandCharge(dataObj, true, chargeId);
-				  break;
-			  }
-			  else
-			  {
-				  printf("错误输入\n"); 
-				  displayOption();
-				  return;
-			  }
-
-	}
-	default:
-		printf("未知输入\n");
-		displayOption();
-		return;
-		break;
-	}
-	
-	
-	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
-	canID |= 0x400;   //v1.3can id需要或上0x400
-	GET_T->sendCanData(dataObj, canID);
-}
+//void readOrWriteCharge()
+//{
+//	printf("请输入(0读取充电/1设置充电):\n");
+//	int nReadOrWrite = 0, chargeId = 0;
+//	stCAN_DevData dataObj;
+//	scanf_s("%d", &nReadOrWrite);
+//	switch (nReadOrWrite)
+//	{
+//	case 0:
+//		GET_P->getCommandCharge(dataObj, false, 0,1);
+//		break;
+//	case 1:
+//	{
+//			  printf("请输入充电号(1-15):");
+//			  scanf_s("%d", &chargeId);
+//			  if (chargeId>0 && chargeId <=15  )
+//			  {
+//				  GET_P->getCommandCharge(dataObj, true, chargeId,false);
+//				  break;
+//			  }
+//			  else
+//			  {
+//				  printf("错误输入\n"); 
+//				  displayOption();
+//				  return;
+//			  }
+//
+//	}
+//	default:
+//		printf("未知输入\n");
+//		displayOption();
+//		return;
+//		break;
+//	}
+//	
+//	
+//	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
+//	canID |= 0x400;   //v1.3can id需要或上0x400
+//	GET_T->sendCanData(dataObj, canID);
+//}
 
 void readLoadAppInfo()
 {
@@ -335,10 +335,20 @@ int _tmain(int argc, _TCHAR* argv[])
 				else if (strcmp(vtStrCommand[1].c_str(), "F9") == 0)
 				{
 					GET_P->setCurrentCANID(vtStrCommand[2]);
+					GET_T->setCurrentCANID(vtStrCommand[2]);
+					GET_P->setCurrentCommandType(vtStrCommand[1]);
+					GET_T->setCurrentCommandType(vtStrCommand[1]);
+					//充电 /停止充电
+					if (readOrWriteChargingState(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
+
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F10") == 0)
 				{
 					GET_P->setCurrentCANID(vtStrCommand[2]);
+
 				}
 				static char waitTime = 0; waitTime = 0;
 				bool flag = true;
@@ -389,7 +399,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			readMaxCharge();
 			break;
 		case  7:
-			readOrWriteCharge();
+			//readOrWriteCharge();
 			break;
 		case  8:
 			readLoadAppInfo();

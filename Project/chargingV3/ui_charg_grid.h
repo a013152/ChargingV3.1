@@ -6,8 +6,7 @@
 #include <QProgressBar>
 #include <qdebug.h>
 #include "common.h"
-#include "DoubleClickedButton.h"
-#pragma execution_character_set("utf-8")
+#include "DoubleClickedButton.h" 
 extern char g_AppPath[256];  //exe路径 
 //QGroupBox 样式表
 //QGroupBox{

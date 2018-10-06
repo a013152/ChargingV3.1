@@ -1,8 +1,9 @@
 #include "charging.h"
 #include "CommandQueue.h"
+#include "CanProcess.h"
 #pragma execution_character_set("utf-8")
  
-  
+
 
 auto pSetQPushButtonChecked = [](QPushButton *pBtn, bool checked){
 	if (checked)
@@ -258,44 +259,90 @@ void charging::OnBtnChargingOrStopCharging1()
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{		
-		bool isCharging = itCharger->second.isCharging;
-		if (!isCharging)
-		{
-			// 判断充电条件，获取对应的电池结构、充电电压、电流
-			int iResult = 0;
-			if (chargingByLocalID(strId, &iResult))
+		//添加充电器种类判断
+		if (itCharger->second.chargerType == NF_Charger){
+			bool isCharging = itCharger->second.isCharging;
+			if (!isCharging)
 			{
-				int indexArray = batteryIDtoArrayIndex(strId);
-				battery_state_enable_refresh[indexArray] = false;
-				itBattery->second.timeLockUI.restart(); 
-				charger_state[indexArray] = STATE_CHARGING;//"充电中";
-				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-				printfDebugInfo(" "+strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
-				COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动充电\n");
+				// 判断充电条件，获取对应的电池结构、充电电压、电流
+				int iResult = 0;
+				if (chargingByLocalID(strId, &iResult))
+				{
+					int indexArray = batteryIDtoArrayIndex(strId);
+					battery_state_enable_refresh[indexArray] = false;
+					itBattery->second.timeLockUI.restart();
+					charger_state[indexArray] = STATE_CHARGING;//"充电中";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动充电\n");
+				}
+				else
+				{
+					//预充 
+				}
 			}
-			else
-			{
-				//预充 
+			else {
+				//2 判断停止条件
+				if (stopByLocalID(strId))
+				{
+					int indexArray = batteryIDtoArrayIndex(strId);
+					battery_state_enable_refresh[indexArray] = false;
+					itBattery->second.timeLockUI.restart();
+					charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止\n");
+					//取消预充
+					itBattery->second.isApplyCharging = false;
+					removeChargingQueue(strId);
+				}
 			}
 		}
-		else {
-			//2 判断停止条件
-			if (stopByLocalID(strId))
+		else if (itCharger->second.chargerType == DJI_Charger)
+		{
+
+			if (GET_CAN->isPreareSendOrRead())  //判断进程、通道都已经准备好
 			{
+				//判断UI充电或者停止
+				groupBox->getCharging();
+
+				//拼装 读取充电状态命令 ，再设置充电状态命令
+				QVector<stCommand> vtStCommand;
+				QString strCommad;
+				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+				stCommand stCommR = stCommand(strCommad);
+				vtStCommand.append(stCommR);
+				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt()%100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
+				stCommand stCommW = stCommand(strCommad);
+				vtStCommand.append(stCommW);
+				m_CommandQueue.addVtCommand(vtStCommand);
+
+				//处理ui
 				int indexArray = batteryIDtoArrayIndex(strId);
 				battery_state_enable_refresh[indexArray] = false;
 				itBattery->second.timeLockUI.restart();
-				charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
-				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-				printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
-				COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止\n");
-				//取消预充
-				itBattery->second.isApplyCharging = false;
-				removeChargingQueue(strId);
+				if (groupBox->getCharging() == false){
+					charger_state[indexArray] = STATE_CHARGING;//"充电中";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动充电\n");
+				}
+				else{
+					charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止\n");
+					//取消预充
+					itBattery->second.isApplyCharging = false;
+					removeChargingQueue(strId);
+				}				
+			}
+			else{
+				printfDebugInfo("CAN设备未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+				showTipsMessagebox(2, "CAN设备未打开，充电命令无效!");
 			}
 		}
-	}  
-	
+	}  	
 }
 //接收到放电
 void charging::OnBtnDisChargingOrStop1()
@@ -889,9 +936,10 @@ void charging::OnBtnSysClose()
 		while (!m_CommandQueue.isFinished()){
 			Sleep(10); 
 		}
-		//my_Serial.serialClose();
+		//在线程run结束前关闭串口和can进程
+		/*
 		SERIAL_PORT->ClosePort();
-		onOpenOrCloseCanDevice(false);
+		onOpenOrCloseCanDevice(false);*/
 		emit ExitApp();
 	}
 }

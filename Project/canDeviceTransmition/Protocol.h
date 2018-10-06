@@ -125,7 +125,7 @@ public:
 	//参数： dataObj引用, bReadOrWrite 是否充电 false 读取充电状态 true设置充电; 
 	//         当bReadOrWrite为true时： changedId 改变状态的id 停止则开启充电，正在充电则停止。
 	//返回值：
-	void getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId );
+	void getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId ,bool bCharge);
 	
 	//函数：getCommandLoadAppInfo
 	//功能：获取充电数的命令

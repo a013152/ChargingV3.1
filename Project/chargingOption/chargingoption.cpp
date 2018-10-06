@@ -4,7 +4,7 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include "MyQComboBox.h"
-
+#pragma execution_character_set("utf-8")
 extern char g_AppPath[256];
 QString g_winTitle;
 

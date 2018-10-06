@@ -38,3 +38,8 @@ bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString);
 
 bool readBatteryInfo(VT_STR vtStrCommand, char* resultString);
 
+
+//¶ÁÈ¡/Ð´Èë³äµç×´Ì¬
+bool readOrWriteChargingState(VT_STR vtStrCommand, char* resultString);
+ 
+

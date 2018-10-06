@@ -1,7 +1,7 @@
 #include "DoubleClickedButton.h"
 #include <QEvent>
 #include <QTimer>
-
+#pragma execution_character_set("utf-8")
 DoubleClickedButton::DoubleClickedButton(QWidget *parent)
 : QPushButton(parent),
 m_single_clicked_timer(new QTimer(this)),

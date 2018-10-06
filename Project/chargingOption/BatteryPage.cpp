@@ -5,6 +5,7 @@
 #include <QLabel> 
 #include <QLineEdit> 
 #include "common.h"
+#pragma execution_character_set("utf-8")
 
 CBatteryPage::CBatteryPage(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, \
 	QWidget *parent) :QWidget(parent)

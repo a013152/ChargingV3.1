@@ -1,5 +1,5 @@
 #include "MessageBoxCus.h"
-
+#pragma execution_character_set("utf-8")
 QFont ft;
 QPalette pa;
 CMessageBoxCus::CMessageBoxCus( QWidget* parent, int nTimerOut ) :QDialog(parent), m_nTimerOut(nTimerOut)

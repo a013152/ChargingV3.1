@@ -143,7 +143,7 @@ void CProtocol::getCommandMaxCharge(stCAN_DevData& dataObj)
 	//dataObj.Data_[1] = 0x0f; // 1~15 最大充电个数
 }
 
-void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId)
+void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId, bool bCharge)
 {
 	dataObj.Header = 0x55;
 	if (false == bReadOrWrite)
@@ -170,7 +170,7 @@ void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int 
 			for (int i = 0; i < 15; i++){
 				if (m_BatteryArray[i].isOline_){
 					if (changedId - 1 == i){
-						uint8_t chargingMode = m_BatteryArray[i].ChargingMode != 1 ? 1 : 2;
+						uint8_t chargingMode = bCharge == true ? 1 : 2;  
 						dataObj.Data_[i + 1] = chargingMode;//(m_BatteryArray[i].ChargingMode != 1 ? 1 : 2);//1 开始充，2停止
 						m_BatteryArray[i].ChargingMode = chargingMode;
 					}
@@ -179,7 +179,7 @@ void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int 
 					}
 				}
 				else{
-					dataObj.Data_[i + 1] = 0xff;
+					dataObj.Data_[i + 1] = 0x02;
 				}
 			}
 		}
@@ -428,23 +428,28 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		//充电 dataObj.Data_[1]  == 0 读取反馈 ，1 设置反馈
 		if (0x00 == dataObj.Data_[1] && 0x00 == dataObj.Data_[0]){
 			m_bReadChargeState = true;
-			m_strDebugData = "读取充电状态：\n";
+			//add 20181006 读取充电状态
+			sprintf_s(szTemp, 256, "%s,F9,%s,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success );
+			m_strDebugData += szTemp;
+			//m_strDebugData = "读取充电状态：\n";
 			for (int i = 2; i < 17; i++){
 				m_BatteryArray[i-2].ChargingMode = dataObj.Data_[i];
 				
-				if(dataObj.Data_[i]==0x01)
+				/*if(dataObj.Data_[i]==0x01)
 					sprintf_s(szTemp, 256, " %02d:%02X 打开\n",i - 1, dataObj.Data_[i]);
 				else if(dataObj.Data_[i] == 0x02)
 					sprintf_s(szTemp, 256, " %02d:%02X 关闭\n", i - 1, dataObj.Data_[i]);
 				else if (dataObj.Data_[i] == 0xff)
-					sprintf_s(szTemp, 256, " %02d:%02X 自动\n", i - 1, dataObj.Data_[i]);
+					sprintf_s(szTemp, 256, " %02d:%02X 自动\n", i - 1, dataObj.Data_[i]);*/
+				sprintf_s(szTemp, 256, " %d", dataObj.Data_[i]);
 				m_strDebugData += szTemp;
 				 
 			}
 			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 		}
 		if (0x01 == dataObj.Data_[1] ){
-			sprintf_s(szTemp, 256, "设置充电结束。返回码:%02X", dataObj.Data_[0]);
+			//sprintf_s(szTemp, 256, "设置充电结束。返回码:%02X", dataObj.Data_[0]);
+			sprintf_s(szTemp, 256, "%s,F9,%s,%d,%d", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
 			m_strDebugData = szTemp;
 			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 		}

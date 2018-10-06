@@ -1,5 +1,5 @@
 #include "ui_charg_grid.h"
-
+#pragma execution_character_set("utf-8")
 
 ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 {  

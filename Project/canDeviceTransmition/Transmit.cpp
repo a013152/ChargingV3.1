@@ -152,9 +152,9 @@ void CTransmit::CAN_Receive()
 		}
 
 		if (NumValue != 0)
-			m_strDebugData = "收到数据：" + str + "\n";
+			m_strDebugData = "ReceiveData:" + str + "\n";
 		else
-			m_strDebugData = "收到数据：空";
+			m_strDebugData = "ReceiveData:Empty";
 		if (m_pPrintfFun) m_pPrintfFun(2, ((NumValue == 0 && bShortInervert==true) ? true : false));//NumValue 等于0 ，则打印
 		bShortInervert = false;
 

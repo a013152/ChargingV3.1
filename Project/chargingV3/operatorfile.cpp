@@ -1,5 +1,5 @@
 #include "operatorfile.h"
-
+#pragma execution_character_set("utf-8")
 static COperatorFile* s_this = nullptr;
 COperatorFile::COperatorFile()
 {

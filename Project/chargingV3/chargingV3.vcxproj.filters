@@ -77,9 +77,6 @@
     <ClCompile Include="ui_charg_grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win_qextserialport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_show.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,9 +142,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\common\typedef.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="win_qextserialport.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GeneratedFiles\ui_loginDialog.h">

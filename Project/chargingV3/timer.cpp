@@ -82,11 +82,7 @@ void charging::beginScanBatteryState(bool reStart)
  //扫描单柜子的电池数据
 void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority enPriority)
 {
-	// 打开can进程
-	if (GET_CAN->isPreareSendOrRead()==false){
-		//打开can 设备
-		onOpenOrCloseCanDevice(true);
-	}
+	
 
 
 	MAP_CLOSET_IT itCloset; ; MAP_CHARGER_IT itCharger;
@@ -117,7 +113,7 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 					stComm.m_strCommand = strCommad;
 				}		
 			}
-			//判断最后一个充电器
+			//判断最后一个充电器，设置循环发送标志
 			if (++nCount == itCloset->second.mapCharger.size())
 			{
 				stComm.lastCommandFlag = true;
