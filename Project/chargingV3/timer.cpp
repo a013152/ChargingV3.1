@@ -478,14 +478,14 @@ void charging::addChargerScanTime()
 		{
 			//增加扫描计数				
 			itCharger->second.nScanWatchDog++;	
-			if (itCharger->second.nScanWatchDog > 2)
+			if (itCharger->second.nScanWatchDog > 3)
 			{
 				//不在线判断。
 				itCharger->second.bOnline = false;  //充电器不在线
 				//itCharger->second.fTemperature = 0;
 				//itCharger->second.fVoltage = 0;
 				//itCharger->second.fCurrent = 0;
-				if (itCharger->second.nScanWatchDog == 3)
+				if (itCharger->second.nScanWatchDog == 4)
 				{					
 					//更新ui不在线状态 
 					if (itCharger->second.chargerType == NF_Charger)
@@ -498,7 +498,7 @@ void charging::addChargerScanTime()
 							itBattery->second.timeLockUI.restart();
 							emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  
 							//电压
-							battery_voltage[indexArray] = "0";
+							battery_voltage[indexArray] = "0.0";
 							emit RefreshState(enRefreshType::BatteryVol, indexArray);
 							//电池状态
 							battery_state[indexArray] = "未放置电池";
@@ -520,7 +520,7 @@ void charging::addChargerScanTime()
 								emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 
 								//电压
-								battery_voltage[indexArray] = "0";
+								battery_voltage[indexArray] = "0.0";
 								emit RefreshState(enRefreshType::BatteryVol, indexArray);
 								//电池状态
 								battery_state[indexArray] = "未放置电池";

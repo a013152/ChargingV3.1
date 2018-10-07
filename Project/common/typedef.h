@@ -84,6 +84,7 @@ struct  stBatteryInfo
 		strcpy(this->id, other.id);
 		strcpy(this->user, other.user);
 		this->timeLockCloseLoop = other.timeLockCloseLoop;
+		this->timeLockUI = other.timeLockUI;
 	}
 };
 //充电器类型 add 20180920

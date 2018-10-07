@@ -12,6 +12,10 @@ static char wbuf[MAX_BUF_SIZE] = "";
 static bool s_sendFlg = false; //发送到调用进程的标志（在执行错误或者线程返回结果为true)
 HANDLE hPipe = 0;	DWORD wlen = 0;	DWORD rlen = 0;
 
+
+#define SET_TYPE_AND_ID  {GET_P->setCurrentCANID(vtStrCommand[2]);GET_T->setCurrentCANID(vtStrCommand[2]);\
+	GET_P->setCurrentCommandType(vtStrCommand[1]); GET_T->setCurrentCommandType(vtStrCommand[1]); }
+
 void displayOption(){
 	printf("\n请输入指令: \n\t0 退出\t1 打开can设备\t2 读取canid指令\
 		   \n\t3 设置canid指令\t4 认证\t5 读取起始模式\
@@ -154,7 +158,7 @@ void readOrWriteDisC()
 	switch (nReadOrWrite)
 	{
 	case 0:
-		GET_P->getCommandDisCharge(dataObj, false, 0);
+		GET_P->getCommandDisCharge(dataObj, false, 0, false);
 		break;
 	case 1:
 	{
@@ -162,7 +166,7 @@ void readOrWriteDisC()
 			  scanf_s("%d", &chargeId);
 			  if (chargeId > 0 && chargeId <= 15)
 			  {
-				  GET_P->getCommandDisCharge(dataObj, true, chargeId);
+				  GET_P->getCommandDisCharge(dataObj, true, chargeId, true);
 				  break;
 			  }
 			  else
@@ -182,8 +186,10 @@ void readOrWriteDisC()
 
 	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
 	canID |= 0x400;   //v1.3can id需要或上0x400
-	GET_T->sendCanData(dataObj, canID); 
+	GET_T->sendCanData(dataObj, canID);
 }
+
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -287,10 +293,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F4") == 0)
 				{
-					GET_P->setCurrentCANID(vtStrCommand[2]);
-					GET_T->setCurrentCANID(vtStrCommand[2]);
-					GET_P->setCurrentCommandType(vtStrCommand[1]);
-					GET_T->setCurrentCommandType(vtStrCommand[1]);
+					SET_TYPE_AND_ID 
 					//认证
 					if (verifyDevice(vtStrCommand, wbuf))
 						s_sendFlg = false;
@@ -299,10 +302,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F5") == 0)
 				{
-					GET_P->setCurrentCANID(vtStrCommand[2]);
-					GET_T->setCurrentCANID(vtStrCommand[2]);
-					GET_P->setCurrentCommandType(vtStrCommand[1]);
-					GET_T->setCurrentCommandType(vtStrCommand[1]);
+					SET_TYPE_AND_ID
+						 
 					//读取/设置起始充电状态
 					if (readOrWriteBeginMode(vtStrCommand, wbuf))
 						s_sendFlg = false;
@@ -312,14 +313,17 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
 				{
+					SET_TYPE_AND_ID
 
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F6") == 0)
 				{
+					SET_TYPE_AND_ID
 
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F8") == 0)
 				{
+					SET_TYPE_AND_ID
 					GET_P->setCurrentCANID(vtStrCommand[2]);
 					GET_T->setCurrentCANID(vtStrCommand[2]);
 					GET_P->setCurrentCommandType(vtStrCommand[1]);
@@ -334,10 +338,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F9") == 0)
 				{
-					GET_P->setCurrentCANID(vtStrCommand[2]);
-					GET_T->setCurrentCANID(vtStrCommand[2]);
-					GET_P->setCurrentCommandType(vtStrCommand[1]);
-					GET_T->setCurrentCommandType(vtStrCommand[1]);
+					SET_TYPE_AND_ID
 					//充电 /停止充电
 					if (readOrWriteChargingState(vtStrCommand, wbuf))
 						s_sendFlg = false;
@@ -347,7 +348,12 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F10") == 0)
 				{
-					GET_P->setCurrentCANID(vtStrCommand[2]);
+					SET_TYPE_AND_ID
+						//充电 /停止充电
+					if (readOrWriteDisChargeState(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
 
 				}
 				static char waitTime = 0; waitTime = 0;

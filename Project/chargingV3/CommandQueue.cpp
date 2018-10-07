@@ -45,9 +45,7 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 
 	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;
 	while (!stopped)
-	{ 
-		
-
+	{ 	
 		while (!m_queComman.isEmpty() && SERIAL_PORT->isOpen())
 		{ 
 			if (!m_bContinueRun)
@@ -235,7 +233,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			//m_pSerial->serialWrite(command.toLatin1()); //写入 
 			auto pSendFun = [&]()->bool{
 				bool bSendSuccess = false;
-				QTime me_time;
+				QTime me_time; int receiveTime = 0;
 				SERIAL_PORT->ReadData(szReadData); ls_temp = QString("%1").arg(szReadData);
 				if (ls_temp.size() != 0){
 					ls_temp = "I discard: " + ls_temp;  //打印抛弃数据
@@ -257,7 +255,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 				//接收返回的数据
 				me_time.start();
 
-				while (me_time.elapsed() < 100)
+				while (receiveTime++ < 15)
 				{
 					Sleep(10);
 					//QApplication::processEvents();

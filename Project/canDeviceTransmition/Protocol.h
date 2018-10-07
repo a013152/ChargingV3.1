@@ -33,6 +33,7 @@ struct stBatteryInfo
 {
 	bool isOline_;
 	uint8_t  ChargingMode; //1 打开充电， 2关闭充电，0xff自动充电（低于40%会充到60%)
+	uint8_t  DischargingMode; //1 打开放电， 0关闭充电，（高于60%才能放电)
 	float vol_;
 	float tempterator;
 	float current_;
@@ -41,7 +42,7 @@ struct stBatteryInfo
 	int capacity_; //容量
 	int life_;   //寿命百分比
 	char sn_[14];  //SN
-	stBatteryInfo() :isOline_(false), ChargingMode(0xff), vol_(0), \
+	stBatteryInfo() :isOline_(false), ChargingMode(0xff), DischargingMode(0), vol_(0), \
 		current_(0), tempterator(0), loop_(0), capacity_(0), life_(0)
 	{
 			memset(&protime_, 0, sizeof(protime_));
@@ -51,6 +52,7 @@ struct stBatteryInfo
 	{
 		this->isOline_ = other_.isOline_;
 		this->ChargingMode = other_.ChargingMode;
+		this->DischargingMode = other_.DischargingMode;
 		this->vol_ = other_.vol_;
 		this->tempterator = other_.tempterator;
 		this->current_ = other_.current_;
@@ -162,7 +164,7 @@ public:
 	//参数： dataObj引用, bReadOrWrite 是否放电 false 读取放电状态 true设置放电; 
 	//         当bReadOrWrite为true时： changedId 改变状态的id 停止则开启充电，正在充电则停止。
 	//返回值：
-	void getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId);
+	void getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int dischangedId, bool bDischarge);
 
 
 

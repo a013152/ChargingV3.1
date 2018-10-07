@@ -117,8 +117,8 @@ void charging::readConfig()
 					battery_state.append("未放置电池");
 				charger_state.append(STATE_OFFLINE);
 				battery_temperature.append("0.0");		  //温度		 	
-				battery_voltage.append("0");//电压			
-				battery_current.append("0");
+				battery_voltage.append("0.0");//电压			
+				battery_current.append("0.0");
 				if (it2!= m_mapBatteryModel.end())
 					battery_balance.append(it2->second.balance);
 

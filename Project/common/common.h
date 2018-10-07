@@ -54,6 +54,8 @@ enum enCANDevieErrorCode{	//CAN进程返回的错误码
 #define ERROR_CONFIG_BATTERY_MODEL -10;   //未匹配电池型号。
 #define ERROR_OVER_HEAT -11;   //充电器过热
 
+#define ERROR_DONT_OPEN_CAN -12;   //CAN设备未打开。
+
 
 #define STATE_OFFLINE "充电器不在线"
 #define STATE_FREE "充电器闲置"

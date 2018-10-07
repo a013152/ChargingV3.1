@@ -99,8 +99,8 @@ int  transfVol(QString strVol)
 // 更新电压 int 是下标
 void charging::show_a_voltage(QString message, int index)
 { 
-	if (m_vtUiChargGrid.size()>0 && index < m_vtUiChargGrid.size())
-		m_vtUiChargGrid[index]->setVol(message.toFloat());  	  //设置电压	
+//	if (m_vtUiChargGrid.size()>0 && index < m_vtUiChargGrid.size())
+//		m_vtUiChargGrid[index]->setVol(message.toFloat());  	  //设置电压	
 }
 
 //转换电流 
@@ -243,13 +243,7 @@ void charging::showTipsMessagebox(int iType , QString strMsg)
 //处理充电
 void charging::OnBtnChargingOrStopCharging1()
 {
-	if (SERIAL_PORT->isOpen()/*my_Serial.isOpen()*/ == false){
 
-		printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
-
-		showTipsMessagebox(1, "串口未打开!");
-		return;
-	}
 	QPushButton* btn = qobject_cast<QPushButton*>(sender()); 
 	ui_charg_grid *groupBox = (ui_charg_grid *)btn->parent(); 
 	qDebug() << groupBox->title() + " clicked: " + (groupBox->getCharging() ? "Stop" : "Charging");
@@ -261,6 +255,7 @@ void charging::OnBtnChargingOrStopCharging1()
 	{		
 		//添加充电器种类判断
 		if (itCharger->second.chargerType == NF_Charger){
+			
 			bool isCharging = itCharger->second.isCharging;
 			if (!isCharging)
 			{
@@ -306,22 +301,19 @@ void charging::OnBtnChargingOrStopCharging1()
 		}
 		else if (itCharger->second.chargerType == DJI_Charger)
 		{
-
-			if (GET_CAN->isPreareSendOrRead())  //判断进程、通道都已经准备好
-			{
-				//判断UI充电或者停止
-				groupBox->getCharging();
-
+			int iResult = 0;
+			if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == true)
+			{			
 				//拼装 读取充电状态命令 ，再设置充电状态命令
 				QVector<stCommand> vtStCommand;
 				QString strCommad;
 				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
-				stCommand stCommR = stCommand(strCommad,stCommand::hight); stCommR.chargerType = DJI_Charger;
+				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
 				vtStCommand.append(stCommR);
-				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt()%100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
-				stCommand stCommW = stCommand(strCommad,stCommand::hight); stCommW.chargerType = DJI_Charger;
+				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
+				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
 				vtStCommand.append(stCommW);
-				m_CommandQueue.addVtCommand(vtStCommand );
+				m_CommandQueue.addVtCommand(vtStCommand);
 
 				//处理ui
 				int indexArray = batteryIDtoArrayIndex(strId);
@@ -344,11 +336,7 @@ void charging::OnBtnChargingOrStopCharging1()
 					//取消预充
 					itBattery->second.isApplyCharging = false;
 					removeChargingQueue(strId);
-				}				
-			}
-			else{
-				printfDebugInfo("CAN设备未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
-				showTipsMessagebox(2, "CAN设备未打开，充电命令无效!");
+				}
 			}
 		}
 	}  	
@@ -356,10 +344,6 @@ void charging::OnBtnChargingOrStopCharging1()
 //接收到放电
 void charging::OnBtnDisChargingOrStop1()
 {
-	if (SERIAL_PORT->isOpen()/*my_Serial.isOpen()*/ == false){
-		printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
-		return;
-	}
 	QPushButton* btn = qobject_cast<QPushButton*>(sender());
 	ui_charg_grid *groupBox = (ui_charg_grid *)btn->parent();	 
 	QString strId = groupBox->title();
@@ -369,29 +353,63 @@ void charging::OnBtnDisChargingOrStop1()
 		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 		if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 		{
-			if (!(itCharger->second.isDisCharging))
+			if (itCharger->second.chargerType == NF_Charger){
+				if (!(itCharger->second.isDisCharging))
+				{
+					QString strConnectType = itBatteryModel->second.connectType;//电池结构
+					QString strStorageVol; strStorageVol.sprintf("%5.2f", itBatteryModel->second.storageVoltage);//存储电压
+					toSend("Q," + QString::number(itCharger->second.id) + "," + strConnectType.left(2) + "," + strStorageVol, stCommand::hight);
+					itCharger->second.isDisCharging = true;
+					int indexArray = batteryIDtoArrayIndex(strId);
+					battery_state_enable_refresh[indexArray] = false;
+					charger_state[indexArray] = STATE_DISCHARGING;//"放电中";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(strId + "手动放电", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动放电\n");
+				}
+				else
+				{
+					toSend("P," + QString::number(itCharger->second.id), stCommand::hight);
+					itCharger->second.isDisCharging = false;
+					int indexArray = batteryIDtoArrayIndex(strId);
+					battery_state_enable_refresh[indexArray] = false;
+					charger_state[indexArray] = STATE_FREE;//"充电器闲置";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止放电\n");
+				}
+			}	
+			else if (itCharger->second.chargerType == DJI_Charger)
 			{
-				QString strConnectType = itBatteryModel->second.connectType;//电池结构
-				QString strStorageVol; strStorageVol.sprintf("%5.2f", itBatteryModel->second.storageVoltage);//存储电压
-				toSend("Q," + QString::number(itCharger->second.id) + "," + strConnectType.left(2) + "," + strStorageVol, stCommand::hight);
-				itCharger->second.isDisCharging = true;
+				//拼装 读取充电状态命令 ，再设置充电状态命令
+				QVector<stCommand> vtStCommand;
+				QString strCommad;
+				strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取充电状态命令
+				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+				vtStCommand.append(stCommR);
+				strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getDisCharging() ? 0 : 1);  //设置放电状态命令
+				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+				vtStCommand.append(stCommW);
+				m_CommandQueue.addVtCommand(vtStCommand);
+
+				//UI更新
 				int indexArray = batteryIDtoArrayIndex(strId);
-				battery_state_enable_refresh[indexArray] = false;
-				charger_state[indexArray] = STATE_DISCHARGING;//"放电中";
-				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-				printfDebugInfo(strId + "手动放电", enDebugInfoPriority::DebugInfoLevelOne);
-				COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动放电\n");
-			}
-			else
-			{
-				toSend("P," + QString::number(itCharger->second.id), stCommand::hight);
-				itCharger->second.isDisCharging = false;
-				int indexArray = batteryIDtoArrayIndex(strId);
-				battery_state_enable_refresh[indexArray] = false;
-				charger_state[indexArray] = STATE_FREE;//"充电器闲置";
-				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
-				printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
-				COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止放电\n");
+				battery_state_enable_refresh[indexArray] = false;	
+				itBattery->second.timeLockUI.restart();
+				itBattery = itLevel->second.mapBattery.find(itBattery->first);
+				itBattery->second.timeLockUI.restart();
+
+				if (groupBox->getDisCharging() == false){
+					printfDebugInfo(strId + "手动放电", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动放电\n");
+				}
+				else{
+					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止放电\n");
+				}
+				charger_state[indexArray] = groupBox->getDisCharging() ? STATE_FREE : STATE_DISCHARGING;//"放电中";
+				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  //信号处理函数中 更新groupBox->getDisCharging()
+				
 			}
 		}
 	}
@@ -748,7 +766,7 @@ void charging::createDebugInfoUI()
 			itBattery != itCloset->second.mapBattery.end(); itBattery++)
 		{
 			QString str;
-			str.sprintf("电池：%d，温度：00.0°，电压：0.00v，电流：0.00a", (itBattery->first));
+			str.sprintf("电池：%d，温度：00.0°，电压：0.00v", (itBattery->first));
 			strList << str;
 		}
 	}
@@ -1041,7 +1059,7 @@ void charging::OnRefreshState(enRefreshType type, int index)
 				updateListviewBatteryModel(index);
 			}
 			else if (type == enRefreshType::BatteryState  && battery_state_enable_refresh[index]){
-				m_vtUiChargGrid[uiIndex]->setBatteryState(battery_state[index], battery_voltage[index]);
+				m_vtUiChargGrid[uiIndex]->setBatteryState(battery_state[index], battery_voltage[index], battery_temperature[index]);
 
 			}
 			else if (type == enRefreshType::ChargerOnlineState)
@@ -1053,7 +1071,7 @@ void charging::OnRefreshState(enRefreshType type, int index)
 				updateListviewBatteryModel(index);
 			}
 			else if (enRefreshType::BatteryVol == type){
-				m_vtUiChargGrid[uiIndex]->setVol(battery_voltage[index].toFloat());
+				m_vtUiChargGrid[uiIndex]->setVol(battery_voltage[index], battery_temperature[index]);
 				updateListviewBatteryModel(index);
 			}
 		}
@@ -1175,11 +1193,11 @@ void charging::updateListviewBatteryModel(int indexMem )
 			m_listview_Battery_model->insertRows(rowCount, 1); //新增
 			modelIndex = m_listview_Battery_model->index(rowCount++);
 			indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id));
-			str.sprintf("电池：%s，温度：%03.1f°，电压：%0.2fv，电流：%0.2fa"\
+			str.sprintf("电池：%s，温度：%03.1f°，电压：%0.2fv"\
 				,(itBattery->second.id)
 				,(battery_temperature[indexArray].toFloat())
 				,(battery_voltage[indexArray].toFloat())
-				,(battery_current[indexArray].toFloat()));
+				);
 
 			m_listview_Battery_model->setData(modelIndex, str);
 			//m_listview_Battery->setCurrentIndex(index);
@@ -1192,14 +1210,24 @@ void charging::updateListviewBatteryModel(int indexMem )
 		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 		if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 		{
-			int uiInsex = indexMem % MAX_BATTERY;
-			QModelIndex modelIndex = m_listview_Battery_model->index(uiInsex);
-			QVariant variant = m_listview_Battery_model->data(modelIndex, Qt::DisplayRole);  //获取当前选择的项的文本  
-			str.sprintf("电池：%s，温度：%03.1f°，电压：%0.2fv，电流：%0.2fa"\
-				, (itBattery->second.id)
-				, (itCharger->second.getAverage(itCharger->second.fTemperature))
-				, (itCharger->second.getAverage(itCharger->second.fVoltage))
-				, (itCharger->second.fCurrent));
+			//int uiInsex = indexMem % MAX_BATTERY;
+			QModelIndex modelIndex = m_listview_Battery_model->index(indexMem);
+			QVariant variant = m_listview_Battery_model->data(modelIndex, Qt::DisplayRole);  //获取当前选择的项的文本 
+			if (itCharger->second.chargerType == NF_Charger){
+				str.sprintf("电池：%s，温度：%03.1f°，电压：%0.2fv" 
+					, (itBattery->second.id)
+					, (battery_temperature[indexMem].toFloat())
+					, (battery_voltage[indexMem].toFloat())
+					);
+			}else if (itCharger->second.chargerType == DJI_Charger)
+			{
+				str.sprintf("电池：%s，温度：%03.1f°，电压：%0.2fv"
+					, (itBattery->second.id)
+					, (battery_temperature[indexMem].toFloat())
+					, (battery_voltage[indexMem].toFloat())
+					);
+			}
+			
 			m_listview_Battery_model->setData(modelIndex, str);
 		} 
 	}

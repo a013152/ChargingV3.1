@@ -31,13 +31,13 @@ public:
 	ui_charg_grid(QWidget * parent, QString Id);
 	~ui_charg_grid();
 
-	void setVol(float vol);  //设置电压
+	void setVol(QString strVol, QString strTem);  //设置电压
 
 	void setCurrent(float cur);  //设置电流
 
 	void setTemperature(float tem);  //设置温度
 
-	void setBatteryState(QString strState, QString strVol); //设置电池状态
+	void setBatteryState(QString strState, QString strVol, QString strTem); //设置电池状态
 
 	void setChargerState(QString strState); //设置充电状态
 	

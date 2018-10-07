@@ -265,9 +265,8 @@ void CProtocol::getCommandLED(stCAN_DevData& dataObj)
 	//dataObj.Data_[1] = 0x01;  //1 闪灯， 2取消控制
 }
 
-void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int changedId)
+void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int dischangedId, bool bDischarge)
 {
-	dataObj.Header = 0x55;
 	if (false == bReadOrWrite)
 		dataObj.LEN[0] = 7 + 1 + 2;
 	else
@@ -275,29 +274,37 @@ void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, i
 
 	dataObj.CMD_ = 0x0d;
 	dataObj.Enc = 0;
-	dataObj.Seq_ = 0x0c;
+	dataObj.Seq_ = 7;
 	dataObj.CRC8_ = calulataCRC8(dataObj);
 
+
 	if (false == bReadOrWrite)
-	{
-		//读取
+		// 0x0 读取， 
 		dataObj.Data_[0] = 0x00;
-	}
 	else
 	{
-		//设置
-		// 待修改：放电需要根据UI情况赋值 
-		dataObj.Data_[0] = 0x01;  //
-		for (int i = 1; i < 16; i++)
+		// 0x01 设置
+		//待修改: 需要根据UI情况赋值充电命令
+		if (dischangedId >= 0 && dischangedId <= 15)
 		{
-			if (changedId == i-1)
-				dataObj.Data_[i] = 0x01;  //1 打开放电， 0 关闭放电
-			else
-				dataObj.Data_[i] = 0x00;
+			dataObj.Data_[0] = 0x01; // 0x01 设置
+			for (int i = 0; i < 15; i++){
+				if (m_BatteryArray[i].isOline_){
+					if (dischangedId - 1 == i){
+						uint8_t DischargingMode = bDischarge == true ? 1 : 0;//1 开始放电，0停止
+						dataObj.Data_[i + 1] = DischargingMode;
+						m_BatteryArray[i].DischargingMode = DischargingMode;
+					}
+					else{
+						dataObj.Data_[i + 1] = m_BatteryArray[i].DischargingMode;// 保留 ;
+					}
+				}
+				else{
+					dataObj.Data_[i + 1] = 0x00;
+				}
+			}
 		}
 	}
-
-
 	UnionCRC unionObj = calulataCRC16(dataObj);
 	dataObj.CRC16_[0] = unionObj.crcArray[0];
 	dataObj.CRC16_[1] = unionObj.crcArray[1];
@@ -441,7 +448,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 					sprintf_s(szTemp, 256, " %02d:%02X 关闭\n", i - 1, dataObj.Data_[i]);
 				else if (dataObj.Data_[i] == 0xff)
 					sprintf_s(szTemp, 256, " %02d:%02X 自动\n", i - 1, dataObj.Data_[i]);*/
-				sprintf_s(szTemp, 256, " %d", dataObj.Data_[i]);
+				sprintf_s(szTemp, 256, "%d", dataObj.Data_[i]);
 				m_strDebugData += szTemp;
 				 
 			}
@@ -579,22 +586,24 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		}
 	}
 	if (dataObj.CMD_ == 0x0d){
+		//放电 dataObj.Data_[1]  == 0 读取反馈 ，1 设置反馈
 		if (0x00 == dataObj.Data_[1] && 0x00 == dataObj.Data_[0]){
 			m_bReadChargeState = true;
-			m_strDebugData = "读取放电状态：\n";
-			for (int i = 2; i < 17; i++){ 
-				if (dataObj.Data_[i] == 0x00)
-					sprintf_s(szTemp, 256, " %02d:%02X 关闭\n", i - 1, dataObj.Data_[i]);
-				else if (dataObj.Data_[i] == 0x01)
-					sprintf_s(szTemp, 256, " %02d:%02X 打开\n", i - 1, dataObj.Data_[i]);
-				m_strDebugData += szTemp;
+			//add 20181007 读取放电状态
+			sprintf_s(szTemp, 256, "%s,F10,%s,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success);
+			m_strDebugData += szTemp; 
+			for (int i = 2; i < 17; i++){
+				m_BatteryArray[i - 2].ChargingMode = dataObj.Data_[i]; 
+				sprintf_s(szTemp, 256, "%d", dataObj.Data_[i]);
+				m_strDebugData += szTemp; 
 			}
 		}
 		if (0x01 == dataObj.Data_[1]){
-			sprintf_s(szTemp, 256, "设置放电结束。返回码:%02X", dataObj.Data_[0]);
+			//sprintf_s(szTemp, 256, "设置放电结束。返回码:%02X", dataObj.Data_[0]);
+			sprintf_s(szTemp, 256, "%s,F10,%s,%d,%d", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
 			m_strDebugData = szTemp;
 		}
-		if (m_pPrintfFun)m_pPrintfFun(1, true);
+		if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 	}
 }
  

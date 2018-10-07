@@ -209,8 +209,8 @@ bool readOrWriteChargingState(VT_STR vtStrCommand, char* resultString)
 	return true;
 }
 
-//写入充电状态
-bool writeChargingState(VT_STR vtStrCommand, char* resultString)
+//读取/写入放电状态
+bool readOrWriteDisChargeState(VT_STR vtStrCommand, char* resultString)
 {
 	if (false == decideCANID(vtStrCommand, resultString))
 	{
@@ -220,9 +220,14 @@ bool writeChargingState(VT_STR vtStrCommand, char* resultString)
 	{
 		str_to_hex(vtStrCommand[2], szTempCanID); g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
 		stCAN_DevData dataObj;
-		int posBattery = atoi(vtStrCommand[4].c_str()); 
-		bool bCharge = atoi(vtStrCommand[5].c_str()) == 1;  //1充电
-		GET_P->getCommandCharge(dataObj, true, posBattery, bCharge);
+		if (vtStrCommand[3].compare("R") == 0){
+			GET_P->getCommandDisCharge(dataObj, false, 0, false);
+		}
+		else if (vtStrCommand[3].compare("W") == 0){
+			int posBattery = atoi(vtStrCommand[4].c_str());
+			bool bDischarge = atoi(vtStrCommand[5].c_str()) == 1;  //放电
+			GET_P->getCommandDisCharge(dataObj, true, posBattery, bDischarge);
+		}		 
 		uintTempCanID = Uint8ToUint16(szTempCanID);
 		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
 		printf("转换后的CAN ID:%04X\n", uintTempCanID);

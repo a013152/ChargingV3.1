@@ -10,9 +10,10 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	isCharging = false;
 	isDisCharging = false; 
 	//groupBox->setGeometry(QRect(20, 60, 281, 121));
-	label = new QLabel("1电压", this);
+	label = new QLabel("0.0° 0.0v", this);
 	label->setObjectName(QStringLiteral("label"));
-	label->setGeometry(QRect(20, 70, 41, 20));
+	label->setGeometry(QRect(25, 70, 80, 20));
+	label->setStyleSheet("QLabel{color:white;}");
 	label_2 = new QLabel("2电流", this);
 	label_2->setObjectName(QStringLiteral("label_2"));
 	label_2->setGeometry(QRect(80, 70, 41, 20));
@@ -54,12 +55,12 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 
 	labBatteryState = new QLabel("", this);
 	labBatteryState->setObjectName(QStringLiteral("labBatteryState"));
-	labBatteryState->setGeometry(QRect(15, 18, 53, 48));
+	labBatteryState->setGeometry(QRect(25, 18, 53, 48));
 	labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_1_not_online.png);}");
 
 	labChargerState = new QLabel("", this);
 	labChargerState->setObjectName(QStringLiteral("labBatteryState"));
-	labChargerState->setGeometry(QRect(25, 31, 35, 28));
+	labChargerState->setGeometry(QRect(35, 31, 35, 28));
 	labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
 	
 
@@ -97,8 +98,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	labTitle->setStyleSheet("QLabel{font-size:16px;font-weight:bold;color:white}");*/
 				
 
-	//隐藏不用的控件 20180123
-	label->setVisible(false);
+	//隐藏不用的控件 20180123	
 	label_2->setVisible(false);
 	label_3->setVisible(false);
 	progressBar_1->setVisible(false);
@@ -133,7 +133,7 @@ ui_charg_grid::~ui_charg_grid()
 }
 
 //设置电压
-void ui_charg_grid::setVol(float vol)
+void ui_charg_grid::setVol(QString strVol, QString strTem)
 {
 	auto transfun = [&](float vol)->int {		 
 		int ret = 0;
@@ -147,9 +147,9 @@ void ui_charg_grid::setVol(float vol)
 		}
 		return ret;
 	};
-	QString strVol; strVol.sprintf("%3.2fV", vol);
+	float vol = strVol.toFloat();;
 
-	label->setText(strVol);
+	label->setText(strTem + "° " + strVol+"v");
 
 	progressBar_1->setValue(transfun(vol)); 
 }
@@ -199,7 +199,7 @@ void ui_charg_grid::setTemperature(float tem)
 }
 
 //设置状态 setBatteryState：等待中、 未放置电池
-void ui_charg_grid::setBatteryState(QString strState ,QString strVol)
+void ui_charg_grid::setBatteryState(QString strState, QString strVol, QString strTem)
 {
 	//需要加载不同的图片
 	if (strState == "电池在线")

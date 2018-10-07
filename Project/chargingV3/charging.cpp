@@ -1,4 +1,5 @@
 #include "charging.h"
+#include "CanProcess.h"
 #pragma execution_character_set("utf-8")
 
 charging::charging(QWidget *parent)
@@ -139,19 +140,35 @@ bool charging::getBatteryIdRelatedInfo(QString strBatteryId, MAP_CLOSET_IT& itCl
 //检测充电条件
 bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool showDebugInfo)
 {
-	if (SERIAL_PORT->isOpen() == false)
-	{
-		if (showDebugInfo)
-		{
-			printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
-			showTipsMessagebox(2, "串口未打开，充电命令无效!");
-		}
-		*iResult = ERROR_DONT_OPEN_SERIAL;
-		return false;
-	}
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
-	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
+	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger, itLevel))
 	{
+		if (itCharger->second.chargerType == NF_Charger){
+			if (SERIAL_PORT->isOpen() == false)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(2, "串口未打开，充电命令无效!");
+				}
+				*iResult = ERROR_DONT_OPEN_SERIAL;
+				return false;
+			}
+		}else if (itCharger->second.chargerType == DJI_Charger)
+		{
+			if (GET_CAN->isPreareSendOrRead() ==  false)  //判断进程、通道都已经准备好
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo("CAN设备未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(2, "CAN设备未打开，充电命令无效!");
+				}
+				*iResult = ERROR_DONT_OPEN_CAN;
+				return false;
+			}
+		}
+		
+	
 		if (false == itCharger->second.bOnline){
 			if (showDebugInfo)
 			{
@@ -169,23 +186,7 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 			}
 			*iResult = ERROR_OVER_HEAT;
 			return false;
-		}		 
-
-		//非智能电池根据电压判断电池是否存在			
-		/*if (itBatteryModel->second.balance == false)
-		{
-			if (itCharger->second.getAverage(itCharger->second.fVoltage) <3.1)
-			{
-				if (showDebugInfo)
-				{
-					printfDebugInfo(strBatteryId + "电池未检测，命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
-					showTipsMessagebox(1, strBatteryId + "电池未检测，充电命令无效!");
-				}
-				*iResult = ERROR_NO_BATTERY;
-				return false;
-			}
-		}*/
-
+		}	
 		if (itCharger->second.isCharging == true)
 		{
 			if (showDebugInfo)
@@ -204,6 +205,37 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 			*iResult = ERROR_BATTERY_CHARGING;
 			return false;
 		}
+
+		//非智能电池根据电压判断电池是否存在	
+		if (itCharger->second.chargerType == DJI_Charger){
+			MAP_BATTERY_IT itBattery1 = itLevel->second.mapBattery.find(itBattery->first);
+			if (itBattery1->second.isExisted == false){
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "电池未检测，命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "电池未检测，充电命令无效!");
+				}
+				*iResult = ERROR_NO_BATTERY;
+				return false;
+			}
+		}
+
+				
+		/*if (itBatteryModel->second.balance == false)
+		{
+			if (itCharger->second.getAverage(itCharger->second.fVoltage) <3.1)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "电池未检测，命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "电池未检测，充电命令无效!");
+				}
+				*iResult = ERROR_NO_BATTERY;
+				return false;
+			}
+		}*/
+
+		
 	}
 	return true;
 }
@@ -211,58 +243,79 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 //检测放电条件
 bool charging::detectDisChargingCondition(QString strBatteryId, int* iResult, bool showDebugInfo)
 {
-	if (SERIAL_PORT->isOpen() == false)
-	{
-		if (showDebugInfo)
-			printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
-
-		*iResult = ERROR_DONT_OPEN_SERIAL;
-		return false;
-	}
+	
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
+		if (itCharger->second.chargerType == NF_Charger){
+			if (SERIAL_PORT->isOpen() == false)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo("串口未打开，放电命令无效!", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, "串口未打开，放电命令无效!");
+				}
+				*iResult = ERROR_DONT_OPEN_SERIAL;
+				return false;
+			}
+			if (itBatteryModel->second.balance)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "属于智能电池，目前不支持放电", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "属于智能电池，目前不支持放电!");
+				}
+				*iResult = ERROR_NO_BATTERY;
+				return false;
+			}
+
+			if (itCharger->second.isCharging)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "正在充电", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "正在充电，请先停止充电!");
+				}
+				*iResult = ERROR_BATTERY_CHARGING;
+				return false;
+			}
+			if (itCharger->second.isDisCharging)
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "正在放电", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "正在放电!");
+				}
+				*iResult = ERROR_BATTERY_CHARGING;
+				return false;
+			}
+
+		}else if (itCharger->second.chargerType == DJI_Charger)
+		{
+			if (GET_CAN->isPreareSendOrRead() == false)  //判断进程、通道都已经准备好
+			{
+				if (showDebugInfo)
+				{
+					printfDebugInfo("CAN设备未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(2, "CAN设备未打开，充电命令无效!");
+				}
+				*iResult = ERROR_DONT_OPEN_CAN;
+				return false;
+			}
+		}
+
 		if (false == itBattery->second.isExisted)
 		{
 			//printfDebugInfo(QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(12).arg("red").arg(strBatteryId + "电池不存在，命令无效"), enDebugInfoPriority::DebugInfoLevelOne);
 			if (showDebugInfo)
 			{
-				printfDebugInfo(strBatteryId + "电池不存在，放电命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
-				showTipsMessagebox(1, strBatteryId + "充电器不在线，放电命令无效!"); 
+				printfDebugInfo(strBatteryId + "电池未检测，放电命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
+				showTipsMessagebox(1, strBatteryId + "电池未检测，放电命令无效!"); 
 			}
 			*iResult = ERROR_NO_BATTERY;
 			return false;
 		}
-		if (itBatteryModel->second.balance)
-		{
-			if (showDebugInfo)
-			{
-				printfDebugInfo(strBatteryId + "属于智能电池，目前不支持放电", enDebugInfoPriority::DebugInfoLevelOne, true);
-				showTipsMessagebox(1, strBatteryId + "属于智能电池，目前不支持放电!");
-			}
-			*iResult = ERROR_NO_BATTERY;
-			return false;
-		}
-		if (itCharger->second.isCharging)
-		{
-			if (showDebugInfo)
-			{
-				printfDebugInfo(strBatteryId + "正在充电", enDebugInfoPriority::DebugInfoLevelOne, true);
-				showTipsMessagebox(1, strBatteryId + "正在充电，请先停止充电!");
-			}
-			*iResult = ERROR_BATTERY_CHARGING;
-			return false;
-		}
-		if (itCharger->second.isDisCharging)
-		{
-			if (showDebugInfo)
-			{
-				printfDebugInfo(strBatteryId + "正在放电", enDebugInfoPriority::DebugInfoLevelOne, true);
-				showTipsMessagebox(1, strBatteryId + "正在放电!");
-			}
-			*iResult = ERROR_BATTERY_CHARGING;
-			return false;
-		}
+		
 	}
 	else{
 		*iResult = ERROR_CONFIG;
@@ -309,6 +362,12 @@ bool charging::chargingByLocalID(QString strBatteryId, int *iResult, bool showDe
 //根据电池ID，拼装停止命令，插入命令队列
 bool charging::stopByLocalID(QString strBatteryId)
 {
+	if (SERIAL_PORT->isOpen() == false){
+		printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+		showTipsMessagebox(1, "串口未打开!");
+		return false;
+	}
+
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
