@@ -574,7 +574,7 @@ void charging::onReadCAN(QString strContent)
 						}
 					}
 
-					int idTemp[15] = { 15 }; int pos_ = 0;
+					QVector<int> idTemp ; int pos_ = 0;
 					//电池动态信息
 					if (strList.size() >= 6)
 					{						
@@ -587,7 +587,7 @@ void charging::onReadCAN(QString strContent)
 							//pos:%d state:%d vol:%3.1fV T:%3.1f
 							
 							int pos = strList2[0].toInt();
-							idTemp[i-5] = pos;
+							idTemp.append(pos);
 							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
 							float vol = strList2[2].toFloat();//电压
 							float tem = strList2[3].toFloat();//温度
@@ -622,7 +622,7 @@ void charging::onReadCAN(QString strContent)
 						bool nextId = false;
 						for (auto iD : idTemp)
 						{
-							if (itBattery.first == iD)
+							if (itBattery.first == itBattery.second.relatedCharger/100*100 + iD)
 							{
 								nextId = true;
 								break;

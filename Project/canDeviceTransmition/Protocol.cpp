@@ -267,6 +267,7 @@ void CProtocol::getCommandLED(stCAN_DevData& dataObj)
 
 void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int dischangedId, bool bDischarge)
 {
+	dataObj.Header = 0x55;
 	if (false == bReadOrWrite)
 		dataObj.LEN[0] = 7 + 1 + 2;
 	else
