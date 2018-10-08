@@ -45,6 +45,37 @@ struct stBatteryModelInfo
 	}
 };
 
+
+//充电记录结构体
+struct stChargeRecord{
+	bool beginChargeFlag; //开始充电记录标志， true表示要写入数据库，写入完成赋值false
+	bool endChargeFlag;  //结束充电记录标志
+	bool pendingEndFlag;  //需要判断结束充电的标志
+	 
+	QDateTime beginTime;
+	QString strRemrk;  //备注 ：手动充电/远程申请充电+手动结束+远程结束
+	stChargeRecord() :beginChargeFlag(false), endChargeFlag(false), pendingEndFlag(false) {
+
+	}
+	stChargeRecord(const stChargeRecord& other)   //拷贝构造函数   
+	{
+		this->beginChargeFlag = other.beginChargeFlag;
+		this->endChargeFlag = other.endChargeFlag;
+		this->pendingEndFlag = other.pendingEndFlag;
+		this->beginTime = other.beginTime;
+		this->strRemrk = other.strRemrk;
+	}
+	stChargeRecord& operator=(const stChargeRecord& other)   //拷贝构造函数   
+	{
+		this->beginChargeFlag = other.beginChargeFlag;
+		this->endChargeFlag = other.endChargeFlag;
+		this->pendingEndFlag = other.pendingEndFlag;
+		this->beginTime = other.beginTime;
+		this->strRemrk = other.strRemrk;
+		return *this;
+	}
+};
+
 //电池信息
 struct  stBatteryInfo
 {
@@ -54,6 +85,7 @@ struct  stBatteryInfo
 	bool online;		      //是否使用  //false 的话跳过处理逻辑
 	char user[256];				//申请使用者
 	unsigned int relatedCharger;  //关联充电器 地址
+	int state;   //状态 （针对DJI电池 的充电状态）
 	//unsigned int relatedRelay;  //关联继电器控制板 地址
 	//char relatedLoop;  //关联回路  
 	bool isExisted;				//是否存在
@@ -61,7 +93,7 @@ struct  stBatteryInfo
 	bool isApplyCharging;       //是否需要预充（针对同组的电池正在充电，）
 	QTime timeLockCloseLoop;	//禁止断开回路的计时器 
 	QTime timeLockUI;   //禁止刷新对应ui的计时器
-	
+	stChargeRecord stRecord;
 	stBatteryInfo() : dbid(0), online(1), modelId(0), \
 		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false){
 		memset(id, 0, 10);	
@@ -85,6 +117,7 @@ struct  stBatteryInfo
 		strcpy(this->user, other.user);
 		this->timeLockCloseLoop = other.timeLockCloseLoop;
 		this->timeLockUI = other.timeLockUI;
+		this->stRecord = other.stRecord;
 	}
 };
 //充电器类型 add 20180920

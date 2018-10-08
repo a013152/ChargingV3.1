@@ -166,6 +166,15 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 				*iResult = ERROR_DONT_OPEN_CAN;
 				return false;
 			}
+			if (itBattery->second.state == 1){
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "正在放电", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "电池正在放电，充电命令无效!");
+				}
+				*iResult = ERROR_BATTERY_CHARGING;
+				return false;
+			}
 		}
 		
 	
@@ -355,6 +364,7 @@ bool charging::chargingByLocalID(QString strBatteryId, int *iResult, bool showDe
 
 		//设置充电标志
 		itCharger->second.isCharging = true; 
+		
 	} 
 
 	return true;

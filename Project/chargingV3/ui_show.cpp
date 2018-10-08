@@ -273,6 +273,12 @@ void charging::OnBtnChargingOrStopCharging1()
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
 					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动充电\n");
+					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+					if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger, itLevel))
+					{
+						itBattery->second.stRecord.beginChargeFlag = true;
+						itBattery->second.stRecord.strRemrk = "手动充电";
+					}
 				}
 				else
 				{
@@ -313,7 +319,7 @@ void charging::OnBtnChargingOrStopCharging1()
 				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
 				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
 				vtStCommand.append(stCommW);
-				m_CommandQueue.addVtCommand(vtStCommand);
+				m_CommandQueue.addVtCommand(vtStCommand); 
 
 				//处理ui
 				int indexArray = batteryIDtoArrayIndex(strId);
@@ -327,6 +333,12 @@ void charging::OnBtnChargingOrStopCharging1()
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
 					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动充电\n");
+					MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+					if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger, itLevel))
+					{
+						itBattery->second.stRecord.beginChargeFlag = true;
+						itBattery->second.stRecord.strRemrk = "手动充电";
+					}
 				}
 				else{
 					charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
@@ -963,6 +975,7 @@ void charging::OnBtnSysClose()
 		while (!m_CommandQueue.isFinished()){
 			Sleep(10); 
 		}
+		m_OperDB.onCloseDbFile();
 		//在线程run结束前关闭串口和can进程
 		/*
 		SERIAL_PORT->ClosePort();

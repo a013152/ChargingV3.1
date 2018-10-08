@@ -11,6 +11,8 @@ void charging::timer_out()
 	if (s_ScanQtime2.elapsed() >= m_ScanDeviceInterval){
 		s_ScanQtime2.restart();
 		addChargerScanTime();   //添加扫描次数，判断充电器是否在线
+
+		detectChargeRecord();  //检测判断需要记录充电/停止充电 add 20181008
 	}
 
 	if (m_bConnectServerIsSeccuss && SERIAL_PORT->isOpen())
@@ -243,14 +245,35 @@ void charging::processApplyBatteryToCharging()
 
 			if (detectChargingCondition(strId, &iResult,false)) //检测充电条件
 			{ 
-				if (chargingByLocalID(strId, &iResult))
+				MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+				if (getBatteryIdRelatedInfo(strId, itCloset, itBattery, itBatteryModel, itCharger, itLevel))
 				{
-					//UI更新 
-					charger_state[indexArray] = STATE_DISCHARGING;		//充电中
-					emit RefreshState(enRefreshType::ChargerState, indexArray);	
-					item.timeLockUI.restart();		//触发充电成功 ，则2秒内禁止刷新充电状态
-					battery_apply_charging[i] = item;
-				} 
+					if (itCharger->second.chargerType == NF_Charger){
+						if (chargingByLocalID(strId, &iResult))
+						{
+							//UI更新 
+							charger_state[indexArray] = STATE_DISCHARGING;		//充电中
+							emit RefreshState(enRefreshType::ChargerState, indexArray);
+							item.timeLockUI.restart();		//触发充电成功 ，则2秒内禁止刷新充电状态
+							battery_apply_charging[i] = item;
+						}
+					}else if (itCharger->second.chargerType == DJI_Charger)
+					{				
+						QVector<stCommand> vtStCommand;
+						QString strCommad;
+						strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+						stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+						vtStCommand.append(stCommR);
+						strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 1);  //设置充电状态命令
+						stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+						vtStCommand.append(stCommW);
+						m_CommandQueue.addVtCommand(vtStCommand);
+					}
+					
+					itBattery->second.stRecord.beginChargeFlag = true;
+					itBattery->second.stRecord.strRemrk = "远程申请充电";
+				}
+				
 			}
 			else{
 				//申请充电失败
@@ -275,8 +298,26 @@ void charging::processApplyBatteryToCharging()
 				{
 					if (itCharger->second.isCharging || itCharger->second.isDisCharging)  //在充电或者放电
 					{
-						if (stopByLocalID(strId))
-						{
+						bool stopFlag = false;
+						if (itCharger->second.chargerType == NF_Charger){
+							if (stopByLocalID(strId))
+							{
+								stopFlag = true;								
+							}
+							else if (itCharger->second.chargerType == DJI_Charger)
+							{
+								QVector<stCommand> vtStCommand;	QString strCommad;
+								strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+								stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+								vtStCommand.append(stCommR);
+								strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 2);  //设置停止充电状态命令
+								stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+								vtStCommand.append(stCommW);
+								m_CommandQueue.addVtCommand(vtStCommand);
+								stopFlag = true;
+							}
+						}
+						if (stopFlag){
 							int indexArray = batteryIDtoArrayIndex(strId);
 							battery_state_enable_refresh[indexArray] = false;
 							itBattery->second.timeLockUI.restart();  //触发停止充电 ，则2秒内禁止刷新充电状态
@@ -289,6 +330,7 @@ void charging::processApplyBatteryToCharging()
 							//取消预充
 							removeChargingQueue(strId);
 						}
+					
 					}
 					else if (itBatteryModel->second.balance == false &&  //非智能 电池
 						itCharger->second.isDisCharging == false )  //没放电
@@ -575,3 +617,32 @@ void charging::submitBatteryModel(MAP_BATTERY& mapNew, MAP_BATTERY& mapBatteryOl
 	}
 }
 
+
+//检测判断需要数据库记录充电/停止充电
+void charging::detectChargeRecord()
+{
+	//if (GET_CAN->isPreareSendOrRead() )
+	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
+	for (MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.begin(); 
+		itBattery != itCloset->second.mapBattery.end(); itBattery++)
+	{
+		float fVol = battery_voltage[batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id))].toFloat();
+		if (itBattery->second.stRecord.beginChargeFlag && fVol > 1.5)
+		{
+			//插入新的充电记录
+			m_OperDB.onAddChargedRecord(itBattery->first, 
+				fVol, itBattery->second.stRecord.strRemrk, iError);
+			itBattery->second.stRecord.beginTime = QDateTime::currentDateTime();
+			itBattery->second.stRecord.beginChargeFlag = false;
+			itBattery->second.stRecord.pendingEndFlag = true;
+		}
+		else if (itBattery->second.stRecord.endChargeFlag)
+		{
+			//更新停止充电记录
+			m_OperDB.onAddStopChargedRecord(itBattery->first,
+				fVol, itBattery->second.stRecord.beginTime.toString("yyyy-MM-dd hh:mm:ss"), iError);
+			itBattery->second.stRecord.endChargeFlag = false;
+			
+		}
+	}
+}

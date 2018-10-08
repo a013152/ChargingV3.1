@@ -13,6 +13,7 @@ void charging::init_now()
 	 
 	//运行线程 测试连接服务器数据库
 	m_ConnectDBThread.start(QThread::NormalPriority);
+	m_OperDB.onOpenDbFile();
 	printfDebugInfo("01开启测试连接服务器线程，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	qtime1.restart();
 

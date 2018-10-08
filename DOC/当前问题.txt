@@ -6,5 +6,20 @@
 3、 放电功能  OK
 
 4、 记录充电功能。
+	思路：写入统一ChargingV3中触发充电中标志，定时器中记录，记录开始的充电时间戳、开始电压，结束时间戳，结束电压，时间间隔。 读取在ChargingOption中。
+	具体做法： 在电池信息结构体中添加记录结构体{bool 开始充电记录标志，bool 结束充电记录标志，QString 记录备注 QDateTime开始时间，QDateTime结束时间）
+	在readSerial/readCAN函数中判断充电状态，如果从充电变为闲置，检测是否需要记录充电结束。
 
-5、能飞充电板，表面通讯超时实际已经发送到下位机问题 OK（现象未重现，不知道是否解决） 
+	sql错误 Driver not loaded", "Driver not loaded"问题 ，m_sql_query = QSqlQuery(m_database);
+
+insert into chargedRecord (chargerId, beginVol, state_, begin_charge, remark) values (101, 4.10, 0, '2018-10-08 23:06:38','手动充电');
+UPDATE chargedRecord  SET endVol=, , )  4.20,  state_ = 1, end_charge=' 2018-10-08 23:27:19',charge_interval='00:00:14' WHERE chargeId=101;
+	在程序中执行报错，在navigate Sqlite中执行正确。
+
+5 、显示充电记录，
+	需要使用chargingOption项目添加读取sqlite数据库，
+	 需要ui列表显示，
+	需要ui时间筛选。 sql语句
+	
+
+6、能飞充电板，表面通讯超时实际已经发送到下位机问题 OK（现象未重现，不知道是否解决） 

@@ -21,6 +21,7 @@
 #include <QStringListModel>
 
 #include "ui_charg_grid.h" 
+#include "operatoreDBFile.h"
 
 //#include "MySerial.h"
 
@@ -156,6 +157,9 @@ private:
 
 	//增加扫描计数
 	void addChargerScanTime();
+
+	//检测判断需要数据库记录充电/停止充电
+	void detectChargeRecord();
 
 	//整合配置内容
 	void combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, MAP_CHARGER& mapCharger, MAP_LEVEL& mapRelay);
@@ -451,6 +455,7 @@ private:
 
 private:
 		QProcess *m_pProcess = NULL;
+		COperatoreDBFile m_OperDB; // 操作数据库文件，记录充电/停止充电记录
 };
 class levelBtnData: public QObjectUserData{
 public:
