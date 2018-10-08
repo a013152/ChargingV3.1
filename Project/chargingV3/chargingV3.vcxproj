@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="CanProcess.cpp" />
     <ClCompile Include="CommonFunction.cpp" />
+    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="ToCanDeviceProcess.cpp" />
     <ClCompile Include="charging.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
@@ -886,6 +887,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </AdditionalInputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="sqlite3ext.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -40,6 +40,39 @@ std::string CommonFunction::WStringToMBytes(const wchar_t* lpwcszWString)
 	return strReturn;
 }
 
+//UTF-8转Unicode 
+std::wstring CommonFunction::Utf82Unicode(const std::string& utf8string)
+{
+	int widesize = ::MultiByteToWideChar(CP_UTF8, 0, utf8string.c_str(), -1, NULL, 0);
+	if (widesize == ERROR_NO_UNICODE_TRANSLATION)
+	{
+		//throw std::exception("Invalid UTF-8 sequence.");
+	}
+	if (widesize == 0)
+	{
+		//throw std::exception("Error in conversion.");
+	}
+	std::vector<wchar_t> resultstring(widesize);
+	int convresult = ::MultiByteToWideChar(CP_UTF8, 0, utf8string.c_str(), -1, &resultstring[0], widesize);
+	if (convresult != widesize)
+	{
+		//throw std::exception("La falla!");
+	}
+	return std::wstring(&resultstring[0]);
+}
+
+std::string CommonFunction::UnicodeToUtf_8(const wchar_t* unicode)
+{
+	int len;
+	len = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)unicode, -1, NULL, 0, NULL, NULL);
+	char *szUtf8 = (char*)malloc(len + 1);
+	memset(szUtf8, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)unicode, -1, szUtf8, len, NULL, NULL);
+	std::string strReturn(szUtf8);
+	delete[] szUtf8;
+	return strReturn;
+}
+
 //查找can设备通讯进程:返回进程id
 DWORD CommonFunction::GetProcessidFromName(LPCTSTR name)
 {

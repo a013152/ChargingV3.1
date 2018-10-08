@@ -9,6 +9,7 @@
 #include <QtSql\QSqlQuery> 
 #include <QDateTime>
 #include <qDebug>
+#include "sqlite3.h"
 
 class COperatoreDBFile
 {
@@ -33,6 +34,8 @@ public:
 private:
 	QSqlDatabase m_database;
 	QSqlQuery m_sql_query;
+
+	sqlite3 * m_sqliteDB;
 
 };
 

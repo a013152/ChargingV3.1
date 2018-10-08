@@ -87,6 +87,7 @@
     <ClCompile Include="CanProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="charging.qrc" />
@@ -177,5 +178,9 @@
     <Filter Include="Generated Files">
       <UniqueIdentifier>{fa3e246e-4f74-4441-b8fd-8a5516d3f2c7}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="sqlite3ext.h" />
   </ItemGroup>
 </Project>

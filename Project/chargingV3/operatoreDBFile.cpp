@@ -1,9 +1,10 @@
 #include "operatoreDBFile.h"
+#include "CommonFunction.h"
 #pragma execution_character_set("utf-8")
 
 COperatoreDBFile::COperatoreDBFile()
 {
-	
+	m_sqliteDB = NULL;
 	m_database = QSqlDatabase::addDatabase("QSQLITE");
 }
 
@@ -16,14 +17,27 @@ COperatoreDBFile::~COperatoreDBFile()
 bool COperatoreDBFile::onOpenDbFile()
 {
 	qDebug() << m_database.drivers();
-	bool bResult = false;
+	bool bResult = true;
 	if (m_database.isOpen() == false)
 	{		
-		m_database.setDatabaseName(QString(g_AppPath) + "\\chargedRecord.db");
-		bResult = m_database.open();
+		//m_database.setDatabaseName(QString(g_AppPath) + "\\chargedRecord.db");
+		//bResult = m_database.open();
 		
 	}
 	qDebug() << m_database.lastError();
+
+	//sqlite3 
+	char dbPath[256] = { 0 }; sprintf_s(dbPath, 256, "%s\\chargedRecord.db", g_AppPath);
+	//转Utf-8
+	char dbPathUtf8[256] = { 0 };
+	strcpy_s(dbPathUtf8, 256,COM_F::UnicodeToUtf_8(COM_F::MBytesToWString(dbPath).c_str()).c_str());
+
+	int nRes = sqlite3_open(dbPathUtf8, &m_sqliteDB);
+	if (nRes != SQLITE_OK)
+	{
+		qDebug() << "Open database fail: " << sqlite3_errmsg(m_sqliteDB);
+		bResult = false;
+	}
 
 	QSqlError error1 = m_database.lastError();
 	return bResult;
@@ -33,6 +47,8 @@ void COperatoreDBFile::onCloseDbFile()
 {
 	if (m_database.isOpen())
 		m_database.close();
+
+	sqlite3_close(m_sqliteDB);
 }
 
 //创建表
@@ -74,11 +90,21 @@ void COperatoreDBFile::onAddChargedRecord(int nChargerId, float fvol,QString str
 	strSql += "\',\'";
 	strSql += strRemark;
 	strSql += "\');"; 
-	if (!m_sql_query.exec()){
-		;//插入错误
-		qDebug() << QObject::tr("insert failed");
-		qDebug() << m_sql_query.lastError();
-	} 
+	//if (!m_sql_query.exec()){
+	//	;//插入错误
+	//	qDebug() << QObject::tr("insert failed");
+	//	qDebug() << m_sql_query.lastError();
+	//} 
+	QByteArray ba = strSql.toLocal8Bit();
+	char szSQL[512] = { 0 }; memcpy(szSQL, ba.data(),ba.size());
+	char szSQLUtf8[256] = { 0 };
+	strcpy_s(szSQLUtf8, 256, COM_F::UnicodeToUtf_8(COM_F::MBytesToWString(szSQL).c_str()).c_str());
+	char* cErrMsg;
+	int nRes = sqlite3_exec(m_sqliteDB, szSQLUtf8, 0, 0, &cErrMsg);
+	if (nRes != SQLITE_OK)
+	{
+		qDebug() << "inset fail: " << cErrMsg ;		
+	}
 }
 //更新充电停止记录： 参数1 电池ID, 参数2 电压 ,参数3 开始 时间，参数4 错误码
 void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QString strTime, int &iError)
@@ -89,18 +115,19 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 	QString strSql, strTemp;
 	strSql = "select * from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
 	strSql += " order by id desc limit 1;";
-	m_sql_query.prepare(strSql);
-	if (m_sql_query.exec())
+	//m_sql_query.prepare(strSql);
+	//if (m_sql_query.exec())
 	{
 		//查询是否有记录
-		if (m_sql_query.isNull("chargerId")){
+		//if (m_sql_query.isNull("chargerId"))
+		{
 			//有则更新		
-			strSql = "UPDATE chargedRecord  SET endVol=, , ) ";
+			strSql = "UPDATE chargedRecord  SET endVol=";
 			strTemp.sprintf(" %4.2f, ", fvol);
 			strSql += strTemp;  //结束电压
-			strSql += " state_ = 1, end_charge=\' ";  //结束状态
+			strSql += " state_=1, end_charge=\'";  //结束状态
 			strSql += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");  //结束时间
-			strSql += "\',charge_interval=\'";
+			strSql += "\', charge_interval=\'";
 			//计算时间间隔
 			QDateTime beginTime = QDateTime::fromString(strTime, "yyyy-MM-dd hh:mm:ss");
 			QDateTime endTime = QDateTime::currentDateTime();			
@@ -111,15 +138,25 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 			unsigned int temp3 = temp2 - temp1;
 			QTime time_3; time_3.setHMS(temp3/3600, (temp3/60)%60, temp3%60);
 			strSql += time_3.toString("hh:mm:ss");  //时间间隔
-			strSql += "\' WHERE chargeId=";
+			strSql += "\' WHERE chargerId=";
 			strSql += QString::number(nChargerId) +";";
 			
-			if (!m_sql_query.exec()){
-				;//更新错误、
-				qDebug() << QObject::tr("update failed");
-				qDebug() << m_sql_query.lastError();
+			//if (!m_sql_query.exec())
+			//{
+			//	;//更新错误、
+			//	qDebug() << QObject::tr("update failed");
+			//	qDebug() << m_sql_query.lastError();
+			//}
+			QByteArray ba = strSql.toLocal8Bit();
+			char szSQL[512] = { 0 }; memcpy(szSQL, ba.data(), ba.size());
+			char szSQLUtf8[256] = { 0 };
+			strcpy_s(szSQLUtf8, 256, COM_F::UnicodeToUtf_8(COM_F::MBytesToWString(szSQL).c_str()).c_str());
+			char* cErrMsg;
+			int nRes = sqlite3_exec(m_sqliteDB, szSQLUtf8, 0, 0, &cErrMsg);
+			if (nRes != SQLITE_OK)
+			{
+				qDebug() << "update fail: " << cErrMsg;
 			}
-			
 		}
 	}
 }

@@ -15,6 +15,7 @@ date： 20180922
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <vector>
 #include <TLHELP32.H>
 
 #define COM_F CommonFunction 
@@ -30,6 +31,9 @@ public:
 	/*宽字节转多字节*/
 	static std::string WStringToMBytes(const wchar_t* lpwcszWString);
 
+	static std::string CommonFunction::UnicodeToUtf_8(const wchar_t* unicode);
+	
+	static std::wstring Utf82Unicode(const std::string& utf8string);
 
 	//查找can设备通讯进程:返回进程id
 	static DWORD GetProcessidFromName(LPCTSTR name);
