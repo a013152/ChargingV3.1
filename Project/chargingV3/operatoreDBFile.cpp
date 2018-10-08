@@ -106,15 +106,32 @@ void COperatoreDBFile::onAddChargedRecord(int nChargerId, float fvol,QString str
 		qDebug() << "inset fail: " << cErrMsg ;		
 	}
 }
+
+int tempChargerId = 0;
+static int checkChargerRecordResult(void *NotUsed, int argc, char **argv, char **azColName)
+{
+	for (int i = 0; i < argc; i++)
+	{
+		tempChargerId = (argv[i] ? atoi(argv[i]) : 0);
+	}
+	return 0;
+} 
 //更新充电停止记录： 参数1 电池ID, 参数2 电压 ,参数3 开始 时间，参数4 错误码
 void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QString strTime, int &iError)
 {
-	QSqlQuery tmpQuery(m_database);
-	m_sql_query = tmpQuery;
+	//QSqlQuery tmpQuery(m_database);
+	//m_sql_query = tmpQuery;
 
-	QString strSql, strTemp;
-	strSql = "select * from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
+	QString strSql, strTemp; char szSQL[512] = { 0 };	char* cErrMsg;
+	strSql = "select id from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
 	strSql += " order by id desc limit 1;";
+	QByteArray ba = strSql.toLocal8Bit();
+	memcpy(szSQL, ba.data(), ba.size());
+	int nRes = sqlite3_exec(m_sqliteDB, szSQL, checkChargerRecordResult, 0, &cErrMsg);
+	if (nRes != SQLITE_OK)
+	{
+		qDebug() << "select fail: " << cErrMsg;
+	}
 	//m_sql_query.prepare(strSql);
 	//if (m_sql_query.exec())
 	{
@@ -139,7 +156,7 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 			QTime time_3; time_3.setHMS(temp3/3600, (temp3/60)%60, temp3%60);
 			strSql += time_3.toString("hh:mm:ss");  //时间间隔
 			strSql += "\' WHERE chargerId=";
-			strSql += QString::number(nChargerId) +";";
+			strSql += QString::number(nChargerId) + " AND id=" + QString::number(tempChargerId) + ";";
 			
 			//if (!m_sql_query.exec())
 			//{
@@ -147,11 +164,11 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 			//	qDebug() << QObject::tr("update failed");
 			//	qDebug() << m_sql_query.lastError();
 			//}
-			QByteArray ba = strSql.toLocal8Bit();
-			char szSQL[512] = { 0 }; memcpy(szSQL, ba.data(), ba.size());
+			ba = strSql.toLocal8Bit();
+			memcpy(szSQL, ba.data(), ba.size());
 			char szSQLUtf8[256] = { 0 };
 			strcpy_s(szSQLUtf8, 256, COM_F::UnicodeToUtf_8(COM_F::MBytesToWString(szSQL).c_str()).c_str());
-			char* cErrMsg;
+		
 			int nRes = sqlite3_exec(m_sqliteDB, szSQLUtf8, 0, 0, &cErrMsg);
 			if (nRes != SQLITE_OK)
 			{
