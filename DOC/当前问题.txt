@@ -15,6 +15,9 @@
 insert into chargedRecord (chargerId, beginVol, state_, begin_charge, remark) values (101, 4.10, 0, '2018-10-08 23:06:38','手动充电');
 UPDATE chargedRecord  SET endVol=, , )  4.20,  state_ = 1, end_charge=' 2018-10-08 23:27:19',charge_interval='00:00:14' WHERE chargeId=101;
 	在程序中执行报错，在navigate Sqlite中执行正确。
+		错误提示 QSqlError("", "Unable to fetch row", "No query")
+
+UPDATE chargedRecord  SET endVol= 0.00,  state_=1, end_charge='2018-10-09 01:01:04', charge_interval='00:00:36' WHERE chargerId=101 ORDER BY id desc limit 1;
 
 5 、显示充电记录，
 	需要使用chargingOption项目添加读取sqlite数据库，

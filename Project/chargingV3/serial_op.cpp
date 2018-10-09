@@ -1,4 +1,5 @@
 #include "charging.h"
+#include "CanProcess.h"
 #pragma execution_character_set("utf-8")
 
 static QString s_preStr;
@@ -505,7 +506,14 @@ void charging::onReadCAN(QString strContent)
 	if (strList.size() > 3)
 	{
 		//分析命令类型
-		if (strList[1].compare("F4") == 0)
+		if (strList[1].compare("F1") == 0){
+			//"S2C,F1,2,打开设备失败。" /"S2C,F1,0,打开设备成功。"
+
+			if (strList[1].compare("0") == 0){
+				GET_CAN->m_bOpenCanDevice = true;
+			}
+		}
+		else if (strList[1].compare("F4") == 0)
 		{
 			//认证通过			
 			MAP_CLOSET_IT itCloset;; MAP_CHARGER_IT itCharger;

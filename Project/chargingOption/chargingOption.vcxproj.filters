@@ -83,6 +83,12 @@
     <ClCompile Include="..\chargingV3\ReadIniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\chargingV3\sqlite3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\chargingV3\CommonFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="chargingoption.h">
@@ -126,5 +132,16 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="chargingOption.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\chargingV3\sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chargingV3\sqlite3ext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chargingV3\CommonFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

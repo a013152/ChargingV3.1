@@ -632,7 +632,7 @@ void charging::detectChargeRecord()
 			//插入新的充电记录
 			m_OperDB.onAddChargedRecord(itBattery->first, 
 				fVol, itBattery->second.stRecord.strRemrk, iError);
-			itBattery->second.stRecord.beginTime = QDateTime::currentDateTime();
+			itBattery->second.stRecord.beginTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 			itBattery->second.stRecord.beginChargeFlag = false;
 			itBattery->second.stRecord.pendingEndFlag = true;
 		}
@@ -640,7 +640,7 @@ void charging::detectChargeRecord()
 		{
 			//更新停止充电记录
 			m_OperDB.onAddStopChargedRecord(itBattery->first,
-				fVol, itBattery->second.stRecord.beginTime.toString("yyyy-MM-dd hh:mm:ss"), iError);
+				fVol, itBattery->second.stRecord.beginTime, iError);
 			itBattery->second.stRecord.endChargeFlag = false;
 			
 		}

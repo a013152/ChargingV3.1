@@ -450,7 +450,7 @@ void charging::OnBtnLevel()
 			levelBtnData* pData = (levelBtnData*)itpBtnLevel->userData(tempLevel++);
 			if (pData->nlevel == m_nCurrentLevel)  //选中的层级
 			{
-				itpBtnLevel->setStyleSheet("QPushButton{font-size:20px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:22px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
 					"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
 					"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
 			}

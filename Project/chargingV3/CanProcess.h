@@ -14,12 +14,14 @@ class CCanProcess
 	HANDLE s_hPipe = 0;//管道句柄
 	std::wstring s_strTemp;
 	
+	
 	char szPrintf[256] ;
 
 
 	CCanProcess();
 
 public:
+	bool m_bOpenCanDevice = false; //打开CAN设备成功的标志
 	~CCanProcess();
 
 	static CCanProcess* GetInstance();

@@ -203,9 +203,9 @@
      <widget class="QComboBox" name="cmbCharger">
       <property name="geometry">
        <rect>
-        <x>700</x>
+        <x>690</x>
         <y>60</y>
-        <width>51</width>
+        <width>61</width>
         <height>21</height>
        </rect>
       </property>
@@ -220,7 +220,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>充电器：</string>
+       <string>电池：</string>
       </property>
      </widget>
      <widget class="QTableWidget" name="tableChargeRecord">

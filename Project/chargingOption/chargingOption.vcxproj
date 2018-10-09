@@ -142,9 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\chargingV3\CommonFunction.cpp" />
     <ClCompile Include="..\chargingV3\operatoreDBFile.cpp" />
     <ClCompile Include="..\chargingV3\operatorfile.cpp" />
     <ClCompile Include="..\chargingV3\ReadIniFile.cpp" />
+    <ClCompile Include="..\chargingV3\sqlite3.c" />
     <ClCompile Include="BatteryModelPage.cpp" />
     <ClCompile Include="BatteryPage.cpp" />
     <ClCompile Include="chargingoption.cpp" />
@@ -562,6 +564,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </AdditionalInputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\chargingV3\CommonFunction.h" />
+    <ClInclude Include="..\chargingV3\sqlite3.h" />
+    <ClInclude Include="..\chargingV3\sqlite3ext.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

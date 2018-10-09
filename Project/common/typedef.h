@@ -51,10 +51,17 @@ struct stChargeRecord{
 	bool beginChargeFlag; //开始充电记录标志， true表示要写入数据库，写入完成赋值false
 	bool endChargeFlag;  //结束充电记录标志
 	bool pendingEndFlag;  //需要判断结束充电的标志
-	 
-	QDateTime beginTime;
+
+	
+	unsigned int batteryId; //电池id， 读取时用 
+	QString beginTime;	//起始时间
+	QString endTime;		//结束时间，读取时用
+	QString pendingTime;	//充电过程时间，读取时用
+	float beginVol;			//起始电压，读取时用
+	float endVol;			//结束电压，读取时用
 	QString strRemrk;  //备注 ：手动充电/远程申请充电+手动结束+远程结束
-	stChargeRecord() :beginChargeFlag(false), endChargeFlag(false), pendingEndFlag(false) {
+
+	stChargeRecord() :beginChargeFlag(false), endChargeFlag(false), pendingEndFlag(false), batteryId(0),beginVol(0), endVol(0){
 
 	}
 	stChargeRecord(const stChargeRecord& other)   //拷贝构造函数   
@@ -62,16 +69,25 @@ struct stChargeRecord{
 		this->beginChargeFlag = other.beginChargeFlag;
 		this->endChargeFlag = other.endChargeFlag;
 		this->pendingEndFlag = other.pendingEndFlag;
+		this->batteryId = other.batteryId;
 		this->beginTime = other.beginTime;
+		this->endTime = other.endTime;
 		this->strRemrk = other.strRemrk;
+		this->beginVol = other.beginVol;
+		this->endVol = other.endVol;
+		this->pendingTime = other.pendingTime;
 	}
 	stChargeRecord& operator=(const stChargeRecord& other)   //拷贝构造函数   
 	{
 		this->beginChargeFlag = other.beginChargeFlag;
 		this->endChargeFlag = other.endChargeFlag;
 		this->pendingEndFlag = other.pendingEndFlag;
+		this->batteryId = other.batteryId;
 		this->beginTime = other.beginTime;
-		this->strRemrk = other.strRemrk;
+		this->endTime = other.endTime;
+		this->beginVol = other.beginVol;
+		this->endVol = other.endVol;
+		this->pendingTime = other.pendingTime;
 		return *this;
 	}
 };

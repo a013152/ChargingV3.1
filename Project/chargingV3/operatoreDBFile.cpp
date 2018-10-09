@@ -31,14 +31,13 @@ bool COperatoreDBFile::onOpenDbFile()
 	//转Utf-8
 	char dbPathUtf8[256] = { 0 };
 	strcpy_s(dbPathUtf8, 256,COM_F::UnicodeToUtf_8(COM_F::MBytesToWString(dbPath).c_str()).c_str());
-
 	int nRes = sqlite3_open(dbPathUtf8, &m_sqliteDB);
 	if (nRes != SQLITE_OK)
 	{
 		qDebug() << "Open database fail: " << sqlite3_errmsg(m_sqliteDB);
 		bResult = false;
 	}
-
+	m_openSqliteFlag = bResult;
 	QSqlError error1 = m_database.lastError();
 	return bResult;
 }
@@ -51,35 +50,17 @@ void COperatoreDBFile::onCloseDbFile()
 	sqlite3_close(m_sqliteDB);
 }
 
-//创建表
-bool COperatoreDBFile::onCreateChargedRecordTable()
-{ 
-	bool bResult = false;
-	if (m_database.open())
-	{
-		qDebug() << "Database Opened";
-		QSqlQuery sql_query;
-		QString create_sql = "create table chargedRecord (id int primary key, chargerId int, beginVol numeric(4, 2),\
-			endVol numeric(4, 2), state_ int, begin_charge datetime, end_charge datetime, charge_interval datetime,remark varchar(256))"; //创建数据表  
-		//QString insert_sql = "insert into chargedRecord values(?,?,?)";    //插入数据   
-	//	QString select_all_sql = "select * from member";
 
-		sql_query.prepare(create_sql); //创建表 
-		if (!sql_query.exec()) //查看创建表是否成功  
-		{
-			qDebug() << QObject::tr("Table Create failed");
-			qDebug() << sql_query.lastError();
-		}
-		else
-			bResult = true;
-	}
-	return bResult;
-}
 //添加充电记录：参数 1 电池ID, 参数2 电压 参数3 备注，参数4 错误码
 void COperatoreDBFile::onAddChargedRecord(int nChargerId, float fvol,QString strRemark, int &iError)
 {
-	QSqlQuery tmpQuery(m_database);
-	m_sql_query = tmpQuery;
+	if (m_openSqliteFlag == false)
+	{
+		iError = -1;
+		return;
+	}
+	//QSqlQuery tmpQuery(m_database);
+	//m_sql_query = tmpQuery;
 
 	QString strSql, strTemp;
 	strSql = "insert into chargedRecord (chargerId, beginVol, state_, begin_charge, remark) values (";
@@ -119,14 +100,20 @@ static int checkChargerRecordResult(void *NotUsed, int argc, char **argv, char *
 //更新充电停止记录： 参数1 电池ID, 参数2 电压 ,参数3 开始 时间，参数4 错误码
 void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QString strTime, int &iError)
 {
+	if (m_openSqliteFlag == false)
+	{
+		iError = -1;
+		return;
+	}
+
 	//QSqlQuery tmpQuery(m_database);
 	//m_sql_query = tmpQuery;
 
 	QString strSql, strTemp; char szSQL[512] = { 0 };	char* cErrMsg;
-	strSql = "select id from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
-	strSql += " order by id desc limit 1;";
+	strSql = "SELECT id FROM chargedRecord WHERE state_=0 AND chargerId=" + QString::number(nChargerId);
+	strSql += " ORDER BY id DESC LIMIT 1;";
 	QByteArray ba = strSql.toLocal8Bit();
-	memcpy(szSQL, ba.data(), ba.size());
+	memcpy(szSQL, ba.data(), ba.size());	
 	int nRes = sqlite3_exec(m_sqliteDB, szSQL, checkChargerRecordResult, 0, &cErrMsg);
 	if (nRes != SQLITE_OK)
 	{
@@ -177,96 +164,54 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 		}
 	}
 }
-
-//添加充电记录：参数 1 充电器ID, 参数2 状态0 开始充电 1停止充电，参数3 错误码
-void onAddChargedRecord(int nChargerId, enChargeRecordStateType nState, float fvol, int &iError)
+QVector<stChargeRecord> vtRecordTemp;
+static int checkChargerRecordResultTotal(void *NotUsed, int argc, char **argv, char **azColName)
 {
-	//QString strSql ,strTemp;
-	//if (nState == StateBegin){
-	//	strSql = "insert into chargedRecord (chargerId, beginVol, state_, begin_charge) values (";
-	//	strSql += QString::number(nChargerId);
-	//	strTemp.sprintf(", %4.2f, 0, \'", fvol);
-	//	strSql += strTemp;
-	//	strSql += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss\');");
-	//	 
-	//}
-	//else if(nState == StateEnd){
-	//	//先查询是否存在记录
-	//	strSql = "select * from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
-	//	strSql += " order by id desc limit 1;";
-	//	m_sql_query.prepare(strSql);
-	//	if (!m_sql_query.exec()) 
-	//	{
-	//		//查询是否有记录
-	//		if (m_sql_query.isNull("chargerId")){
-	//			//有则更新				
-	//			QString chargerId, strbeginTime;
-	//			chargerId = m_sql_query.value("chargerId").toString();
-	//			strbeginTime = m_sql_query.value("begin_charge").toString();
-	//			// 
-	//			strSql = "UPDATE chargedRecord ( endVol, state_, end_charge, charge_interval) values (";
-	//			strTemp.sprintf(" %4.2f, ", fvol);
-	//			strSql += strTemp;  //结束电压
-	//			strSql += " 1, \' ";  //结束状态
-	//			strSql += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss\')");  //结束时间
-	//			strSql += ",";
-	//			QDateTime beginTime = QDateTime::fromString(strbeginTime,"yyyy-MM-dd hh:mm:ss");
-	//			//计算时间间隔
-	//		}
-	//		else{
-	//			//无则插入
-	//		}
-	//		
-	//		
-	//	}
-	//}
-	//if (strSql.isEmpty() != false){
-	//	m_sql_query.prepare(strSql);
-	//	if (!m_sql_query.exec()) //插入或者更新是否成功  
-	//	{
-	//		qDebug() << QObject::tr("select failed");
-	//		qDebug() << m_sql_query.lastError();
-	//	}
-	//}
-	return ;
+	stChargeRecord obj;
+	obj.batteryId = (atoi(argv[1] ? argv[1] : 0));
+	obj.beginVol = QString(argv[2] ? argv[2] : "").toFloat();
+	obj.endVol = QString(argv[3] ? argv[3] : "").toFloat();
+	obj.beginTime = QString((argv[5] ? argv[5] : ""));
+	obj.endTime = QString((argv[6] ? argv[6] : ""));
+	obj.pendingTime = QString(argv[7] ? argv[7] : "");
+	obj.strRemrk = QString(argv[8] ? argv[8] : "");
+	vtRecordTemp.append(obj);
+	return 0;
 }
 //查询记录：参数1 充电器ID , 参数2开始时间， 参数3结束时间
-bool COperatoreDBFile::onQueryChargedRecord(int nChargerId , QDateTime* beginTime, QDateTime *endTime)
+bool COperatoreDBFile::onQueryChargedRecord(QVector<stChargeRecord>& vtRecord, int nChargerId, QDateTime* beginTime, QDateTime *endTime)
 {
+	if (m_openSqliteFlag == false)
+		return false;
+	vtRecordTemp.clear();
 	bool bResult = false;
-	if (m_database.open())
-	{
-		bool bWhereFlag = false;
-		QString strSql = "select * from chargedRecord ";
-		if (nChargerId != 0){
-			if (bWhereFlag == false){
-				strSql += "where ";
-				bWhereFlag = true;
-			}
-			strSql += " chargerId=" + QString::number(nChargerId);
-		}
-		if (beginTime != nullptr){
-			if (bWhereFlag == false){
-				strSql += "where ";
-				bWhereFlag = true;
-			}
-			strSql += " begin_charge>=" + beginTime->toString("yyyy-MM-dd hh:mm:ss");
-		}
-		if (endTime != nullptr){
-			if (bWhereFlag == false){
-				strSql += "where ";
-				bWhereFlag = true;
-			}
-			strSql += " end_charge<=" +endTime->toString("yyyy-MM-dd hh:mm:ss");
-		}
-		m_sql_query.prepare(strSql); 
-		if (!m_sql_query.exec()) //查看是否成功  
-		{
-			qDebug() << QObject::tr("select failed");
-			qDebug() << m_sql_query.lastError();
-		}
-		else
-			bResult = true;
+	 
+	QString strSql = "SELECT * FROM chargedRecord WHERE state_ = 1"; 
+	if (nChargerId != 0){ 
+		strSql += " AND  chargerId=" + QString::number(nChargerId);
 	}
+	if (beginTime != nullptr){ 
+		strSql += " AND  begin_charge >=\'" + beginTime->toString("yyyy-MM-dd hh:mm:ss") +"\'";
+	}
+	if (endTime != nullptr){		
+		QDate date = endTime->date(); date.setDate(date.year(), date.month(), date.day() + 1); endTime->setDate(date);
+		strSql += " AND  end_charge <=\'" + endTime->toString("yyyy-MM-dd hh:mm:ss") + "\'";
+	}
+
+	char szSQL[512] = { 0 };	char* cErrMsg;
+	//strSql = "select id from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
+	strSql += " ORDER BY id DESC LIMIT 200;";   //逆序id读取前200条
+	QByteArray ba = strSql.toLocal8Bit();
+	memcpy(szSQL, ba.data(), ba.size());
+	int nRes = sqlite3_exec(m_sqliteDB, szSQL, checkChargerRecordResultTotal, 0, &cErrMsg);
+	if (nRes != SQLITE_OK)
+	{
+		qDebug() << "select fail: " << cErrMsg;
+	}else
+		bResult = true;
+	if (bResult){
+		vtRecordTemp.swap(vtRecord);
+	}
+
 	return bResult;
 }

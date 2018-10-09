@@ -20,9 +20,12 @@ chargingOption::chargingOption(QWidget *parent)
 
 	setWindowTitle(SETING_WINDOW_TITLE);
 
-
+	//读取配置
 	COperatorFile::GetInstance()->setAppPath(QString(g_AppPath));
 	COperatorFile::GetInstance()->readAllConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger, &m_iError);
+	//读取数据库充电记录
+	m_OperatoreDB.onOpenDbFile();
+	m_OperatoreDB.onQueryChargedRecord(m_vtChargeRecord);
 
 	//读取提交服务器时间间隔
 	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval", QString(g_AppPath) + "\\set.ini", &iError).toInt();
@@ -64,7 +67,7 @@ chargingOption::~chargingOption()
 void chargingOption::initWidget()
 { 
 	ui.tablePage->setCurrentIndex(0);
-	ui.tablePage->removeTab(2);  //暂时屏蔽 “充电记录”功能 delete 20180723
+	//ui.tablePage->removeTab(2);  //暂时屏蔽 “充电记录”功能 delete 20180723
 	 
 	ui.btnAdd_1->setVisible(false);
 	ui.btnDel_1->setVisible(false);
@@ -78,6 +81,8 @@ void chargingOption::initWidget()
 
 	//设置表格的内容  
 	initTabWidget(m_mapBattery, m_mapBatteryModel); 
+
+	initTabWidget(m_vtChargeRecord);
 
 	// 初始化Combo
 	ui.cmbCloset->addItem("全部");
@@ -114,8 +119,28 @@ void chargingOption::initComboBoxWidget()
 	if (m_ComboBoxBalance == NULL)
 		m_ComboBoxBalance = new MyQComboBox(ui.tableBatteryModel);
 	m_ComboBoxBalance->setVisible(false);
+
+	for (auto itBattery : m_mapBattery)
+		ui.cmbCharger->addItem(QString(itBattery.second.id));
+	ui.cmbCharger->setCurrentIndex(0);
+
+
+	ui.dateTime_Begin->setDateTime(QDateTime::currentDateTime());
+	ui.dateTime_End->setDateTime(QDateTime::currentDateTime());
 }
 
+auto pNewLabe = [](QWidget* parent, QString str) -> QLabel*	{
+	QLabel *lab = new QLabel(str);
+	return lab;
+};
+auto pNewTableWidgetItem = [](QString str) -> QTableWidgetItem*	{
+	QTableWidgetItem *item0 = new QTableWidgetItem(str);
+	return item0;
+};
+auto pSetDisEnable = [](QTableWidgetItem* pItemTemp) {
+	pItemTemp->setFlags(pItemTemp->flags() & (~Qt::ItemIsEditable)); //不可编辑
+	pItemTemp->setFlags(pItemTemp->flags() & (~Qt::ItemIsSelectable)); //不可选中
+};
 //初始化Tab控件
 void chargingOption::initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& mapBatteryModel)
 {
@@ -149,24 +174,22 @@ void chargingOption::initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& m
 	ui.tableBatteryModel->setColumnCount(9);
 	ui.tableBatteryModel->setSelectionMode(QAbstractItemView::SingleSelection);  //单选 
 	headerLabels.clear();
-	headerLabels << "型号编号"  << "无人机型号" << "容量" << "充电电压" << "充电电流" \
+	headerLabels << "型号编号" << "无人机型号" << "容量" << "充电电压" << "充电电流" \
 		<< "满电电压" << "储存电压" << "电池结构" << "是否平衡";
 	ui.tableBatteryModel->setHorizontalHeaderLabels(headerLabels);
+	ui.dateTime_Begin->setDisplayFormat("yyyy-MM-dd");
+	ui.dateTime_End->setDisplayFormat("yyyy-MM-dd");
+
+
+
+	ui.tableChargeRecord->setColumnCount(7);
+	ui.tableChargeRecord->setSelectionMode(QAbstractItemView::SingleSelection);  //单选 
+	headerLabels.clear();
+	
 
 	int iRow = mapBattery.size();
 	ui.tableBattery->setRowCount(iRow);
-	auto pNewLabe = [](QWidget* parent, QString str) -> QLabel*	{
-		QLabel *lab = new QLabel(str);
-		return lab;
-	};
-	auto pNewTableWidgetItem = [](QString str) -> QTableWidgetItem*	{
-		QTableWidgetItem *item0 = new QTableWidgetItem(str);
-		return item0;
-	};
-	auto pSetDisEnable = [](QTableWidgetItem* pItemTemp) {
-		pItemTemp->setFlags(pItemTemp->flags() & (~Qt::ItemIsEditable)); //不可编辑
-		pItemTemp->setFlags(pItemTemp->flags() & (~Qt::ItemIsSelectable)); //不可选中
-	};
+
 	auto pNewQComboBox1 = [&](QWidget* parent, int index) -> QComboBox*	{
 		QComboBox *ComboBox = new QComboBox();
 		for (MAP_BATTERY_MODEL_IT it2 = m_mapBatteryModel.begin(); it2 != m_mapBatteryModel.end(); it2++)
@@ -226,6 +249,9 @@ void chargingOption::initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& m
 	//自动调整最后一列的宽度使它和表格的右边界对齐  
 	ui.tableBatteryModel->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+
+	
+
 	//设置电池型号表格的内容  
 	iRow = mapBatteryModel.size();
 
@@ -261,6 +287,56 @@ void chargingOption::initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& m
 	m_ComboBoxBalance->addItem(QString("非平衡"));
 	ui.tableBattery->blockSignals(false);
 	ui.tableBatteryModel->blockSignals(false);
+}
+
+void chargingOption::initTabWidget(QVector<stChargeRecord> &vtChargeRecord)
+{
+	char szTemp[256] = { 0 };  QString strTemp;
+	ui.tableChargeRecord->clear();
+	QStringList headerLabels; headerLabels << "电池编号" << "开始电压" << "结束电压" << "开始时间" << "结束时间" \
+		<< "时间间隔" << "备注";
+	ui.tableChargeRecord->setHorizontalHeaderLabels(headerLabels);
+
+	ui.tableChargeRecord->setColumnWidth(0, 65);
+	ui.tableChargeRecord->setColumnWidth(1, 65);
+	ui.tableChargeRecord->setColumnWidth(2, 65);
+	ui.tableChargeRecord->setColumnWidth(3, 135);
+	ui.tableChargeRecord->setColumnWidth(4, 135);
+	ui.tableChargeRecord->setColumnWidth(5, 69);
+	//ui.tableChargeRecord->setColumnWidth(6, 80);
+
+	//自动调整最后一列的宽度使它和表格的右边界对齐  
+	//ui.tableChargeRecord->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+	//设置充电记录表格的内容  
+	int iRow = vtChargeRecord.size();
+	ui.tableChargeRecord->setRowCount(iRow);
+	iRow = 0;
+	// "电池编号" << "开始电压" << "结束电压" << "开始时间" << "结束时间" 	<< "时间间隔" << "备注" 
+	for (QVector<stChargeRecord>::iterator it = vtChargeRecord.begin(); it != vtChargeRecord.end(); it++, iRow++)
+	{
+		strTemp.sprintf("%04d", it->batteryId);
+		ui.tableChargeRecord->setItem(iRow, 0, pNewTableWidgetItem(strTemp));  //电池编号
+		//pSetDisEnable(ui.tableChargeRecord->item(iRow, 0));   //不可编辑，不可选中 
+
+		strTemp.sprintf("%4.2f",it->beginVol);
+		ui.tableChargeRecord->setItem(iRow, 1, pNewTableWidgetItem(strTemp));  //开始电压
+		//pSetDisEnable(ui.tableChargeRecord->item(iRow, 1));   //不可编辑，不可选中  
+
+		strTemp.sprintf("%4.2f", it->endVol);
+		ui.tableChargeRecord->setItem(iRow, 2, pNewTableWidgetItem(strTemp));  //结束电压
+		//pSetDisEnable(ui.tableChargeRecord->item(iRow, 2));   //不可编辑，不可选中  
+
+		ui.tableChargeRecord->setItem(iRow, 3, pNewTableWidgetItem(it->beginTime));  //开始时间
+
+		ui.tableChargeRecord->setItem(iRow, 4, pNewTableWidgetItem(it->endTime));  //结束时间
+
+		ui.tableChargeRecord->setItem(iRow, 5, pNewTableWidgetItem(it->pendingTime));  //时间间隔
+
+		ui.tableChargeRecord->setItem(iRow, 6, pNewTableWidgetItem(it->strRemrk));  //备注
+	}
+
+
 }
 
 void chargingOption::initConnectWidget()
@@ -381,8 +457,8 @@ void chargingOption::OnBtnSave3()
 	}
 	str = ui.lineEdit_2->text();
 	temp = str.toInt();
-	if (temp < 10000){
-		QMessageBox::information(this, "提示", "网络提交时间间隔不建议小于10000毫秒。");
+	if (temp < 5000){
+		QMessageBox::information(this, "提示", "网络提交时间间隔不建议小于5000毫秒。");
 		ui.lineEdit_2->setText(QString::number(m_SubmitInterval));
 
 		return;
@@ -415,9 +491,44 @@ void chargingOption::OnBtnSave3()
 
 void chargingOption::OnBtnQuery_1()
 {
-	m_OperatoreDB.onOpenDbFile();
-	bool ff = m_OperatoreDB.onCreateChargedRecordTable();
-	ff = false;
+	//检测ui勾选项
+	int nChargerId = 0; QDateTime* beginTime = nullptr; QDateTime *endTime = nullptr;
+	//
+	if (Qt::Checked == ui.checkBox_1->checkState())
+	{
+		nChargerId = ui.cmbCharger->currentText().toInt();
+	}
+	if (Qt::Checked == ui.checkBox_2->checkState())
+	{
+		QDateTime* pDateTime2 = new QDateTime();
+		QDateTime DataTemp2 = ui.dateTime_Begin->dateTime();
+		pDateTime2->swap(DataTemp2);
+		beginTime = pDateTime2;
+	}
+	if (Qt::Checked == ui.checkBox_3->checkState())
+	{
+		QDateTime* pDateTime3 = new QDateTime();
+		QDateTime DataTemp3 = ui.dateTime_End->dateTime();
+		pDateTime3->swap(DataTemp3); 
+		endTime = pDateTime3;
+	}
+	if (Qt::Checked == ui.checkBox_2->checkState() && Qt::Checked == ui.checkBox_3->checkState()){
+		 
+		if (*beginTime > *endTime){
+			QMessageBox::about(this, "提示", "开始时间不能大于结束时间");
+			return;
+		}
+	}
+	//重新查询数据库
+	m_OperatoreDB.onQueryChargedRecord(m_vtChargeRecord, nChargerId, beginTime, endTime);
+
+	//更新ui
+	initTabWidget(m_vtChargeRecord);
+	
+	//清理工作
+	if (beginTime){ delete beginTime; }
+	if (endTime){ delete endTime; }
+
 }
 
 //新增加

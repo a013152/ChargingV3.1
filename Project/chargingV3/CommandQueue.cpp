@@ -40,7 +40,10 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 	else{
 		::Sleep(100);
 		if (0 != GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
+		{
 			emit printfed(QString::fromLocal8Bit(szPrintf));
+			emit readedCAN(QString::fromLocal8Bit(szPrintf));
+		}
 	}
 
 	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;

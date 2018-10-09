@@ -48,6 +48,8 @@ public:
 
 	void initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& mapBatteryModel);  //初始化Tab控件
 
+	void initTabWidget(QVector<stChargeRecord> &vtChargeRecord);
+
 	void initComboBoxWidget();
 
 	//初始化绑定
@@ -129,6 +131,8 @@ private:
 
 	MAP_CLOSET m_mapCloset;  MAP_BATTERY_MODEL m_mapBatteryModel; MAP_BATTERY m_mapBattery; 
 	MAP_CHARGER m_mapCharger;
+	QVector<stChargeRecord> m_vtChargeRecord;
+
 	unsigned int m_SubmitInterval;
 	unsigned int m_ChargeLimitTime;
 	float m_fOverHeatTemperature;
@@ -137,6 +141,7 @@ private:
 	QTabWidget *tabWidget; 
 	QVBoxLayout *mainLayout; 
 	COperatoreDBFile m_OperatoreDB;
+	
 
 	bool isChanged, isChanged2; //修改过的标志、如果修改电池内容设置为true， 保存后设置为false
 	//bool isChangedBatteryModel = false; //修改过的标志、如果修改电池内容设置为true， 保存后设置为false

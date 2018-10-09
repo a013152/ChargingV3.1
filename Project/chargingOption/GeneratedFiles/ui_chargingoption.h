@@ -137,7 +137,7 @@ public:
         btnQuery_1->setGeometry(QRect(670, 280, 81, 41));
         cmbCharger = new QComboBox(tab);
         cmbCharger->setObjectName(QStringLiteral("cmbCharger"));
-        cmbCharger->setGeometry(QRect(700, 60, 51, 21));
+        cmbCharger->setGeometry(QRect(690, 60, 61, 21));
         label_8 = new QLabel(tab);
         label_8->setObjectName(QStringLiteral("label_8"));
         label_8->setGeometry(QRect(655, 60, 48, 16));
@@ -237,7 +237,7 @@ public:
         btnRefresh_2->setText(QApplication::translate("chargingOptionClass", "\345\210\267\346\226\260", 0));
         tablePage->setTabText(tablePage->indexOf(tab_2), QApplication::translate("chargingOptionClass", "\347\224\265\346\261\240\345\236\213\345\217\267", 0));
         btnQuery_1->setText(QApplication::translate("chargingOptionClass", "\346\237\245\350\257\242", 0));
-        label_8->setText(QApplication::translate("chargingOptionClass", "\345\205\205\347\224\265\345\231\250\357\274\232", 0));
+        label_8->setText(QApplication::translate("chargingOptionClass", "\347\224\265\346\261\240\357\274\232", 0));
         checkBox_1->setText(QApplication::translate("chargingOptionClass", "\344\275\277\350\203\275", 0));
         checkBox_2->setText(QString());
         label_9->setText(QApplication::translate("chargingOptionClass", "\345\274\200\345\247\213\346\227\266\351\227\264\357\274\232", 0));
