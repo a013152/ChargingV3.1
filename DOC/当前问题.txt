@@ -1,11 +1,11 @@
 
-1、充电设置ui“充电中”状态有变成“充电闲置”再变化“充电中” ， OK
+1、充电设置ui“充电中”状态有变成“充电闲置”再变化“充电中”
 
-2、电压温度显示功能  OK
+2、电压温度显示功能   ， 温度在充电或者放电时有归零的情况。 (命令连续发送，温度数据和S2C粘在一起了，添加“，”分离)OK
 
 3、 放电功能  OK
 
-4、 记录充电功能。
+4、 记录充电功能。  OK
 	思路：写入统一ChargingV3中触发充电中标志，定时器中记录，记录开始的充电时间戳、开始电压，结束时间戳，结束电压，时间间隔。 读取在ChargingOption中。
 	具体做法： 在电池信息结构体中添加记录结构体{bool 开始充电记录标志，bool 结束充电记录标志，QString 记录备注 QDateTime开始时间，QDateTime结束时间）
 	在readSerial/readCAN函数中判断充电状态，如果从充电变为闲置，检测是否需要记录充电结束。
@@ -16,13 +16,19 @@ insert into chargedRecord (chargerId, beginVol, state_, begin_charge, remark) va
 UPDATE chargedRecord  SET endVol=, , )  4.20,  state_ = 1, end_charge=' 2018-10-08 23:27:19',charge_interval='00:00:14' WHERE chargeId=101;
 	在程序中执行报错，在navigate Sqlite中执行正确。
 		错误提示 QSqlError("", "Unable to fetch row", "No query")
+ 
 
-UPDATE chargedRecord  SET endVol= 0.00,  state_=1, end_charge='2018-10-09 01:01:04', charge_interval='00:00:36' WHERE chargerId=101 ORDER BY id desc limit 1;
-
-5 、显示充电记录，
+5 、显示充电记录， OK
 	需要使用chargingOption项目添加读取sqlite数据库，
 	 需要ui列表显示，
-	需要ui时间筛选。 sql语句
+	需要ui时间筛选。 sql语句  
 	
 
 6、能飞充电板，表面通讯超时实际已经发送到下位机问题 OK（现象未重现，不知道是否解决） 
+
+
+7、 处理远程服务器数据库的申请充电，
+
+8、 整体测试
+
+9、文档不全

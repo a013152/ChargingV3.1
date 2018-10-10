@@ -308,7 +308,11 @@ void charging::OnBtnChargingOrStopCharging1()
 		else if (itCharger->second.chargerType == DJI_Charger)
 		{
 			int iResult = 0;
-			if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == true)
+			if (groupBox->getCharging() == false){
+				if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == false)
+					return;
+			}
+			//if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == true)
 			{			
 				//拼装 读取充电状态命令 ，再设置充电状态命令
 				QVector<stCommand> vtStCommand;
@@ -393,10 +397,10 @@ void charging::OnBtnDisChargingOrStop1()
 			}	
 			else if (itCharger->second.chargerType == DJI_Charger)
 			{
-				//拼装 读取充电状态命令 ，再设置充电状态命令
+				//拼装 读取放电状态命令 ，再设置放电状态命令
 				QVector<stCommand> vtStCommand;
 				QString strCommad;
-				strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取充电状态命令
+				strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
 				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
 				vtStCommand.append(stCommR);
 				strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getDisCharging() ? 0 : 1);  //设置放电状态命令
@@ -977,6 +981,10 @@ void charging::OnBtnSysClose()
 		}
 		m_OperDB.onCloseDbFile();
 		//在线程run结束前关闭串口和can进程
+		m_ConnectDBThread.stop();
+		while (!m_ConnectDBThread.isFinished()){
+			Sleep(10);
+		} 
 		/*
 		SERIAL_PORT->ClosePort();
 		onOpenOrCloseCanDevice(false);*/

@@ -509,7 +509,7 @@ void charging::onReadCAN(QString strContent)
 		if (strList[1].compare("F1") == 0){
 			//"S2C,F1,2,打开设备失败。" /"S2C,F1,0,打开设备成功。"
 
-			if (strList[1].compare("0") == 0){
+			if (strList[2].compare("0") == 0){
 				GET_CAN->m_bOpenCanDevice = true;
 			}
 		}
@@ -563,7 +563,12 @@ void charging::onReadCAN(QString strContent)
 					}
 					else if (strList[3].toInt() == 2) //超时
 					{
-						itCharger->second.bOnline = false;
+						if (strList[4] == "收到数据：空")
+							itCharger->second.bOnline = false;
+						else{
+							
+						}
+						//return;
 					}
 				}
 				if (itLevel != m_mapLevel.end() && strList[3].toInt() == 0)//返回成功
@@ -637,10 +642,11 @@ void charging::onReadCAN(QString strContent)
 									{
 										if (getBatteryIdRelatedInfo(QString::fromLocal8Bit(itBattery->second.id), itCloset2, itBattery2, itBatteryModel2, itCharger2, itLevel2))
 										{
-											if (itBattery2->second.stRecord.pendingEndFlag)
+											if (itBattery2->second.stRecord.pendingEndFlag 
+												&& itBattery2->second.timeLockChargeRecord.elapsed() > 5000)  //
 											{
 												itBattery2->second.stRecord.pendingEndFlag = false;
-												itBattery2->second.stRecord.endChargeFlag = true;//满电/静默，停止充电
+												itBattery2->second.stRecord.endChargeFlag = true;//满电/静默，准备写入数据库记录停止充电,
 											}
 										}
 										charger_state[indexArray] = STATE_FREE;//"充电器闲置";
@@ -684,8 +690,6 @@ void charging::onReadCAN(QString strContent)
 							}
 						}
 					}
-						 
-					 
 				}
 			}
 			

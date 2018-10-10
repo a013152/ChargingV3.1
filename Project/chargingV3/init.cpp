@@ -13,6 +13,9 @@ void charging::init_now()
 	 
 	//运行线程 测试连接服务器数据库
 	m_ConnectDBThread.start(QThread::NormalPriority);
+	m_ConnectDBThread.doTestConnectDB();
+	m_ConnectDBThread.setMainProcess(this);
+
 	m_OperDB.onOpenDbFile();
 	printfDebugInfo("01开启测试连接服务器线程，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	qtime1.restart();
@@ -194,6 +197,7 @@ void charging::initConnectWidget()
 	QObject::connect(&m_CommandQueue, SIGNAL(readedCAN(QString)), this, SLOT(onReadCAN(QString)));
 	QObject::connect(&m_CommandQueue, SIGNAL(printfed(QString)), this, SLOT(updateTextEdit(QString)));
 	QObject::connect(&m_CommandQueue, SIGNAL(readyGetBatteryState( int)), this, SLOT(OnReadyGetBatteryState( int)));
+	QObject::connect(this, SIGNAL(printfed(QString)), this, SLOT(updateTextEdit(QString)));
 	QObject::connect(this, SIGNAL(refreshUI(QString)), this, SLOT(onRefreshUI(QString)));
 	 
 	QObject::connect(this, &charging::ExitApp, this, &charging::OnExitApp);

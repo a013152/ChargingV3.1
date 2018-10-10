@@ -457,7 +457,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		}
 		if (0x01 == dataObj.Data_[1] ){
 			//sprintf_s(szTemp, 256, "设置充电结束。返回码:%02X", dataObj.Data_[0]);
-			sprintf_s(szTemp, 256, "%s,F9,%s,%d,%d", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
+			sprintf_s(szTemp, 256, "%s,F9,%s,%d,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
 			m_strDebugData = szTemp;
 			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 		}
@@ -511,77 +511,83 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			for (int i = 0; i < 4; i++)	{
 				temp2[i] = ((temp1 << i)&dataObj.Data_[2])>>i	;
 			}
-			if (temp2[0])
-				m_strDebugData = "适配器故障。";
-			if (temp2[1])
-				m_strDebugData = "电池柜单元温度过高。";
-			if (temp2[2])
-				m_strDebugData = "电池柜单元温度过低。";
-			if (temp2[3])
-				m_strDebugData = "电池柜单元风扇异常。";
-			//if (m_AppWnd && dataObj.Data_[2] != 0x00) { ::PostMessage(m_AppWnd, WM_MSG_DISPLAY_DATA, 0, 1); }
-			uint16_t batteryOnline = Uint8ToUint16(&dataObj.Data_[3]);
-			temp1 = 0x01;
-			char szTempOnline[16] = { 0 };
-			for (int i = 0; i < 15; i++)
+			do 
 			{
-				static bool isPreOnline = false;
-				isPreOnline = m_BatteryArray[i].isOline_;
-				temp3 = (temp1 << i);
-				temp4 = (temp3 & batteryOnline);
-				szTempOnline[i] = (temp4 >> i == 0x01)?'1':'0';
-				
-			}
-			//add 20180929 保存电池在线情况
-			sprintf_s(szTemp, 256, "%s,F8,%s,%d,%s", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, szTempOnline);
-			m_strDebugData += szTemp;
-
-			//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
-			int  dataDynaLength = dataObj.getLen() - 7 - 5 -2; //数据头长度7，数据体前5（返回码+操作类型+电池1~15在位信息），数据CRC16长度2
-			if (dataDynaLength >0 && dataDynaLength % 19 ==0){
-				int loop = dataDynaLength / 19;
-				for (int i = 0; i < loop; i++){
-					static float nPreVol;
-					uint8_t szTempData[20] = { 0 };
-					memcpy(szTempData, &dataObj.Data_[5 + i*19] , 19);
-					stDJI_DanyBatteryData stObj;
-					stObj.packetUp(szTempData, 19);
-					//四节电池的电压
-					int volTemp = stObj.volDetail_[0];		volTemp += stObj.volDetail_[1];	
-					volTemp += stObj.volDetail_[2];			volTemp += stObj.volDetail_[3];
-					nPreVol = m_BatteryArray[stObj.position_ - 1].vol_;
-					m_BatteryArray[stObj.position_ - 1].vol_ = volTemp / 4000.0f;
-					m_BatteryArray[stObj.position_ - 1].tempterator = stObj.temperater / 10.0f;
-					//大于0.2V更新ui
-				//	if(fabs(nPreVol - m_BatteryArray[stObj.position_ - 1].vol_) > 0.2 && m_AppWnd)
-					//	::PostMessage(m_AppWnd, WM_MSG_REFRESH_BATTERY, stObj.position_ - 1, 0);
-					//sprintf_s(szTemp, 256, "电池号：%d , 状态：%s,电压:%3.1fV, 温度：%3.1f℃\n",\
-					//	stObj.position_,  stObj.getBatteryState(), volTemp / 4000.0f, stObj.temperater / 10.0f);
-
-
-					//add 20180929 
-					sprintf_s(szTemp, 256, ",%d %d %3.1f %3.1f",     //pos:%d state:%d vol:%3.1fV T:%3.1f
-						stObj.position_, stObj.state_, volTemp / 4000.0f, stObj.temperater / 10.0f);
-					m_strDebugData += szTemp;
-				} 
-			} 
-
-			//电池在线情况
-			
-			temp1 = 0x01;
-			for (int i = 0; i < 15; i++)
-			{
-				static bool isPreOnline = false;
-				isPreOnline = m_BatteryArray[i].isOline_;
-				temp3 = (temp1 << i);
-				temp4 = (temp3 & batteryOnline);
-				m_BatteryArray[i].isOline_ = (temp4 >> i == 0x01);
-				if (false == m_BatteryArray[i].isOline_){
-					//电池不在线，温度电压清零
-					m_BatteryArray[i].vol_ = 0;
-					m_BatteryArray[i].tempterator = 0;
+				if (temp2[0] || temp2[1] || temp2[2] || temp2[3])
+				{
+					sprintf_s(szTemp, 256, "S2C,F8,%s,%d,", m_strCurrentCanID.c_str(), enCANDevieErrorCode::DetailError);
+					m_strDebugData = szTemp;
+					if (temp2[0])
+						m_strDebugData += "适配器故障。";
+					if (temp2[1])
+						m_strDebugData += "电池柜单元温度过高。";
+					if (temp2[2])
+						m_strDebugData += "电池柜单元温度过低。";
+					if (temp2[3])
+						m_strDebugData += "电池柜单元风扇异常。";
+					break;
 				}
-			}
+
+				uint16_t batteryOnline = Uint8ToUint16(&dataObj.Data_[3]);
+				temp1 = 0x01;
+				char szTempOnline[16] = { 0 };
+				for (int i = 0; i < 15; i++)
+				{
+					static bool isPreOnline = false;
+					isPreOnline = m_BatteryArray[i].isOline_;
+					temp3 = (temp1 << i);
+					temp4 = (temp3 & batteryOnline);
+					szTempOnline[i] = (temp4 >> i == 0x01) ? '1' : '0';
+
+				}
+				//add 20180929 保存电池在线情况
+				sprintf_s(szTemp, 256, "%s,F8,%s,%d,%s", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, szTempOnline);
+				m_strDebugData += szTemp;
+
+				//获取电池的动态数据（一个电池一组数据，一组数据长19bytes）：位置序号，电压，温度
+				int  dataDynaLength = dataObj.getLen() - 7 - 5 - 2; //数据头长度7，数据体前5（返回码+操作类型+电池1~15在位信息），数据CRC16长度2
+				if (dataDynaLength > 0 && dataDynaLength % 19 == 0){
+					int loop = dataDynaLength / 19;
+					for (int i = 0; i < loop; i++){
+						static float nPreVol;
+						uint8_t szTempData[20] = { 0 };
+						memcpy(szTempData, &dataObj.Data_[5 + i * 19], 19);
+						stDJI_DanyBatteryData stObj;
+						stObj.packetUp(szTempData, 19);
+						//四节电池的电压
+						int volTemp = stObj.volDetail_[0];		volTemp += stObj.volDetail_[1];
+						volTemp += stObj.volDetail_[2];			volTemp += stObj.volDetail_[3];
+						nPreVol = m_BatteryArray[stObj.position_ - 1].vol_;
+						m_BatteryArray[stObj.position_ - 1].vol_ = volTemp / 4000.0f;
+						m_BatteryArray[stObj.position_ - 1].tempterator = stObj.temperater / 10.0f;
+						//大于0.2V更新ui 
+
+						//add 20180929 
+						sprintf_s(szTemp, 256, ",%d %d %3.1f %3.1f",     //pos:%d state:%d vol:%3.1fV T:%3.1f
+							stObj.position_, stObj.state_, volTemp / 4000.0f, stObj.temperater / 10.0f);
+						m_strDebugData += szTemp;
+					}
+					m_strDebugData += ",";//区分后续的命令
+				}
+
+				//电池在线情况
+
+				temp1 = 0x01;
+				for (int i = 0; i < 15; i++)
+				{
+					static bool isPreOnline = false;
+					isPreOnline = m_BatteryArray[i].isOline_;
+					temp3 = (temp1 << i);
+					temp4 = (temp3 & batteryOnline);
+					m_BatteryArray[i].isOline_ = (temp4 >> i == 0x01);
+					if (false == m_BatteryArray[i].isOline_){
+						//电池不在线，温度电压清零
+						m_BatteryArray[i].vol_ = 0;
+						m_BatteryArray[i].tempterator = 0;
+					}
+				}
+
+			} while (0);		
 
 			if (m_pPrintfFun)m_pPrintfFun(1, true);
 		}
@@ -601,7 +607,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		}
 		if (0x01 == dataObj.Data_[1]){
 			//sprintf_s(szTemp, 256, "设置放电结束。返回码:%02X", dataObj.Data_[0]);
-			sprintf_s(szTemp, 256, "%s,F10,%s,%d,%d", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
+			sprintf_s(szTemp, 256, "%s,F10,%s,%d,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
 			m_strDebugData = szTemp;
 		}
 		if (m_pPrintfFun){ m_pPrintfFun(1, true); }

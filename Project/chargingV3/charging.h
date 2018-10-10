@@ -54,6 +54,7 @@ extern char g_AppPath[256];
 
 
 
+class charging;
 
 //设置窗口置顶
 void SetWindowTop(char * _szAppName);
@@ -64,20 +65,34 @@ class CConnectDBThread : public QThread
 	Q_OBJECT
 public:
 	CConnectDBThread();
-	void stop();
+	
+	void setMainProcess(charging* pthis){ m_pMainProcess = pthis; }
+
+	void stop(){ stopped = true; }  //设置线程停止标志
+
+	void doTestConnectDB(){ m_bTestConnectDB = true; } //测试连接数据库，是否通畅
+
+	void doDetectServerDB(){ m_bDetectServerDB = true; } //连接数据库：提交电池数据，检测申请充电
 
 signals:
 	void connectDBResult(bool);  //连接数据库结果信号
 
 protected:
 	void run();
+
 			
 private:
 	volatile bool stopped;
+
+	bool m_bTestConnectDB = false;
+	bool m_bDetectServerDB = false;
+ 
+
+	charging * m_pMainProcess = NULL;
 };
 
 
-//连接数据库线程类
+//隐藏调试信息UI线程类
 class CThreadShowOrHideDebugInfo : public QThread
 {
 	Q_OBJECT
@@ -210,6 +225,8 @@ signals:
 
 	void AddCommamdIntoQueue(stCommand strCommand);
 
+	void printfed(QString strPrintf);
+
 public:
 
 	//初始化函数
@@ -228,9 +245,9 @@ public:
 	//检测放电电条件，返回true 表示能充, iResult返回不能充电的原因：
 	bool detectDisChargingCondition(QString strBatteryId, int* iResult, bool showDebugInfo = true);
 
-	void detectServerBatteryState();    //检测服务器电池状态：申请充电或停止
+	void detectServerBatteryState();    //检测服务器电池状态：申请充电或停止 本函数在线程中执行，不可操作UI
 
-	void detectSubmitBatteryState();    //提交服务器电池状态: 电压、电流、温度
+	void detectSubmitBatteryState();    //提交服务器电池状态: 电压、电流、温度 本函数在线程中执行，不可操作UI
 
 	void submitBatteryModel(MAP_BATTERY& mapNew, MAP_BATTERY& mapOld);  //提交电池型号
 

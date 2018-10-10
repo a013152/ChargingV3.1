@@ -21,7 +21,7 @@ class CCanProcess
 	CCanProcess();
 
 public:
-	bool m_bOpenCanDevice = false; //打开CAN设备成功的标志
+	bool m_bOpenCanDevice = false; //打开CAN设备成功的标志, 只有在CAN进程返回“S2C,F1,0,打开设备成功。” 设置为true
 	~CCanProcess();
 
 	static CCanProcess* GetInstance();

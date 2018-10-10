@@ -169,8 +169,8 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 			if (itBattery->second.state == 1){
 				if (showDebugInfo)
 				{
-					printfDebugInfo(strBatteryId + "正在放电", enDebugInfoPriority::DebugInfoLevelOne, true);
-					showTipsMessagebox(1, strBatteryId + "电池正在放电，充电命令无效!");
+					printfDebugInfo(strBatteryId + "正在充电", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "电池正在充电，充电命令无效!");
 				}
 				*iResult = ERROR_BATTERY_CHARGING;
 				return false;

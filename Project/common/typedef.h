@@ -109,6 +109,7 @@ struct  stBatteryInfo
 	bool isApplyCharging;       //是否需要预充（针对同组的电池正在充电，）
 	QTime timeLockCloseLoop;	//禁止断开回路的计时器 
 	QTime timeLockUI;   //禁止刷新对应ui的计时器
+	QTime timeLockChargeRecord;   //禁止刷新充电记录标志计时器
 	stChargeRecord stRecord;
 	stBatteryInfo() : dbid(0), online(1), modelId(0), \
 		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false){
@@ -116,6 +117,7 @@ struct  stBatteryInfo
 		memset(user, 0, 256);
 		timeLockCloseLoop.start();
 		timeLockUI.start();
+		timeLockChargeRecord.start();
 		//memset(gridNO, 0, 4);
 	}
 	stBatteryInfo(const stBatteryInfo& other)   //拷贝构造函数   
@@ -133,6 +135,7 @@ struct  stBatteryInfo
 		strcpy(this->user, other.user);
 		this->timeLockCloseLoop = other.timeLockCloseLoop;
 		this->timeLockUI = other.timeLockUI;
+		this->timeLockChargeRecord = other.timeLockChargeRecord;
 		this->stRecord = other.stRecord;
 	}
 };

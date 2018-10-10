@@ -27,12 +27,15 @@ void charging::timer_out()
 		//qDebug() << "detect submit battery elaped:" << iElaped;
 		if (s_Qtime.elapsed() >= m_SubmitInterval && m_bContinueSubmit)	//大于检测申请时间间隔 默认15秒
 		{  
-			detectServerBatteryState();//检测 服务器的电池申请情况	
+			//detectServerBatteryState();//检测 服务器的电池申请情况	
 
-			detectSubmitBatteryState(); //提交电池信息
+			//detectSubmitBatteryState(); //提交电池信息
+			m_ConnectDBThread.doDetectServerDB();
 
 			s_Qtime.restart();
 		}
+		iElaped = s_Qtime.elapsed();
+		qDebug() << "interval elaped:" << iElaped;
 	} 
 	else if (false == m_bConnectServerIsSeccuss && m_bContinueSubmit){
 		//尝试开启线程测试网络连接情况 20180620
@@ -163,15 +166,18 @@ void charging::detectSubmitBatteryState()
 		str += QString::number(temp / 1000);
 		str += "秒";
 		str += QString::number(temp % 1000); str += "毫秒";//
-		printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne);
+		//printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne);
+		emit printfed(str);
 	}
 	else
-		printfDebugInfo("\r\n电池数据上传失败", enDebugInfoPriority::DebugInfoLevelOne);
-
+	{	//printfDebugInfo("\r\n电池数据上传失败", enDebugInfoPriority::DebugInfoLevelOne);
+		emit printfed("\r\n电池数据上传失败");
+	}
 }
-//检测申请电池
+//检测申请电池 本函数在线程中执行，不可操作UI
 void charging::detectServerBatteryState()
 { 
+
 	if (m_bConnectServerIsSeccuss){
 		//获取服务器数据库的电池申请情况	 
 		battery_apply = m_submitServer.msg_get_now(battery_my_id);
@@ -296,61 +302,117 @@ void charging::processApplyBatteryToCharging()
 			{
 				if (itCharger->second.bOnline)  
 				{
-					if (itCharger->second.isCharging || itCharger->second.isDisCharging)  //在充电或者放电
+					bool stopFlag = false;
+					if (itCharger->second.chargerType == NF_Charger)
 					{
-						bool stopFlag = false;
-						if (itCharger->second.chargerType == NF_Charger){
+						if (itCharger->second.isCharging || itCharger->second.isDisCharging)  //在充电或者放电
+						{
 							if (stopByLocalID(strId))
-							{
-								stopFlag = true;								
-							}
-							else if (itCharger->second.chargerType == DJI_Charger)
-							{
-								QVector<stCommand> vtStCommand;	QString strCommad;
-								strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
-								stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
-								vtStCommand.append(stCommR);
-								strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 2);  //设置停止充电状态命令
-								stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
-								vtStCommand.append(stCommW);
-								m_CommandQueue.addVtCommand(vtStCommand);
 								stopFlag = true;
-							}
+
 						}
-						if (stopFlag){
+						else if (itBatteryModel->second.balance == false &&  //非智能 电池
+							itCharger->second.isDisCharging == false)  //没放电
+						{
+							//非智能电池触发放电
+							QString strId = QString::fromLocal8Bit(itBattery->second.id);
+							QString strConnectType = itBatteryModel->second.connectType;//电池结构
+							QString strStorageVol; strStorageVol.sprintf("%5.2f", itBatteryModel->second.storageVoltage);//存储电压
+							toSend("Q," + QString::number(itCharger->second.id) + "," + strConnectType.left(2) + "," + strStorageVol, stCommand::hight);
 							int indexArray = batteryIDtoArrayIndex(strId);
 							battery_state_enable_refresh[indexArray] = false;
-							itBattery->second.timeLockUI.restart();  //触发停止充电 ，则2秒内禁止刷新充电状态
+							charger_state[indexArray] = STATE_DISCHARGING;//"放电中";
+							m_vtUiChargGrid[indexArray % MAX_BATTERY]->setChargerState(charger_state[indexArray]);
+							printfDebugInfo(" 远程触发" + strId + "放电。", enDebugInfoPriority::DebugInfoLevelOne);
+							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ")
+								+ " 远程触发" + strId + "放电\n");
+						}
+					}
+					else if (itCharger->second.chargerType == DJI_Charger)
+					{
+						if (itBattery->second.state == 1)//正在充电
+						{
+							//停止充电
+							QVector<stCommand> vtStCommand;	QString strCommad;
+							strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+							stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+							vtStCommand.append(stCommR);
+							strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 2);  //设置停止充电状态命令
+							stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+							vtStCommand.append(stCommW);
+							m_CommandQueue.addVtCommand(vtStCommand);
+							stopFlag = true;
+						}
+						else if (itBattery->second.state == 3 || itBattery->second.state == 0)
+						{
+							//远程触发放电
+							//拼装 读取放电状态命令 ，再设置放电状态命令
+							QVector<stCommand> vtStCommand;
+							QString strCommad;
+							strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
+							stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+							vtStCommand.append(stCommR);
+							strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, itBattery->first % 100, 1);  //设置放电状态命令
+							stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+							vtStCommand.append(stCommW);
+							m_CommandQueue.addVtCommand(vtStCommand);
+
+							//UI更新
+							int indexArray = batteryIDtoArrayIndex(strId);
+							battery_state_enable_refresh[indexArray] = false;
+							itBattery->second.timeLockUI.restart();
 							itBattery = itLevel->second.mapBattery.find(itBattery->first);
 							itBattery->second.timeLockUI.restart();
-							charger_state[indexArray] = STATE_FREE;//"充电器闲置";
-							m_vtUiChargGrid[indexArray % MAX_BATTERY]->setChargerState(charger_state[indexArray]);
-							printfDebugInfo("远程停止" + strId + "充放电", enDebugInfoPriority::DebugInfoLevelOne);
-							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + "远程停止" + strId + "充电\n");
-							//取消预充
-							removeChargingQueue(strId);
+
+							printfDebugInfo(strId + "远程触发放电", enDebugInfoPriority::DebugInfoLevelOne);
+							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "远程触发放电\n");
+ 
+							charger_state[indexArray] =  STATE_DISCHARGING;//"放电中";
 						}
-					
+						else if (itBattery->second.state == 2)
+						{
+							//停止放电
+							//拼装 读取放电状态命令 ，再设置放电状态命令
+							QVector<stCommand> vtStCommand;
+							QString strCommad;
+							strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
+							stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+							vtStCommand.append(stCommR);
+							strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, itBattery->first % 100, 0);  //设置放电状态命令
+							stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+							vtStCommand.append(stCommW);
+							m_CommandQueue.addVtCommand(vtStCommand);
+
+							//UI更新
+							int indexArray = batteryIDtoArrayIndex(strId);
+							battery_state_enable_refresh[indexArray] = false;
+							itBattery->second.timeLockUI.restart();
+							itBattery = itLevel->second.mapBattery.find(itBattery->first);
+							itBattery->second.timeLockUI.restart();
+							charger_state[indexArray] = STATE_FREE;//闲置;
+
+							printfDebugInfo(strId + "远程停止放电", enDebugInfoPriority::DebugInfoLevelOne);
+							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "远程停止放电\n");
+
+							stopFlag = true;
+						}
+						
 					}
-					else if (itBatteryModel->second.balance == false &&  //非智能 电池
-						itCharger->second.isDisCharging == false )  //没放电
-					{
-						//非智能电池触发放电
-						QString strId = QString::fromLocal8Bit(itBattery->second.id);
-						QString strConnectType = itBatteryModel->second.connectType;//电池结构
-						QString strStorageVol; strStorageVol.sprintf("%5.2f", itBatteryModel->second.storageVoltage);//存储电压
-						toSend("Q," + QString::number(itCharger->second.id) + "," + strConnectType.left(2) + "," + strStorageVol, stCommand::hight);
+					if (stopFlag){
 						int indexArray = batteryIDtoArrayIndex(strId);
 						battery_state_enable_refresh[indexArray] = false;
-						charger_state[indexArray] = STATE_DISCHARGING;//"放电中";
+						itBattery->second.timeLockUI.restart();  //触发停止充电 ，则2秒内禁止刷新充电状态
+						itBattery = itLevel->second.mapBattery.find(itBattery->first);
+						itBattery->second.timeLockUI.restart();
+						charger_state[indexArray] = STATE_FREE;//"充电器闲置";
 						m_vtUiChargGrid[indexArray % MAX_BATTERY]->setChargerState(charger_state[indexArray]);
-						printfDebugInfo(" 远程触发" + strId + "放电。", enDebugInfoPriority::DebugInfoLevelOne);
-						COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ")
-							+ " 远程触发" + strId + "放电\n");
+						printfDebugInfo("远程停止" + strId + "充放电", enDebugInfoPriority::DebugInfoLevelOne);
+						COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + "远程停止" + strId + "充电\n");
+						//取消预充
+						removeChargingQueue(strId);
 					}
 				}
 			}
-
 			battery_cancel_charging_info.append(item); //add 20180524
 		}
 	}
@@ -475,7 +537,7 @@ void charging::detectTextEdit()
 		s_Qtime.start();
 	}
 	int iElaped = s_Qtime.elapsed();
-	qDebug() << "clear TextEdit elaped:" << iElaped;
+	//qDebug() << "clear TextEdit elaped:" << iElaped;
 	if (s_Qtime.elapsed() >= 10 * 60 * 1000)	//10分钟删一次
 	{
 		QString str = m_TextEdit_DebugInfo->toPlainText(), str2;
@@ -635,6 +697,7 @@ void charging::detectChargeRecord()
 			itBattery->second.stRecord.beginTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 			itBattery->second.stRecord.beginChargeFlag = false;
 			itBattery->second.stRecord.pendingEndFlag = true;
+			itBattery->second.timeLockChargeRecord.restart();  //重新计时，防止DJI电池读取错误状态3
 		}
 		else if (itBattery->second.stRecord.endChargeFlag)
 		{

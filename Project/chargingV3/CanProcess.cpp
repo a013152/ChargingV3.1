@@ -56,9 +56,10 @@ bool CCanProcess::startCanDeviceProcess(char * szPrintf)
 	}
 	s_strTemp = COM_F::MBytesToWString(szServerPath);
 	if (s_canDeviceProcessId == 0){
-
+		std::wstring strPath = COM_F::getAppDir(); strPath += L"set.ini";
+		int showMode = GetPrivateProfileIntW(L"SET", L"canDeviceProcessShowMode", 0, strPath.c_str()); // 显示模式 0 隐藏，1 显示
 		//启动进程
-		COM_F::startProcessFromPath(s_strTemp.c_str(), 1);
+		COM_F::startProcessFromPath(s_strTemp.c_str(), showMode);
 		::Sleep(1000);
 		s_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
 

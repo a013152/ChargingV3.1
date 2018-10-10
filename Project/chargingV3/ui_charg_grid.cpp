@@ -208,9 +208,9 @@ void ui_charg_grid::setBatteryState(QString strState, QString strVol, QString st
 		float fvol = strVol.toFloat();
 		if (fvol < 3.5)
 			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_2_online.png);}");
-		else if (fvol >= 3.5 && fvol < 4.10)
+		else if (fvol >= 3.5 && fvol < 4.19)
 			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_3_online_half.png);}");
-		else if (fvol >= 4.10 && fvol < 4.3)
+		else if (fvol >= 4.19 && fvol < 4.39)
 			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_4_online_full.png);}");
 	}
 	else if (strState == "Œ¥∑≈÷√µÁ≥ÿ")
