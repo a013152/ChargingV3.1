@@ -227,8 +227,8 @@ void CThreadShowOrHideDebugInfo::signalAdjustRect(QRect _t1)
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 struct qt_meta_stringdata_charging_t {
-    QByteArrayData data[89];
-    char stringdata[1252];
+    QByteArrayData data[90];
+    char stringdata[1268];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -325,7 +325,8 @@ QT_MOC_LITERAL(84, 1184, 17),
 QT_MOC_LITERAL(85, 1202, 12),
 QT_MOC_LITERAL(86, 1215, 7),
 QT_MOC_LITERAL(87, 1223, 13),
-QT_MOC_LITERAL(88, 1237, 14)
+QT_MOC_LITERAL(88, 1237, 14),
+QT_MOC_LITERAL(89, 1252, 15)
     },
     "charging\0ExitApp\0\0RefreshState\0"
     "enRefreshType\0type\0index\0AddCommamdIntoQueue\0"
@@ -361,7 +362,8 @@ QT_MOC_LITERAL(88, 1237, 14)
     "indexMem\0onOpenOrCloseCanDevice\0"
     "bOpenOrClose\0allClosetCharging\0"
     "oneClosetCharging\0onPauseScand\0checked\0"
-    "onPauseSubmit\0onBtnCanDevice"
+    "onPauseSubmit\0onBtnCanDevice\0"
+    "onOneKeyCharger"
 };
 #undef QT_MOC_LITERAL
 
@@ -371,7 +373,7 @@ static const uint qt_meta_data_charging[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      54,   14, // methods
+      55,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -379,62 +381,63 @@ static const uint qt_meta_data_charging[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  284,    2, 0x06 /* Public */,
-       3,    2,  285,    2, 0x06 /* Public */,
-       7,    1,  290,    2, 0x06 /* Public */,
-      10,    1,  293,    2, 0x06 /* Public */,
-      12,    1,  296,    2, 0x06 /* Public */,
+       1,    0,  289,    2, 0x06 /* Public */,
+       3,    2,  290,    2, 0x06 /* Public */,
+       7,    1,  295,    2, 0x06 /* Public */,
+      10,    1,  298,    2, 0x06 /* Public */,
+      12,    1,  301,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      14,    0,  299,    2, 0x0a /* Public */,
-      15,    0,  300,    2, 0x0a /* Public */,
-      16,    0,  301,    2, 0x0a /* Public */,
-      17,    1,  302,    2, 0x0a /* Public */,
-      19,    1,  305,    2, 0x0a /* Public */,
-      20,    1,  308,    2, 0x0a /* Public */,
-      21,    1,  311,    2, 0x0a /* Public */,
-      23,    0,  314,    2, 0x0a /* Public */,
-      24,    0,  315,    2, 0x0a /* Public */,
-      25,    0,  316,    2, 0x0a /* Public */,
-      26,    1,  317,    2, 0x0a /* Public */,
-      29,    0,  320,    2, 0x0a /* Public */,
-      30,    1,  321,    2, 0x0a /* Public */,
-      31,    0,  324,    2, 0x0a /* Public */,
-      32,    0,  325,    2, 0x0a /* Public */,
-      33,    3,  326,    2, 0x0a /* Public */,
-      36,    1,  333,    2, 0x0a /* Public */,
-      37,    0,  336,    2, 0x0a /* Public */,
-      38,    0,  337,    2, 0x0a /* Public */,
-      39,    0,  338,    2, 0x0a /* Public */,
-      40,    1,  339,    2, 0x0a /* Public */,
-      41,    0,  342,    2, 0x0a /* Public */,
-      42,    0,  343,    2, 0x0a /* Public */,
-      43,    1,  344,    2, 0x0a /* Public */,
-      44,    6,  347,    2, 0x0a /* Public */,
-      56,    1,  360,    2, 0x0a /* Public */,
-      58,    1,  363,    2, 0x0a /* Public */,
-      59,    1,  366,    2, 0x0a /* Public */,
-      60,    0,  369,    2, 0x0a /* Public */,
-      61,    3,  370,    2, 0x0a /* Public */,
-      61,    2,  377,    2, 0x2a /* Public | MethodCloned */,
-      66,    1,  382,    2, 0x0a /* Public */,
-      67,    0,  385,    2, 0x0a /* Public */,
-      68,    0,  386,    2, 0x0a /* Public */,
-      69,    1,  387,    2, 0x0a /* Public */,
-      70,    0,  390,    2, 0x0a /* Public */,
-      71,    0,  391,    2, 0x0a /* Public */,
-      72,    0,  392,    2, 0x0a /* Public */,
-      73,    1,  393,    2, 0x0a /* Public */,
-      75,    2,  396,    2, 0x0a /* Public */,
-      78,    0,  401,    2, 0x0a /* Public */,
-      79,    1,  402,    2, 0x0a /* Public */,
-      79,    0,  405,    2, 0x2a /* Public | MethodCloned */,
-      81,    1,  406,    2, 0x0a /* Public */,
-      83,    0,  409,    2, 0x0a /* Public */,
-      84,    0,  410,    2, 0x0a /* Public */,
-      85,    1,  411,    2, 0x0a /* Public */,
-      87,    1,  414,    2, 0x0a /* Public */,
-      88,    1,  417,    2, 0x0a /* Public */,
+      14,    0,  304,    2, 0x0a /* Public */,
+      15,    0,  305,    2, 0x0a /* Public */,
+      16,    0,  306,    2, 0x0a /* Public */,
+      17,    1,  307,    2, 0x0a /* Public */,
+      19,    1,  310,    2, 0x0a /* Public */,
+      20,    1,  313,    2, 0x0a /* Public */,
+      21,    1,  316,    2, 0x0a /* Public */,
+      23,    0,  319,    2, 0x0a /* Public */,
+      24,    0,  320,    2, 0x0a /* Public */,
+      25,    0,  321,    2, 0x0a /* Public */,
+      26,    1,  322,    2, 0x0a /* Public */,
+      29,    0,  325,    2, 0x0a /* Public */,
+      30,    1,  326,    2, 0x0a /* Public */,
+      31,    0,  329,    2, 0x0a /* Public */,
+      32,    0,  330,    2, 0x0a /* Public */,
+      33,    3,  331,    2, 0x0a /* Public */,
+      36,    1,  338,    2, 0x0a /* Public */,
+      37,    0,  341,    2, 0x0a /* Public */,
+      38,    0,  342,    2, 0x0a /* Public */,
+      39,    0,  343,    2, 0x0a /* Public */,
+      40,    1,  344,    2, 0x0a /* Public */,
+      41,    0,  347,    2, 0x0a /* Public */,
+      42,    0,  348,    2, 0x0a /* Public */,
+      43,    1,  349,    2, 0x0a /* Public */,
+      44,    6,  352,    2, 0x0a /* Public */,
+      56,    1,  365,    2, 0x0a /* Public */,
+      58,    1,  368,    2, 0x0a /* Public */,
+      59,    1,  371,    2, 0x0a /* Public */,
+      60,    0,  374,    2, 0x0a /* Public */,
+      61,    3,  375,    2, 0x0a /* Public */,
+      61,    2,  382,    2, 0x2a /* Public | MethodCloned */,
+      66,    1,  387,    2, 0x0a /* Public */,
+      67,    0,  390,    2, 0x0a /* Public */,
+      68,    0,  391,    2, 0x0a /* Public */,
+      69,    1,  392,    2, 0x0a /* Public */,
+      70,    0,  395,    2, 0x0a /* Public */,
+      71,    0,  396,    2, 0x0a /* Public */,
+      72,    0,  397,    2, 0x0a /* Public */,
+      73,    1,  398,    2, 0x0a /* Public */,
+      75,    2,  401,    2, 0x0a /* Public */,
+      78,    0,  406,    2, 0x0a /* Public */,
+      79,    1,  407,    2, 0x0a /* Public */,
+      79,    0,  410,    2, 0x2a /* Public | MethodCloned */,
+      81,    1,  411,    2, 0x0a /* Public */,
+      83,    0,  414,    2, 0x0a /* Public */,
+      84,    0,  415,    2, 0x0a /* Public */,
+      85,    1,  416,    2, 0x0a /* Public */,
+      87,    1,  419,    2, 0x0a /* Public */,
+      88,    1,  422,    2, 0x0a /* Public */,
+      89,    1,  425,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -490,6 +493,7 @@ static const uint qt_meta_data_charging[] = {
     QMetaType::Void, QMetaType::Bool,   82,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,   86,
     QMetaType::Void, QMetaType::Bool,   86,
     QMetaType::Void, QMetaType::Bool,   86,
     QMetaType::Void, QMetaType::Bool,   86,
@@ -566,6 +570,7 @@ void charging::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 51: _t->onPauseScand((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 52: _t->onPauseSubmit((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 53: _t->onBtnCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 54: _t->onOneKeyCharger((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -654,13 +659,13 @@ int charging::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 54)
+        if (_id < 55)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 54;
+        _id -= 55;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 54)
+        if (_id < 55)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 54;
+        _id -= 55;
     }
     return _id;
 }

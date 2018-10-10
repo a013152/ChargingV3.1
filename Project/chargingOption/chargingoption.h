@@ -136,6 +136,7 @@ private:
 	unsigned int m_SubmitInterval;
 	unsigned int m_ChargeLimitTime;
 	float m_fOverHeatTemperature;
+	unsigned int m_DisChargeDay;
 	int m_iError = 0;
 	
 	QTabWidget *tabWidget; 

@@ -368,6 +368,7 @@ public slots:
 	void onPauseScand(bool checked);
 	void onPauseSubmit(bool checked);
 	void onBtnCanDevice(bool checked);
+	void onOneKeyCharger(bool checked);
 	
 signals:
 	void refreshUI(QString strID);  //刷新信号 ： 参数电池ID 

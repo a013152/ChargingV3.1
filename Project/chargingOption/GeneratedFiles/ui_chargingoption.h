@@ -73,6 +73,9 @@ public:
     QLabel *label_5;
     QLabel *label_6;
     QLabel *label_7;
+    QLineEdit *lineEdit_4;
+    QLabel *label_11;
+    QLabel *label_12;
     QPushButton *btnSave_3;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -198,6 +201,15 @@ public:
         label_7 = new QLabel(groupBox);
         label_7->setObjectName(QStringLiteral("label_7"));
         label_7->setGeometry(QRect(230, 80, 61, 16));
+        lineEdit_4 = new QLineEdit(groupBox);
+        lineEdit_4->setObjectName(QStringLiteral("lineEdit_4"));
+        lineEdit_4->setGeometry(QRect(110, 110, 113, 20));
+        label_11 = new QLabel(groupBox);
+        label_11->setObjectName(QStringLiteral("label_11"));
+        label_11->setGeometry(QRect(30, 110, 81, 16));
+        label_12 = new QLabel(groupBox);
+        label_12->setObjectName(QStringLiteral("label_12"));
+        label_12->setGeometry(QRect(230, 110, 61, 16));
         btnSave_3 = new QPushButton(tab_3);
         btnSave_3->setObjectName(QStringLiteral("btnSave_3"));
         btnSave_3->setGeometry(QRect(680, 330, 81, 41));
@@ -216,7 +228,7 @@ public:
 
         retranslateUi(chargingOptionClass);
 
-        tablePage->setCurrentIndex(2);
+        tablePage->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(chargingOptionClass);
@@ -251,6 +263,8 @@ public:
         label_5->setText(QApplication::translate("chargingOptionClass", "\345\210\206\351\222\237", 0));
         label_6->setText(QApplication::translate("chargingOptionClass", "\346\257\253\347\247\222/\346\254\241", 0));
         label_7->setText(QApplication::translate("chargingOptionClass", "\345\272\246", 0));
+        label_11->setText(QApplication::translate("chargingOptionClass", "\350\207\252\346\224\276\347\224\265\357\274\232", 0));
+        label_12->setText(QApplication::translate("chargingOptionClass", "\345\244\251", 0));
         btnSave_3->setText(QApplication::translate("chargingOptionClass", "\344\277\235\345\255\230", 0));
         tablePage->setTabText(tablePage->indexOf(tab_3), QApplication::translate("chargingOptionClass", "\350\275\257\344\273\266\350\256\276\347\275\256", 0));
     } // retranslateUi

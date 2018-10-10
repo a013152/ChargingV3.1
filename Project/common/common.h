@@ -26,6 +26,7 @@ enum enCANDevieErrorCode{	//CAN进程返回的错误码
 #define ONE_CLOSET_SCAN_TIME 3 * 1000  //单元间隔时间  
 #define ONE_SUBMIT_TIME 15000			//网络提交间隔
 #define CHARGING_LIMIT_TIME 360		//充电时限，超过则主动停止，分钟为单位 add20180521
+#define DISCHARGING_DAY 10		//放电充电天数 add20181010
 #define DEFAUT_OVERHEATTEMPERATURE 45 //过热温度
 #define MAX_CLOSET  10  //最大柜子数量
 #define MAX_CHARGER 48  //每个柜子最大充电器数量

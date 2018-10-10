@@ -39,6 +39,11 @@ chargingOption::chargingOption(QWidget *parent)
 		m_ChargeLimitTime = CHARGING_LIMIT_TIME;
 	}
 
+	m_DisChargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	if (m_DisChargeDay == 0){
+		m_DisChargeDay = DISCHARGING_DAY;
+	}
+
 	//过热温度
 	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature", QString(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_fOverHeatTemperature == 0){
@@ -99,6 +104,12 @@ void chargingOption::initWidget()
 	ui.lineEdit->setText(QString::number(m_ChargeLimitTime));
 	ui.lineEdit_2->setText(QString::number(m_SubmitInterval));
 	ui.lineEdit_3->setText(QString("%1").arg(m_fOverHeatTemperature));
+
+	regx.setPattern("[0-9]");
+	validator = new QRegExpValidator(regx, ui.lineEdit_4);  //只能输入数字
+	ui.lineEdit_4->setValidator(validator);
+	ui.lineEdit_4->setText(QString("%1").arg(m_DisChargeDay));
+	
 }
 
 

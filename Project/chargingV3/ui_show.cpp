@@ -168,6 +168,13 @@ void charging::onPauseScand(bool checked)
 	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueScan", QString("%1").arg(m_bContinueScan), QString(g_AppPath) + "\\set.ini", &iError);
 
 }
+
+//一键充电
+void charging::onOneKeyCharger(bool checked)
+{
+
+}
+
 //暂停扫描
 void charging::onPauseSubmit(bool checked)
 {
@@ -563,9 +570,14 @@ QAction * charging::createMenus()
 	connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
 	//action12->setVisible(false);
 
+	QAction * action12 = new QAction("一键充电", m_menuSys);
+	connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOneKeyCharger(bool)));
+	m_menuSys->addAction(action12);
+
 	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
 	QAction * action11 = new QAction("串口设备", m_menuSys);
 	m_menuSys->addAction(action11);
+
 
 	QAction * action4 = new QAction("显示信息等级", m_menuSys);
 	m_menuSys->addAction(action4);
@@ -587,6 +599,8 @@ QAction * charging::createMenus()
 	 
 	m_menuCom = new QMenu(m_menuSys);
 	connect(m_menuCom, SIGNAL(triggered(QAction *)), this, SLOT(OnClickMenuCom(QAction *))); 
+
+	
 	
 	return serial_scan(action11);
 }
