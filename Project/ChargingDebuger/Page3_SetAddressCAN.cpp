@@ -52,6 +52,8 @@ BEGIN_MESSAGE_MAP(CPage3_SetAddressCAN, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_RBM, &CPage3_SetAddressCAN::OnBnClickedBtnRbm)
 	ON_BN_CLICKED(IDC_BTN_WBM50, &CPage3_SetAddressCAN::OnBnClickedBtnWbm50)
 	ON_BN_CLICKED(IDC_BTN_WBM100, &CPage3_SetAddressCAN::OnBnClickedBtnWbm100)
+	ON_BN_CLICKED(IDC_BTN_ReadDyBattery, &CPage3_SetAddressCAN::OnBnClickedBtnReaddybattery)
+	ON_BN_CLICKED(IDC_BTN_WAatoDCharge, &CPage3_SetAddressCAN::OnBnClickedBtnWaatodcharge)
 END_MESSAGE_MAP()
 
 
@@ -348,6 +350,36 @@ void CPage3_SetAddressCAN::OnBnClickedBtnWbm100()
 	if (!isPrepareCANID(strCanId))
 		return;
 	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,W,0xff", C2S, "F5", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	receiveFromCanDeviceProcess(g_szReceBuff);
+	m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnReaddybattery()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	if (!isPrepareCANID(strCanId))
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,", C2S, "F8", COM_F::WStringToMBytes(strCanId).c_str());
+	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
+	receiveFromCanDeviceProcess(g_szReceBuff);
+	m_pParent->SetFocus();
+}
+
+
+void CPage3_SetAddressCAN::OnBnClickedBtnWaatodcharge()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (!isPrepareToSendCAN())
+		return;
+	CString strCanId;
+	if (!isPrepareCANID(strCanId))
+		return;
+	sprintf_s(g_szSendBuff, 256, "%s,%s,%s,W,10", C2S, "F11", COM_F::WStringToMBytes(strCanId).c_str());
 	sendToCanDeviceProcess(g_szSendBuff, strlen(g_szSendBuff));
 	receiveFromCanDeviceProcess(g_szReceBuff);
 	m_pParent->SetFocus();

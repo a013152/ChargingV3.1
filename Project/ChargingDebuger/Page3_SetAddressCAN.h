@@ -45,4 +45,6 @@ public:
 	afx_msg void OnBnClickedBtnRbm();
 	afx_msg void OnBnClickedBtnWbm50();
 	afx_msg void OnBnClickedBtnWbm100();
+	afx_msg void OnBnClickedBtnReaddybattery();
+	afx_msg void OnBnClickedBtnWaatodcharge();
 };

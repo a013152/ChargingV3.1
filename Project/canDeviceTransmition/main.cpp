@@ -81,47 +81,6 @@ void readMaxCharge()
 	GET_T->sendCanData(dataObj, canID);
 }
 
-//void readOrWriteCharge()
-//{
-//	printf("请输入(0读取充电/1设置充电):\n");
-//	int nReadOrWrite = 0, chargeId = 0;
-//	stCAN_DevData dataObj;
-//	scanf_s("%d", &nReadOrWrite);
-//	switch (nReadOrWrite)
-//	{
-//	case 0:
-//		GET_P->getCommandCharge(dataObj, false, 0,1);
-//		break;
-//	case 1:
-//	{
-//			  printf("请输入充电号(1-15):");
-//			  scanf_s("%d", &chargeId);
-//			  if (chargeId>0 && chargeId <=15  )
-//			  {
-//				  GET_P->getCommandCharge(dataObj, true, chargeId,false);
-//				  break;
-//			  }
-//			  else
-//			  {
-//				  printf("错误输入\n"); 
-//				  displayOption();
-//				  return;
-//			  }
-//
-//	}
-//	default:
-//		printf("未知输入\n");
-//		displayOption();
-//		return;
-//		break;
-//	}
-//	
-//	
-//	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
-//	canID |= 0x400;   //v1.3can id需要或上0x400
-//	GET_T->sendCanData(dataObj, canID);
-//}
-
 void readLoadAppInfo()
 {
 	stCAN_DevData dataObj;
@@ -144,46 +103,6 @@ void readDynaData()
 {
 	stCAN_DevData dataObj;
 	GET_P->getCommandDynaData(dataObj);
-	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
-	canID |= 0x400;   //v1.3can id需要或上0x400
-	GET_T->sendCanData(dataObj, canID);
-}
-
-void readOrWriteDisC()
-{
-	printf("请输入(0读取放电/1设置放电):\n");
-	int nReadOrWrite = 0, chargeId = 0;
-	stCAN_DevData dataObj;
-	scanf_s("%d", &nReadOrWrite);
-	switch (nReadOrWrite)
-	{
-	case 0:
-		GET_P->getCommandDisCharge(dataObj, false, 0, false);
-		break;
-	case 1:
-	{
-			  printf("请输入放电号(1-15):");
-			  scanf_s("%d", &chargeId);
-			  if (chargeId > 0 && chargeId <= 15)
-			  {
-				  GET_P->getCommandDisCharge(dataObj, true, chargeId, true);
-				  break;
-			  }
-			  else
-			  {
-				  printf("错误输入\n");
-				  displayOption();
-				  return;
-			  }
-
-	}
-	default:
-		printf("错误输入\n");
-		displayOption();
-		return;
-		break;
-	}
-
 	UINT canID = Uint8ToUint16(g_CAN_ID_Default);
 	canID |= 0x400;   //v1.3can id需要或上0x400
 	GET_T->sendCanData(dataObj, canID);
@@ -353,9 +272,19 @@ int _tmain(int argc, _TCHAR* argv[])
 					if (readOrWriteDisChargeState(vtStrCommand, wbuf))
 						s_sendFlg = false;
 					else
+						s_sendFlg = true; 
+				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F11") == 0)
+				{
+					SET_TYPE_AND_ID
+					//自动放电
+					if (writeAutoDischargeDay(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
 						s_sendFlg = true;
 
 				}
+
 				static char waitTime = 0; waitTime = 0;
 				bool flag = true;
 				while (flag )
@@ -417,7 +346,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			readDynaData();
 			break;
 		case  11:
-			readOrWriteDisC();
+			//readOrWriteDisC();
 			break;
 		default:
 			printf("未知命令，请重新输入\n");

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="charging.cpp" />
     <ClCompile Include="CommandQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,11 +82,16 @@
     <ClCompile Include="ToCanDeviceProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommonFunction.cpp" />
     <ClCompile Include="CanProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sqlite3.c" />
+    <ClCompile Include="charging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="charging.qrc" />
@@ -157,8 +161,10 @@
     <CustomBuild Include="GeneratedFiles\ui_messageBoxCus.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="CommonFunction.h" />
     <CustomBuild Include="CanProcess.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CommonFunction.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

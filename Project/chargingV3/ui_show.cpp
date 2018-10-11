@@ -174,6 +174,30 @@ void charging::onOneKeyCharger(bool checked)
 {
 
 }
+//设置自动放电天数
+void charging::setDischargeDay()
+{
+	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
+	for (MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.begin(); itCharger != itCloset->second.mapCharger.end(); itCharger++){
+		if (itCharger->second.bOnline){
+			if (itCharger->second.chargerType == NF_Charger){
+				//
+			}
+			else if (itCharger->second.chargerType == DJI_Charger){
+				//设置自动放电
+				QVector<stCommand> vtStCommand;
+				QString strCommad;
+				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令 //更新内存中的在线情况
+				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+				vtStCommand.append(stCommR);
+				strCommad.sprintf("C2S,F11,%d,W,%d", itCharger->second.id, m_nDischargeDay);  //拼接自动放电命令
+				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+				vtStCommand.append(stCommW);
+				m_CommandQueue.addVtCommand(vtStCommand);
+			}
+		}
+	}
+}
 
 //暂停扫描
 void charging::onPauseSubmit(bool checked)
@@ -1147,34 +1171,20 @@ void charging::createClosetRadio()
 //刷新当前的电池信息
 void charging::refreshCurrentUI()
 { 
-	QString strClosetUiNo = m_iCurrentCloset < 10 ? "0" + QString::number(m_iCurrentCloset) : QString::number(m_iCurrentCloset);
-		
-	QString strClosetNo;
-	QVector<QString> vtTemp;	
-	for (MAP_BATTERY_IT it = m_mapBattery.begin(); m_mapBattery.end() != it; it++){
-		for (int i = 0; i < MAX_BATTERY; i++){
-			strClosetNo = it->second.id;
-			if (i + 1 == strClosetNo.right(2).toInt() 
-				&& strClosetNo.left(2) == strClosetUiNo)
-			{ //电池号
-				vtTemp.append(strClosetNo);
-				break;
-			}
-		} 
-	}
-	for (int i = 0; i < MAX_BATTERY; i++)
+	MAP_LEVEL_IT itLevel = m_mapLevel.find(m_nCurrentLevel);
+	if (itLevel == m_mapLevel.end())
+		return;
+	int i = 0;
+	for ( MAP_BATTERY_IT itBattery = itLevel->second.mapBattery.begin();
+		i < MAX_BATTERY &&itBattery != itLevel->second.mapBattery.end();itBattery++,i++)
 	{		
 		if (m_vtUiChargGrid.size() > 0)
 		{
-			m_vtUiChargGrid[i]->setTitle(vtTemp[i]);  	  //设置标题 
-			MAP_BATTERY_IT itBattery = m_mapBattery.find(vtTemp[i].toInt());
-			if (itBattery != m_mapBattery.end()){
-				MAP_BATTERY_MODEL_IT itBatteryModel = m_mapBatteryModel.find(itBattery->second.modelId);
-				if (itBatteryModel != m_mapBatteryModel.end()){//设置电池型号
-					m_vtUiChargGrid[i]->setBatteryModel(QString::fromLocal8Bit(itBatteryModel->second.droneModel));
-				
-				}
-			} 
+			m_vtUiChargGrid[i]->setTitle(QString::fromLocal8Bit(itBattery->second.id));  	  //设置标题 			
+			MAP_BATTERY_MODEL_IT itBatteryModel = m_mapBatteryModel.find(itBattery->second.modelId);
+			if (itBatteryModel != m_mapBatteryModel.end()){//设置电池型号
+				m_vtUiChargGrid[i]->setBatteryModel(QString::fromLocal8Bit(itBatteryModel->second.droneModel));
+			}
 		} 
 	}
 	
@@ -1267,3 +1277,4 @@ void charging::updateListviewBatteryModel(int indexMem )
 		} 
 	}
 }
+

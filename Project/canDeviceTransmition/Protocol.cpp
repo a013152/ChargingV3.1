@@ -236,21 +236,6 @@ void CProtocol::getCommandDynaData(stCAN_DevData& dataObj)
 	
 }
 
-void CProtocol::getCommandAutoDCharge(stCAN_DevData& dataObj)
-{
-	//dataObj.Header = 0x55;
-	//dataObj.LEN[0] = 8 + 17;
-	//dataObj.CMD_ = 0x0b;
-	//dataObj.Enc = 0;
-	//dataObj.Seq_ = 0x0b;
-	//UnionCRC unionObj = calulataCRC(dataObj);
-	//dataObj.CRC16_[0] = unionObj.crcArray[0];
-	//dataObj.CRC16_[1] = unionObj.crcArray[1];
-	//dataObj.Data_[0] = 0xff;
-	//dataObj.Data_[1] = 0x7f;
-	//for (INT i = 2; i < 17; i++)dataObj.Data_[i] = 9;//9天自动放电
-}
-
 void CProtocol::getCommandLED(stCAN_DevData& dataObj)
 {
 	//dataObj.Header = 0x55;
@@ -309,7 +294,36 @@ void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, i
 	UnionCRC unionObj = calulataCRC16(dataObj);
 	dataObj.CRC16_[0] = unionObj.crcArray[0];
 	dataObj.CRC16_[1] = unionObj.crcArray[1];
+}
 
+void CProtocol::getCommandAutoDischargeDay(stCAN_DevData& dataObj, int days)
+{
+	dataObj.Header = 0x55;
+	 
+	dataObj.LEN[0] = 7 + 17 + 2; 
+
+	dataObj.CMD_ = 0x0b;
+	dataObj.Enc = 0;
+	dataObj.Seq_ = 0x0b;
+	dataObj.CRC8_ = calulataCRC8(dataObj);
+
+	//电池在位信息
+	for (int i = 0; i < 15; i++){
+		if (i < 8)
+			dataObj.Data_[0] = (dataObj.Data_[0]  | ((m_BatteryArray[i].isOline_?1:0)<<i));
+		else
+			dataObj.Data_[1] = (dataObj.Data_[1]  | ((m_BatteryArray[i].isOline_ ? 1 : 0)<< (i-8)));
+		//printf("i:%d->online:%d, Data1:%X,Data2:%X\n ", i, (m_BatteryArray[i].isOline_ ? 1 : 0), dataObj.Data_[0], dataObj.Data_[1]);
+	}
+	
+
+	//电池放电天数
+	for (int i = 2; i < 17; i++)
+		dataObj.Data_[i] = (BYTE)days;
+
+	UnionCRC unionObj = calulataCRC16(dataObj);
+	dataObj.CRC16_[0] = unionObj.crcArray[0];
+	dataObj.CRC16_[1] = unionObj.crcArray[1];
 }
 
 void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
@@ -612,6 +626,15 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		}
 		if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 	}
+	if (dataObj.CMD_ == 0x0b){
+		//设置放电
+		if (0x00 == dataObj.Data_[0])
+		{
+			sprintf_s(szTemp, 256, "%s,F11,%s,%d,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
+			m_strDebugData = szTemp;
+		}
+		if (m_pPrintfFun){ m_pPrintfFun(1, true); }
+	}
 }
  
 uint8_t CProtocol::calulataCRC8(stCAN_DevData& dataObj)
@@ -740,4 +763,4 @@ void CProtocol::verifyStepTwo(stCAN_DevData& dataObj)
 		m_strDebugData = szTemp;
 	}
 	if (m_pPrintfFun)m_pPrintfFun(1, true);
-}
+} 

@@ -249,6 +249,8 @@ public:
 
 	void detectSubmitBatteryState();    //提交服务器电池状态: 电压、电流、温度 本函数在线程中执行，不可操作UI
 
+	void setDischargeDay();		//设置自动放电天数
+
 	void submitBatteryModel(MAP_BATTERY& mapNew, MAP_BATTERY& mapOld);  //提交电池型号
 
 	void processApplyBatteryToCharging();  //处理申请电池 到 触发充电
@@ -430,6 +432,9 @@ private:
 	bool m_bConnectServerIsSeccuss = false;//连接服务器数据库成功标志 
 
 	float m_fOverHeatTemperature = DEFAUT_OVERHEATTEMPERATURE; //过热温度默认45
+
+	int m_nDischargeDay = DISCHARGING_DAY; //自动放电天数
+
 
 	unsigned int m_nCurrentLevel = 1; //当前层级
 private:

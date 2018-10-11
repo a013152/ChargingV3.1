@@ -461,15 +461,23 @@ bool charging::nativeEvent(const QByteArray &eventType, void *message, long *res
 				//添加电池型号更新判断 add20180418
 				MAP_BATTERY mapBatteryOld = m_mapBattery;
 				//m_vtUiChargGrid[uiIndex]->setChargerState([index]);				
-				readConfig();
+				
 				m_nChargeLimitTime = stObj->nTime1; 
 				m_SubmitInterval = stObj->nSubmitTime;	
 				m_fOverHeatTemperature = stObj->fOverHeatTemperature;
+				if (m_nDischargeDay != stObj->nDischargeDay){
+					//设置放电天数
+					m_nDischargeDay = stObj->nDischargeDay;					
+					setDischargeDay();
+				}
+				
+				readConfig();
 				refreshCurrentUI();
 				show_all_data_now(); 
 				
 				//对比后提交一次型号数据到服务器
 				submitBatteryModel(m_mapBattery, mapBatteryOld);
+				
 				*result = 1;
 				return true;
 			}

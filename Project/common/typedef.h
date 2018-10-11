@@ -454,7 +454,8 @@ struct stProcessSimpltData
 	int nTime1;
 	int nSubmitTime ;
 	float fOverHeatTemperature;
-	stProcessSimpltData() :nTime1(0), nSubmitTime(0), fOverHeatTemperature(45.0){
+	int nDischargeDay;
+	stProcessSimpltData() :nTime1(0), nSubmitTime(0), fOverHeatTemperature(45.0), nDischargeDay(10){
 		memset(strInfo, 0, 256);
 	}
 };

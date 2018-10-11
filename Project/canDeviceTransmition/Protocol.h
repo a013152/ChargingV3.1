@@ -147,24 +147,26 @@ public:
 	//返回值：
 	void getCommandDynaData(stCAN_DevData& dataObj);
 	 
-	//函数：getCommandAutoDCharge
-	//功能：获取自动放电时间的命令
-	//参数： dataObj引用,  
-	//返回值：
-	void getCommandAutoDCharge(stCAN_DevData& dataObj);
-
+	 
 	//函数：getCommandBlueLED
 	//功能：获取满电LED闪烁的命令
 	//参数： dataObj引用,  
 	//返回值：
 	void getCommandLED(stCAN_DevData& dataObj);
 
-	//函数：getCommandDisC
-	//功能：充电数的命令
+	//函数：getCommandDisCharge
+	//功能：获取放电的命令
 	//参数： dataObj引用, bReadOrWrite 是否放电 false 读取放电状态 true设置放电; 
 	//         当bReadOrWrite为true时： changedId 改变状态的id 停止则开启充电，正在充电则停止。
 	//返回值：
 	void getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int dischangedId, bool bDischarge);
+
+	//函数：getCommandAutoDischargeDay
+	//功能：获取设置自动放电天数数的命令
+	//参数： dataObj引用,  
+	//         电池： changedId 改变状态的id 停止则开启充电，正在充电则停止。
+	//返回值：
+	void getCommandAutoDischargeDay(stCAN_DevData& dataObj,  int days);
 
 
 

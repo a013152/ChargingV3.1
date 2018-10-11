@@ -489,9 +489,23 @@ void chargingOption::OnBtnSave3()
 	else{
 		m_fOverHeatTemperature = ftemp;
 	}
+	//自动放电天数
+	str = ui.lineEdit_4->text();
+	temp = str.toInt();
+	if (temp < 3 || temp > 10){
+		QMessageBox::information(this, "提示", "自动放电天数易设置在3~10天之间。");
+		ui.lineEdit_4->setText(QString("%1").arg(m_fOverHeatTemperature));
+
+		return;
+	}
+	else{
+		m_DisChargeDay = temp;
+	}
+
 
 	CReadIniFile::getInstance()->writeProfileInfo("SET", "SubmitInterval", QString::number(m_SubmitInterval), QString(g_AppPath) + "\\set.ini", &iError);
 	CReadIniFile::getInstance()->writeProfileInfo("SET", "ChargeLimitTime", QString::number(m_ChargeLimitTime), QString(g_AppPath) + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "DisChargerDay", QString::number(m_DisChargeDay), QString(g_AppPath) + "\\set.ini", &iError2);
 	CReadIniFile::getInstance()->writeProfileInfo("SET", "OverHeatTemperature", QString("%1").arg(m_fOverHeatTemperature), QString(g_AppPath) + "\\set.ini", &iError2);
 	if (iError2 == 0 && iError == 0){
 		QMessageBox::information(this, "提示", "保存完成");
@@ -665,6 +679,7 @@ void chargingOption::SendChargingProgramToReadConfig()
 		stObj.nTime1 = m_ChargeLimitTime;
 		stObj.nSubmitTime = m_SubmitInterval;
 		stObj.fOverHeatTemperature = m_fOverHeatTemperature;
+		stObj.nDischargeDay = m_DisChargeDay;
 
 
 		COPYDATASTRUCT copydata;

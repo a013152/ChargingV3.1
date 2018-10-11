@@ -45,3 +45,6 @@ bool readOrWriteChargingState(VT_STR vtStrCommand, char* resultString);
 
 //读取/写入放电状态
 bool readOrWriteDisChargeState(VT_STR vtStrCommand, char* resultString);
+
+//读取/写入放电状态
+bool writeAutoDischargeDay(VT_STR vtStrCommand, char* resultString);

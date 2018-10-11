@@ -235,3 +235,23 @@ bool readOrWriteDisChargeState(VT_STR vtStrCommand, char* resultString)
 	}
 	return true;
 }
+
+//写入自动放电天数
+bool writeAutoDischargeDay(VT_STR vtStrCommand, char* resultString)
+{
+	if (false == decideCANID(vtStrCommand, resultString))
+	{
+		return false;
+	}
+	else
+	{
+		str_to_hex(vtStrCommand[2], szTempCanID); g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
+		stCAN_DevData dataObj;
+		GET_P->getCommandAutoDischargeDay(dataObj, std::stoi(vtStrCommand[4], nullptr, 10));
+		uintTempCanID = Uint8ToUint16(szTempCanID);
+		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
+		printf("转换后的CAN ID:%04X\n", uintTempCanID);
+		GET_T->sendCanData(dataObj, uintTempCanID);
+	}
+	return true;
+}

@@ -158,6 +158,11 @@ void charging::readConfig()
 		m_fOverHeatTemperature = ONE_CLOSET_SCAN_TIME;
 		//printfDebugInfo("SET OverHeatTemperature 未设置过热温度，默认45度", enDebugInfoPriority::DebugInfoLevelOne, true);
 	}
+	//自动放电天数
+	m_nDischargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	if (m_nDischargeDay == 0){
+		m_nDischargeDay = DISCHARGING_DAY;
+	}
 
 	//读取调试信息显示等级
 	m_enShowDebugInfoLevel = (enDebugInfoPriority)(CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "debugInfoLevel", QString(g_AppPath) + "\\set.ini", &iError).toInt());
