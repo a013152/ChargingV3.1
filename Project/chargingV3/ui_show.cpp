@@ -172,6 +172,83 @@ void charging::onPauseScand(bool checked)
 //一键充电
 void charging::onOneKeyCharger(bool checked)
 {
+	MAP_CLOSET_IT itCloset2;	MAP_BATTERY_IT itBattery2; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	QString strId; int iResult = 0;
+	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
+	for (MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.begin(); itBattery != itCloset->second.mapBattery.end(); itBattery++)
+	{
+		strId = QString::fromLocal8Bit(itBattery->second.id); 
+		//	continue;
+
+		if (getBatteryIdRelatedInfo(strId, itCloset2, itBattery2, itBatteryModel, itCharger, itLevel))
+		{
+			if (itCharger->second.bOnline == false)
+				continue;
+
+			//添加充电器种类判断
+			if (itCharger->second.chargerType == NF_Charger)
+			{
+				bool isCharging = itCharger->second.isCharging;
+				if (!isCharging)
+				{
+					// 判断充电条件，获取对应的电池结构、充电电压、电流
+					int iResult = 0;
+					if (chargingByLocalID(strId, &iResult,false))
+					{
+						int indexArray = batteryIDtoArrayIndex(strId);
+						battery_state_enable_refresh[indexArray] = false;
+						itBattery2->second.timeLockUI.restart();
+						itBattery2 = itLevel->second.mapBattery.find(itBattery2->first);
+						itBattery2->second.timeLockUI.restart();
+
+						charger_state[indexArray] = STATE_CHARGING;//"充电中";
+						emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+						printfDebugInfo(" " + strId + "一键充电", enDebugInfoPriority::DebugInfoLevelOne);
+						COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "一键充电\n");
+						itBattery2->second.stRecord.beginChargeFlag = true;
+						itBattery2->second.stRecord.strRemrk = "一键充电";
+					}
+				}				
+			}
+			else if (itCharger->second.chargerType == DJI_Charger)
+			{
+				
+				if (itBattery2->second.isExisted && itBattery2->second.state != 3){  //在位，并且静默状态
+					 continue;
+				}
+
+				//拼装 读取充电状态命令 ，再设置充电状态命令
+				QVector<stCommand> vtStCommand;
+				QString strCommad;
+				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+				vtStCommand.append(stCommR);
+				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 1);  //设置充电状态命令
+				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+				vtStCommand.append(stCommW);
+				m_CommandQueue.addVtCommand(vtStCommand);
+
+				//处理ui
+				int indexArray = batteryIDtoArrayIndex(strId);
+				battery_state_enable_refresh[indexArray] = false;
+				itBattery2->second.timeLockUI.restart();
+				itBattery2 = itLevel->second.mapBattery.find(itBattery2->first);
+				itBattery2->second.timeLockUI.restart();
+
+				if (itBattery2->second.state == 3){
+					charger_state[indexArray] = STATE_CHARGING;//"充电中";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
+					printfDebugInfo(" " + strId + "一键充电", enDebugInfoPriority::DebugInfoLevelOne);
+					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "一键充电\n");
+					 
+					itBattery2->second.stRecord.beginChargeFlag = true;
+					itBattery2->second.stRecord.strRemrk = "一键充电";
+					 
+				}
+			}
+		}
+	}
+
 
 }
 //设置自动放电天数

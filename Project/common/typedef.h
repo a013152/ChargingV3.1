@@ -111,7 +111,7 @@ struct  stBatteryInfo
 	QTime timeLockUI;   //禁止刷新对应ui的计时器
 	QTime timeLockChargeRecord;   //禁止刷新充电记录标志计时器
 	stChargeRecord stRecord;
-	stBatteryInfo() : dbid(0), online(1), modelId(0), \
+	stBatteryInfo() : dbid(0), online(1), modelId(0), state(0),\
 		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false){
 		memset(id, 0, 10);	
 		memset(user, 0, 256);
@@ -125,7 +125,7 @@ struct  stBatteryInfo
 		this->dbid = other.dbid;
 		this->modelId = other.modelId;
 		this->relatedCharger = other.relatedCharger;
-		//this->relatedRelay = other.relatedRelay; 
+		this->state = other.state; 
 		this->online = other.online;
 		//this->relatedLoop = other.relatedLoop;
 		this->isExisted = other.isExisted;
