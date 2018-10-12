@@ -213,7 +213,7 @@ void charging::onOneKeyCharger(bool checked)
 			else if (itCharger->second.chargerType == DJI_Charger)
 			{
 				
-				if (itBattery2->second.isExisted && itBattery2->second.state != 3){  //在位，并且静默状态
+				if (itBattery2->second.isExisted == false || itBattery2->second.state != 3){  //如果电池不在位，或者不在静默状态，退出
 					 continue;
 				}
 
@@ -440,7 +440,8 @@ void charging::OnBtnChargingOrStopCharging1()
 				itBattery = itLevel->second.mapBattery.find(itBattery->first);
 				itBattery->second.timeLockUI.restart();
 
-				if (groupBox->getCharging() == false){
+				if (groupBox->getCharging() == false)
+				{
 					charger_state[indexArray] = STATE_CHARGING;//"充电中";
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(" " + strId + "手动充电", enDebugInfoPriority::DebugInfoLevelOne);
@@ -663,17 +664,17 @@ QAction * charging::createMenus()
 	QAction * action10 = new QAction("显示调试信息", m_menuSys);
 	m_menuSys->addAction(action10);
 	connect(action10, SIGNAL(triggered()), this, SLOT(OnBtnShowDebugInfo()));
-	
-
-	m_menuItemCan = new QAction("CAN设备", m_menuSys);
-	m_menuSys->addAction(m_menuItemCan);
-	m_menuItemCan->setCheckable(true);
-	connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
-	//action12->setVisible(false);
 
 	QAction * action12 = new QAction("一键充电", m_menuSys);
 	connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOneKeyCharger(bool)));
 	m_menuSys->addAction(action12);
+
+	m_menuItemCan = new QAction("CAN设备", m_menuSys);
+	m_menuSys->addAction(m_menuItemCan); 
+	m_menuItemCan->setCheckable(true);
+	connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
+	//action12->setVisible(false);
+
 
 	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
 	QAction * action11 = new QAction("串口设备", m_menuSys);

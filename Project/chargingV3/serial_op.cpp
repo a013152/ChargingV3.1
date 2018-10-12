@@ -260,8 +260,9 @@ void charging::readSerial(QString type, QString strContent, int iError)
 								itBattery->second.stRecord.pendingEndFlag = false;
 								itBattery->second.stRecord.endChargeFlag = true; //充电器闲置，停止充电记录
 							}
-							 
-							charger_state[indexArray] = STATE_FREE;//"充电器闲置";
+							if (itCharger->second.timeLockChargingState.elapsed() > 10000){
+								charger_state[indexArray] = STATE_FREE;//"充电器闲置";
+							}
 						}
 						else if (strChargerState == QChar('2'))
 							charger_state[indexArray] = STATE_CHARGING;// "充电中";
@@ -293,13 +294,13 @@ void charging::readSerial(QString type, QString strContent, int iError)
 								int indexArray = batteryIDtoArrayIndex(QString::number(nBatteryID));
 								if (charger_state[indexArray] != STATE_FREE/*"充电器闲置"*/ \
 									&&itBattery->second.isApplyCharging == false){
-									//判断是否有申请充电锁UI,如果没被申请，或者被申请了时间超过了5秒，则刷新UI
+									//判断是否有申请充电锁UI,如果没被申请，或者被申请了时间超过了10秒，则刷新UI
 									stApplyInfo item = battery_apply_charging[indexArray];
-									bool flag1 = (item.bApply == false || (item.bApply == true && item.timeLockUI.elapsed() > 2000));
-									bool flag2 = itBattery->second.timeLockUI.elapsed() > 2000;
+									bool flag1 = (item.bApply == false || (item.bApply == true && item.timeLockUI.elapsed() > 10000));
+									bool flag2 = itBattery->second.timeLockUI.elapsed() > 10000;
 									int elapsed1 = itBattery->second.timeLockUI.elapsed();
-									if ((item.bApply == false || (item.bApply == true && item.timeLockUI.elapsed() > 2000)) \
-										&& itBattery->second.timeLockUI.elapsed() > 2000){
+									if ((item.bApply == false || (item.bApply == true && item.timeLockUI.elapsed() > 10000)) \
+										&& itBattery->second.timeLockUI.elapsed() > 10000){
 										charger_state[indexArray] = STATE_FREE;//"充电器闲置";
 										emit RefreshState(enRefreshType::ChargerState, indexArray);
 									}
@@ -511,6 +512,10 @@ void charging::onReadCAN(QString strContent)
 
 			if (strList[2].compare("0") == 0){
 				GET_CAN->m_bOpenCanDevice = true;
+				m_menuItemCan->blockSignals(true);
+				m_menuItemCan->setChecked(true);
+				m_menuItemCan->blockSignals(false);
+
 			}
 		}
 		else if (strList[1].compare("F4") == 0)
@@ -587,9 +592,13 @@ void charging::onReadCAN(QString strContent)
 							itBattery2->second.isExisted = (strOnline[i] == QChar('1'));
 						int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit((itBattery->second.id)));
 						battery_state[indexArray] = itBattery->second.isExisted ? "电池在线" : "未放置电池";
-						emit RefreshState(enRefreshType::BatteryState, \
-							batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery->second.id))); //更新在线状态
+						if (itBattery->second.isExisted == false){
+							battery_voltage[indexArray] = "0.0";
+							battery_temperature[indexArray] = "0.0";
+						} 
 						indexArray = batteryIDtoArrayIndex(itBattery->second.id);
+						emit RefreshState(enRefreshType::BatteryState, 	indexArray); //更新在线状态
+						
 						if (itBattery->second.isExisted == false && itBattery->second.timeLockUI.elapsed() > 10000){
 							charger_state[indexArray] = STATE_FREE;//"电池不在线，更新充电器闲置";
 							if (itBattery2->second.stRecord.pendingEndFlag)
@@ -637,26 +646,26 @@ void charging::onReadCAN(QString strContent)
 									itBattery->second.state = state;
 									itBattery2->second.state = state;
 								}
-								if (itBattery->second.timeLockUI.elapsed() > 10000){
-									if (state == 0 || state == 3)// 满电/静默
+								if (state == 0 || state == 3)// 满电/静默
+								{
+									if (getBatteryIdRelatedInfo(QString::fromLocal8Bit(itBattery->second.id), itCloset2, itBattery2, itBatteryModel2, itCharger2, itLevel2))
 									{
-										if (getBatteryIdRelatedInfo(QString::fromLocal8Bit(itBattery->second.id), itCloset2, itBattery2, itBatteryModel2, itCharger2, itLevel2))
+										if (itBattery2->second.stRecord.pendingEndFlag
+											&& itBattery2->second.timeLockChargeRecord.elapsed() > 10000)  //
 										{
-											if (itBattery2->second.stRecord.pendingEndFlag 
-												&& itBattery2->second.timeLockChargeRecord.elapsed() > 10000)  //
-											{
-												itBattery2->second.stRecord.pendingEndFlag = false;
-												itBattery2->second.stRecord.endChargeFlag = true;//满电/静默，准备写入数据库记录停止充电,
-											}
+											itBattery2->second.stRecord.pendingEndFlag = false;
+											itBattery2->second.stRecord.endChargeFlag = true;//满电/静默，准备写入数据库记录停止充电,
 										}
+									}
+									if (itBattery->second.timeLockUI.elapsed() > 10000){
 										charger_state[indexArray] = STATE_FREE;//"充电器闲置";
 									}
-									else if (state == 1)
-										charger_state[indexArray] = STATE_CHARGING;// "充电中";
-									else if (state == 2)
-										charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
-									emit RefreshState(enRefreshType::ChargerState, indexArray);
-								}								
+								}
+								else if (state == 1)
+									charger_state[indexArray] = STATE_CHARGING;// "充电中";
+								else if (state == 2)
+									charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
+								emit RefreshState(enRefreshType::ChargerState, indexArray);
 							}
 						}
 					} 
@@ -678,6 +687,8 @@ void charging::onReadCAN(QString strContent)
 							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
 
 							charger_state[indexArray] = STATE_FREE;//"充电闲置";
+							battery_voltage[indexArray] = "0.0";
+							battery_temperature[indexArray] = "0.0";
 							emit RefreshState(enRefreshType::ChargerOnlineState, \
 								batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id))); //更新在线状态
 							if (getBatteryIdRelatedInfo(QString::fromLocal8Bit(itBattery.second.id), itCloset2, itBattery2, itBatteryModel2, itCharger2, itLevel2))

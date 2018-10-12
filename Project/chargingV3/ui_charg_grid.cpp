@@ -218,6 +218,7 @@ void ui_charg_grid::setBatteryState(QString strState, QString strVol, QString st
 		labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_1_not_online.png);}");
 
 	}
+	label->setText(strTem + "¡ã " + strVol + "v");
 }
 //ÉèÖÃ×´Ì¬ £º ³äµçÆ÷ÏÐÖÃ¡¢³äµçÖÐ¡¢
 void ui_charg_grid::setChargerState(QString strState)
@@ -228,6 +229,7 @@ void ui_charg_grid::setChargerState(QString strState)
 		pushButton->setStyleSheet(m_strBtnStyleOffline);
 		isCharging = false;
 		isDisCharging = false;
+		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
 	}
 	 else if (strState == STATE_FREE){  //ÏÐÖÃ
 		pushButton->setStyleSheet(m_strBtnStyleFree);

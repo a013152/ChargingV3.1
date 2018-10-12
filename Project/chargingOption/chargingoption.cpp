@@ -930,6 +930,21 @@ void chargingOption::cellchangeBattery(int row, int col, int prow, int pcol)
 	QTableWidgetItem *pItem = ui.tableBattery->item(row, col);
 	if (pItem)
 	{
+		//添加充电器判断，如果是DJI设备 不显示电池型号。
+		QTableWidgetItem *pItem2 = ui.tableBattery->item(row, 0);
+		QString strId = pItem2->text();
+		MAP_BATTERY_IT itBattery;  MAP_CHARGER_IT itCharger; 
+		itBattery = m_mapBattery.find(strId.toInt());  //
+		if (itBattery != m_mapBattery.end())
+		{
+			itCharger = m_mapCharger.find(itBattery->second.relatedCharger);
+			if (itCharger != m_mapCharger.end())
+			{
+				if (itCharger->second.chargerType == DJI_Charger)
+					return;
+			}
+		}
+
 		ptemp = pItem->text();
 		QRect rect;
 		int rowCount = ui.tableBattery->rowCount();

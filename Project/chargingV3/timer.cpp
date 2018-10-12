@@ -389,11 +389,10 @@ void charging::processApplyBatteryToCharging()
 							itBattery->second.timeLockUI.restart();
 							itBattery = itLevel->second.mapBattery.find(itBattery->first);
 							itBattery->second.timeLockUI.restart();
-							charger_state[indexArray] = STATE_FREE;//闲置;
-
 							printfDebugInfo(strId + "远程停止放电", enDebugInfoPriority::DebugInfoLevelOne);
 							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "远程停止放电\n");
 
+							charger_state[indexArray] = STATE_FREE;//闲置;
 							stopFlag = true;
 						}
 						
