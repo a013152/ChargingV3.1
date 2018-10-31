@@ -10,3 +10,7 @@
 *.idb
 *.ipch
 Project/ipch/chargerdebuger-50854523/chargerdebuger-a6c56d86.ipch
+*.idb
+*.suo
+*.pch
+*.res
