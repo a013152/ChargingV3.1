@@ -200,7 +200,7 @@ void CPage3_SetAddressCAN::OnBnClickedBtnOpenCan()
 				Sleep(100);
 				m_canDeviceProcessId = COM_F::GetProcessidFromName(COM_F::MBytesToWString(CANDEVICETRANSMITION).c_str());
 			}
-			m_pPrintfFun(CString(L"CAN通讯进程\n\n"));
+			m_pPrintfFun(CString(L"CAN通讯进程关闭。\n\n"));
 		}
 		GetDlgItem(IDC_BTN_OPEN_CAN)->SetWindowText(L"打开CAN设备");
 	}	
