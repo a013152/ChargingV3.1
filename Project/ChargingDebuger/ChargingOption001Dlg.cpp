@@ -110,7 +110,7 @@ BOOL CChargingOption001Dlg::OnInitDialog()
 	//cf.crTextColor = RGB(0, 0, 0); //文字颜色
 	//richeditctrl.SetSel(-1, -1);  
 	//richeditctrl.SetSelectionCharFormat(cf); 
-	
+	::SetWindowLong(m_hWnd, GWL_STYLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU );
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
