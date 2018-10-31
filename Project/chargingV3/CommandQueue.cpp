@@ -28,6 +28,11 @@ void CCommandQueue::init( unsigned int iMaxLength)
 
 void CCommandQueue::run()  //处理队列 、并且发送数据
 {
+	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;
+	 
+	strPrint = "启动can进程";
+	emit printfed(strPrint);
+
 	// 打开can进程	
 	bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
 	emit printfed(QString::fromLocal8Bit(szPrintf));
@@ -41,12 +46,13 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 		::Sleep(100);
 		if (0 != GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
 		{
-			emit printfed(QString::fromLocal8Bit(szPrintf));
+			strPrint = "打开can进程完成，接收：" + QString::fromLocal8Bit(szPrintf);
+			emit printfed(strPrint);
+			//emit printfed(QString::fromLocal8Bit(szPrintf));
 			emit readedCAN(QString::fromLocal8Bit(szPrintf));
 		}
 	}
 
-	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;
 	while (!stopped)
 	{ 	
 		while (!m_queComman.isEmpty() && SERIAL_PORT->isOpen())

@@ -415,24 +415,57 @@ void charging::OnBtnChargingOrStopCharging1()
 		}
 		else if (itCharger->second.chargerType == DJI_Charger)
 		{
+			bool doCharging = false, doStop = false; //充电、放电、停止 标志
 			int iResult = 0;
-			if (groupBox->getCharging() == false){
-				if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == false)
-					return;
+			//如果没有充电放电，触发充电，
+			if (groupBox->getCharging() == false &&groupBox->getDisCharging() == false)
+			{
+				if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult))
+				{
+					doCharging = true;
+					
+					QVector<stCommand> vtStCommand;
+					QString strCommad;
+					strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
+					stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+					vtStCommand.append(stCommR);
+					strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 1);  //设置充电状态命令 1充电 2 停止 
+					stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+					vtStCommand.append(stCommW);
+					m_CommandQueue.addVtCommand(vtStCommand);
+				}
 			}
-			//if (detectChargingCondition(QString::fromLocal8Bit(itBattery->second.id), &iResult) == true)
-			{			
-				//拼装 读取充电状态命令 ，再设置充电状态命令
+			//如果正在充电，则停止
+			if (groupBox->getCharging() )
+			{
+				doStop = true;				
 				QVector<stCommand> vtStCommand;
-				QString strCommad;
+				QString strCommad; 
 				strCommad.sprintf("C2S,F9,%d,R", itCharger->second.id);  //读取充电状态命令
 				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
 				vtStCommand.append(stCommR);
-				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getCharging() ? 2 : 1);  //设置充电状态命令
+				strCommad.sprintf("C2S,F9,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, 2);  //设置充电状态命令 1充电 2 停止 
 				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
 				vtStCommand.append(stCommW);
-				m_CommandQueue.addVtCommand(vtStCommand); 
-
+				m_CommandQueue.addVtCommand(vtStCommand);
+			}
+			//如果正在放电，则停止
+			if (groupBox->getDisCharging())
+			{
+				doStop = true;
+				QVector<stCommand> vtStCommand;
+				QString strCommad;
+				strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
+				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+				vtStCommand.append(stCommR);
+				strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100,  0 );  //设置放电状态命令
+				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+				vtStCommand.append(stCommW);
+				m_CommandQueue.addVtCommand(vtStCommand);
+			}
+			//判断电池是否在充电
+			if (doCharging || doStop)
+			{	 
 				//处理ui
 				int indexArray = batteryIDtoArrayIndex(strId);
 				battery_state_enable_refresh[indexArray] = false;
@@ -440,7 +473,7 @@ void charging::OnBtnChargingOrStopCharging1()
 				itBattery = itLevel->second.mapBattery.find(itBattery->first);
 				itBattery->second.timeLockUI.restart();
 
-				if (groupBox->getCharging() == false)
+				if (doCharging)
 				{
 					charger_state[indexArray] = STATE_CHARGING;//"充电中";
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
@@ -453,7 +486,7 @@ void charging::OnBtnChargingOrStopCharging1()
 						itBattery->second.stRecord.strRemrk = "手动充电";
 					}
 				}
-				else{
+				else if(doStop){
 					charger_state[indexArray] = STATE_FREE;//"充电器闲置"; 
 					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);
 					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
@@ -506,35 +539,45 @@ void charging::OnBtnDisChargingOrStop1()
 			}	
 			else if (itCharger->second.chargerType == DJI_Charger)
 			{
-				//拼装 读取放电状态命令 ，再设置放电状态命令
-				QVector<stCommand> vtStCommand;
-				QString strCommad;
-				strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
-				stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
-				vtStCommand.append(stCommR);
-				strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getDisCharging() ? 0 : 1);  //设置放电状态命令
-				stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
-				vtStCommand.append(stCommW);
-				m_CommandQueue.addVtCommand(vtStCommand);
+				//先判断是否在充电状态
+				if ( groupBox->getCharging() == false)
+				{
+					//拼装 读取放电状态命令 ，再设置放电状态命令 
+					QVector<stCommand> vtStCommand;
+					QString strCommad;
+					strCommad.sprintf("C2S,F10,%d,R", itCharger->second.id);  //读取放电状态命令
+					stCommand stCommR = stCommand(strCommad, stCommand::hight); stCommR.chargerType = DJI_Charger;
+					vtStCommand.append(stCommR);
+					strCommad.sprintf("C2S,F10,%d,W,%d,%d", itCharger->second.id, strId.toInt() % 100, groupBox->getDisCharging()?0: 1);  //设置放电状态命令 1 放电 0 停止
+					stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
+					vtStCommand.append(stCommW);
+					m_CommandQueue.addVtCommand(vtStCommand);
+					
 
-				//UI更新
-				int indexArray = batteryIDtoArrayIndex(strId);
-				battery_state_enable_refresh[indexArray] = false;	
-				itBattery->second.timeLockUI.restart();
-				itBattery = itLevel->second.mapBattery.find(itBattery->first);
-				itBattery->second.timeLockUI.restart();
+					//UI更新
+					int indexArray = batteryIDtoArrayIndex(strId);
+					battery_state_enable_refresh[indexArray] = false;
+					itBattery->second.timeLockUI.restart();
+					itBattery = itLevel->second.mapBattery.find(itBattery->first);
+					itBattery->second.timeLockUI.restart();
 
-				if (groupBox->getDisCharging() == false){
-					printfDebugInfo(strId + "手动放电", enDebugInfoPriority::DebugInfoLevelOne);
-					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动放电\n");
+					if (groupBox->getDisCharging() == false){
+						printfDebugInfo(strId + "手动放电", enDebugInfoPriority::DebugInfoLevelOne);
+						COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动放电\n");
+					}
+					else{
+						printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
+						COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止放电\n");
+					}
+					charger_state[indexArray] = groupBox->getDisCharging() ? STATE_FREE : STATE_DISCHARGING;//"放电中";
+					emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  //信号处理函数中 更新groupBox->getDisCharging()
+
+
 				}
 				else{
-					printfDebugInfo(strId + "手动停止", enDebugInfoPriority::DebugInfoLevelOne);
-					COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "手动停止放电\n");
+					printfDebugInfo(strId + "正在充电，放电命令无效！", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strId + "正在充电，放电命令无效！");
 				}
-				charger_state[indexArray] = groupBox->getDisCharging() ? STATE_FREE : STATE_DISCHARGING;//"放电中";
-				emit RefreshState(enRefreshType::ChargerOnlineState, indexArray);  //信号处理函数中 更新groupBox->getDisCharging()
-				
 			}
 		}
 	}
