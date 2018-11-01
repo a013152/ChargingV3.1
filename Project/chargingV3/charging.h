@@ -331,6 +331,8 @@ public slots :
 	//获取电池id 关联信息
 	bool getBatteryIdRelatedInfo(QString strBatteryID, MAP_CLOSET_IT& itCloset, MAP_BATTERY_IT& itBattery, MAP_BATTERY_MODEL_IT& itBatteryModel, MAP_CHARGER_IT& itCharger, MAP_LEVEL_IT& itLevel);
 
+	int getCanDJIBattery(int CANID, int pos);
+
 	int chargerIDtoBatteryId(int chargerId);//充电器ID 查找对应电池ID
 
 	int batteryIDtoArrayIndex(QString strID ); //转换 电池id对应 数组ID
@@ -370,7 +372,7 @@ public slots:
 	void onPauseScand(bool checked);
 	void onPauseSubmit(bool checked);
 	void onBtnCanDevice(bool checked);
-	void onOneKeyCharger(bool checked);
+	void onOneKeyCharger();
 	
 signals:
 	void refreshUI(QString strID);  //刷新信号 ： 参数电池ID 
@@ -413,7 +415,9 @@ private:
 
 	unsigned int m_count_recv = 0; //收到的电池计数
 	 
-	bool isOpenSerialPort;// 是否打开
+	bool isOpenSerialPort;// 是否打开串口设备
+
+	bool isOpenCANProcess;// 是否打开进程
 
 	bool m_bContinueScan;// 是否继续扫描
 

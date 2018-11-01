@@ -74,14 +74,15 @@ void charging::scanAllBatteryState()
 //开始扫描
 void charging::beginScanBatteryState(bool reStart)
 {
-	static bool first = true;
+	/*static bool first = true;
 	if (first){
-		first = false;
-		scanOneBatteryState(m_iCurrentCloset);
+	first = false;
+	scanOneBatteryState(m_iCurrentCloset);
 	}
 	if (reStart && first == false){
-		scanOneBatteryState(m_iCurrentCloset);
-	}
+	scanOneBatteryState(m_iCurrentCloset);
+	}*/
+	scanOneBatteryState(m_iCurrentCloset);
 }
 
  //扫描单柜子的电池数据
@@ -97,18 +98,26 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 	QVector<stCommand> vtStCommand;
 	itCloset = m_mapCloset.find(nClosetId);
 	int nCount = 0;
+	static char ChargerSum = 0;
 	if (itCloset != m_mapCloset.end())
 	{  
-		
+		if (ChargerSum == 0){  //计算有需要发送多少数量充电器
+			for (auto itCharger : itCloset->second.mapCharger){
+				if (itCharger.second.chargerType == NF_Charger  && isOpenSerialPort)
+					ChargerSum++;
+				else if (itCharger.second.chargerType == DJI_Charger  && isOpenCANProcess)
+					ChargerSum++;
+			}
+		}
 		for (itCharger = itCloset->second.mapCharger.begin(); itCharger != itCloset->second.mapCharger.end();itCharger++ )
 		{
 			stCommand stComm("", enPriority);
 			stComm.chargerType = itCharger->second.chargerType;
-			if (itCharger->second.chargerType == NF_Charger){
+			if (itCharger->second.chargerType == NF_Charger  && isOpenSerialPort){
 				//G命令读取电池存在状态 
 				stComm.m_strCommand = packageCommand("G," + QString::number(itCharger->second.id) + ",");					
 			}
-			else if (itCharger->second.chargerType == DJI_Charger)
+			else if (itCharger->second.chargerType == DJI_Charger  && isOpenCANProcess)
 			{
 				//大疆充电槽处理逻辑
 				if (GET_CAN->isPreareSendOrRead())  //判断进程、通道都已经准备好
@@ -120,13 +129,18 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 						strCommad.sprintf("C2S,F4,%d", itCharger->second.id);    //不在线的话发送认证命令
 					stComm.m_strCommand = strCommad;
 				}		
-			}
-			//判断最后一个充电器，设置循环发送标志
-			if (++nCount == itCloset->second.mapCharger.size())
+			} 
+			if (stComm.m_strCommand.isEmpty() == false)
 			{
-				stComm.lastCommandFlag = true;
+				//判断最后一个充电器，设置循环发送标志
+				if (++nCount == ChargerSum)
+				{
+					stComm.lastCommandFlag = true;
+				}
+				//命令不为空则添加到命令队列
+				vtStCommand.append(stComm);
 			}
-			vtStCommand.append(stComm);
+
 		}
 		m_CommandQueue.addVtCommand(vtStCommand);
 	} 

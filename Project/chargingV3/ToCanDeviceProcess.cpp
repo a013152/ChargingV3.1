@@ -29,11 +29,10 @@ void charging::onOpenOrCloseCanDevice(bool bOpenOrClose)
 			::Sleep(100);
 			if(0 == GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
 				printfDebugInfo(QString::fromLocal8Bit(szPrintf), enDebugInfoPriority::DebugInfoLevelOne, true);
-			else{
-				//打开can 设备成功，循环认证所以can充电器。
-				m_menuItemCan->blockSignals(true);
-				m_menuItemCan->setChecked(true);
-				m_menuItemCan->blockSignals(false);
+			else{ 
+				onReadCAN(QString::fromLocal8Bit(szPrintf));
+				//打开can 设备成功，循环认证can充电器。
+				 
 				//for (auto itCharger : m_mapCharger)
 				//{
 				//	if (itCharger.second.chargerType == DJI_Charger){
@@ -87,8 +86,9 @@ void charging::onOpenOrCloseCanDevice(bool bOpenOrClose)
 		}		
 	}
 	else{  //关闭
-		if(GET_CAN->clossCanDeviceProcess(szPrintf))
-			printfDebugInfo(QString(szPrintf), enDebugInfoPriority::DebugInfoLevelOne);
+		GET_CAN->clossCanDeviceProcess(szPrintf);
+		isOpenCANProcess = false;
+	 
 	}
 	
 }

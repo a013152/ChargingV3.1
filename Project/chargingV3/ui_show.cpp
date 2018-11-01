@@ -154,7 +154,7 @@ void charging::onPauseScand(bool checked)
 {
 	checked;
 	QAction * action = (QAction *)QObject::sender();
-	if (SERIAL_PORT->isOpen() ){
+	if (/*SERIAL_PORT->isOpen()*/ isOpenSerialPort || isOpenCANProcess  ){
 		m_bContinueScan = !action->isChecked() ;
 		//m_bContinueScan 为 false 不继续扫描 
 		m_CommandQueue.setPause(m_bContinueScan);
@@ -170,7 +170,7 @@ void charging::onPauseScand(bool checked)
 }
 
 //一键充电
-void charging::onOneKeyCharger(bool checked)
+void charging::onOneKeyCharger()
 {
 	MAP_CLOSET_IT itCloset2;	MAP_BATTERY_IT itBattery2; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	QString strId; int iResult = 0;
@@ -708,9 +708,9 @@ QAction * charging::createMenus()
 	m_menuSys->addAction(action10);
 	connect(action10, SIGNAL(triggered()), this, SLOT(OnBtnShowDebugInfo()));
 
-	QAction * action12 = new QAction("一键充电", m_menuSys);
-	connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOneKeyCharger(bool)));
-	m_menuSys->addAction(action12);
+	//QAction * action12 = new QAction("一键充电", m_menuSys);
+	//connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOneKeyCharger(bool)));
+	//m_menuSys->addAction(action12);
 
 	m_menuItemCan = new QAction("CAN设备", m_menuSys);
 	m_menuSys->addAction(m_menuItemCan); 
@@ -1006,18 +1006,18 @@ void charging::adjustUI()
 
 	
 	//设置操作按钮位置、大小、背景图
-	ui.btnMenuSys->setGeometry(QRect(580, 3, 94, 62));
+	ui.btnMenuSys->setGeometry(QRect(520, 3, 94, 62));
 	ui.btnMenuSys->setText("");
 	ui.btnMenuSys->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_operator.png);}" //
 		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_operator_hover.png);}"
 		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_operator.png);}"); //
 	
 	//设置操作按钮位置、大小、背景图
-	//ui.btnMenuCom->setGeometry(QRect(605, 3, 94, 62));
-	//ui.btnMenuCom->setText("");
-	//ui.btnMenuCom->setStyleSheet("QPushButton{border-image: url(" + g_AppPath + "/img/btn_serial_port.png);}"
-	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btn_serial_port_hover.png);}"
-	//		"QPushButton:pressed{border-image: url(" + g_AppPath + "/img/btn_serial_port.png);}"); //
+	ui.btnOneKey->setGeometry(QRect(605, 3, 94, 62));
+	ui.btnOneKey->setText("");
+	ui.btnOneKey->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey.png);}"
+		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey_hover.png);}"
+		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey.png);}"); //
 
 	//设置操作按钮位置、大小、背景图
 	ui.btnSysClose->setGeometry(QRect(690, 3, 94, 62));
@@ -1111,7 +1111,7 @@ void charging::OnBtnShowSysMenu()
 //显示
 void charging::OnBtnShowComMenu()
 {
-	QRect rect = ui.btnMenuCom->geometry();
+	QRect rect = ui.btnOneKey->geometry();
 	m_menuCom->move(mapToGlobal(QPoint(rect.left() + 10, rect.bottom())));
 	//menu->move(cursor().pos()); //让菜单显示的位置在鼠标的坐标上
 	m_menuCom->show();

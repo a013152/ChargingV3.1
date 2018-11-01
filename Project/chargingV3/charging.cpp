@@ -20,6 +20,8 @@ charging::charging(QWidget *parent)
 
 	isOpenSerialPort = false; 
 
+	isOpenCANProcess = false;
+
 	m_enShowDebugInfoLevel = DebugInfoLevelThree;
 
 	m_nChargeLimitTime = CHARGING_LIMIT_TIME;

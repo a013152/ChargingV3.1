@@ -28,7 +28,7 @@ class Ui_chargingClass
 public:
     QWidget *centralWidget;
     QPushButton *btnMenuSys;
-    QPushButton *btnMenuCom;
+    QPushButton *btnOneKey;
     QPushButton *btnSysMin;
     QPushButton *btnSysClose;
     QTabWidget *tabWidget;
@@ -54,9 +54,9 @@ public:
         btnMenuSys = new QPushButton(centralWidget);
         btnMenuSys->setObjectName(QStringLiteral("btnMenuSys"));
         btnMenuSys->setGeometry(QRect(1030, 10, 75, 23));
-        btnMenuCom = new QPushButton(centralWidget);
-        btnMenuCom->setObjectName(QStringLiteral("btnMenuCom"));
-        btnMenuCom->setGeometry(QRect(1120, 10, 75, 23));
+        btnOneKey = new QPushButton(centralWidget);
+        btnOneKey->setObjectName(QStringLiteral("btnOneKey"));
+        btnOneKey->setGeometry(QRect(1120, 10, 75, 23));
         btnSysMin = new QPushButton(centralWidget);
         btnSysMin->setObjectName(QStringLiteral("btnSysMin"));
         btnSysMin->setGeometry(QRect(1220, 40, 75, 23));
@@ -118,7 +118,7 @@ public:
     {
         chargingClass->setWindowTitle(QApplication::translate("chargingClass", "charging", 0));
         btnMenuSys->setText(QApplication::translate("chargingClass", "\346\223\215\344\275\234", 0));
-        btnMenuCom->setText(QApplication::translate("chargingClass", "\344\270\262\345\217\243", 0));
+        btnOneKey->setText(QApplication::translate("chargingClass", "\344\270\200\351\224\256", 0));
         btnSysMin->setText(QApplication::translate("chargingClass", "\346\234\200\345\260\217\345\214\226", 0));
         btnSysClose->setText(QApplication::translate("chargingClass", "\345\205\263\351\227\255", 0));
         btnPrePage->setText(QApplication::translate("chargingClass", "\344\270\212\344\270\200\351\241\265", 0));

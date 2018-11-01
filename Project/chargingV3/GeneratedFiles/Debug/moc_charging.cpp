@@ -227,8 +227,8 @@ void CThreadShowOrHideDebugInfo::signalAdjustRect(QRect _t1)
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 struct qt_meta_stringdata_charging_t {
-    QByteArrayData data[90];
-    char stringdata[1268];
+    QByteArrayData data[93];
+    char stringdata[1295];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -293,40 +293,43 @@ QT_MOC_LITERAL(52, 726, 15),
 QT_MOC_LITERAL(53, 742, 9),
 QT_MOC_LITERAL(54, 752, 13),
 QT_MOC_LITERAL(55, 766, 7),
-QT_MOC_LITERAL(56, 774, 20),
-QT_MOC_LITERAL(57, 795, 9),
-QT_MOC_LITERAL(58, 805, 21),
-QT_MOC_LITERAL(59, 827, 11),
-QT_MOC_LITERAL(60, 839, 26),
-QT_MOC_LITERAL(61, 866, 17),
-QT_MOC_LITERAL(62, 884, 5),
-QT_MOC_LITERAL(63, 890, 4),
-QT_MOC_LITERAL(64, 895, 7),
-QT_MOC_LITERAL(65, 903, 13),
-QT_MOC_LITERAL(66, 917, 13),
-QT_MOC_LITERAL(67, 931, 17),
-QT_MOC_LITERAL(68, 949, 11),
-QT_MOC_LITERAL(69, 961, 11),
-QT_MOC_LITERAL(70, 973, 15),
-QT_MOC_LITERAL(71, 989, 17),
-QT_MOC_LITERAL(72, 1007, 8),
-QT_MOC_LITERAL(73, 1016, 15),
-QT_MOC_LITERAL(74, 1032, 12),
-QT_MOC_LITERAL(75, 1045, 18),
-QT_MOC_LITERAL(76, 1064, 5),
-QT_MOC_LITERAL(77, 1070, 6),
-QT_MOC_LITERAL(78, 1077, 16),
-QT_MOC_LITERAL(79, 1094, 26),
-QT_MOC_LITERAL(80, 1121, 8),
-QT_MOC_LITERAL(81, 1130, 22),
-QT_MOC_LITERAL(82, 1153, 12),
-QT_MOC_LITERAL(83, 1166, 17),
-QT_MOC_LITERAL(84, 1184, 17),
-QT_MOC_LITERAL(85, 1202, 12),
-QT_MOC_LITERAL(86, 1215, 7),
-QT_MOC_LITERAL(87, 1223, 13),
-QT_MOC_LITERAL(88, 1237, 14),
-QT_MOC_LITERAL(89, 1252, 15)
+QT_MOC_LITERAL(56, 774, 16),
+QT_MOC_LITERAL(57, 791, 5),
+QT_MOC_LITERAL(58, 797, 3),
+QT_MOC_LITERAL(59, 801, 20),
+QT_MOC_LITERAL(60, 822, 9),
+QT_MOC_LITERAL(61, 832, 21),
+QT_MOC_LITERAL(62, 854, 11),
+QT_MOC_LITERAL(63, 866, 26),
+QT_MOC_LITERAL(64, 893, 17),
+QT_MOC_LITERAL(65, 911, 5),
+QT_MOC_LITERAL(66, 917, 4),
+QT_MOC_LITERAL(67, 922, 7),
+QT_MOC_LITERAL(68, 930, 13),
+QT_MOC_LITERAL(69, 944, 13),
+QT_MOC_LITERAL(70, 958, 17),
+QT_MOC_LITERAL(71, 976, 11),
+QT_MOC_LITERAL(72, 988, 11),
+QT_MOC_LITERAL(73, 1000, 15),
+QT_MOC_LITERAL(74, 1016, 17),
+QT_MOC_LITERAL(75, 1034, 8),
+QT_MOC_LITERAL(76, 1043, 15),
+QT_MOC_LITERAL(77, 1059, 12),
+QT_MOC_LITERAL(78, 1072, 18),
+QT_MOC_LITERAL(79, 1091, 5),
+QT_MOC_LITERAL(80, 1097, 6),
+QT_MOC_LITERAL(81, 1104, 16),
+QT_MOC_LITERAL(82, 1121, 26),
+QT_MOC_LITERAL(83, 1148, 8),
+QT_MOC_LITERAL(84, 1157, 22),
+QT_MOC_LITERAL(85, 1180, 12),
+QT_MOC_LITERAL(86, 1193, 17),
+QT_MOC_LITERAL(87, 1211, 17),
+QT_MOC_LITERAL(88, 1229, 12),
+QT_MOC_LITERAL(89, 1242, 7),
+QT_MOC_LITERAL(90, 1250, 13),
+QT_MOC_LITERAL(91, 1264, 14),
+QT_MOC_LITERAL(92, 1279, 15)
     },
     "charging\0ExitApp\0\0RefreshState\0"
     "enRefreshType\0type\0index\0AddCommamdIntoQueue\0"
@@ -349,21 +352,21 @@ QT_MOC_LITERAL(89, 1252, 15)
     "MAP_CLOSET_IT&\0itCloset\0MAP_BATTERY_IT&\0"
     "itBattery\0MAP_BATTERY_MODEL_IT&\0"
     "itBatteryModel\0MAP_CHARGER_IT&\0itCharger\0"
-    "MAP_LEVEL_IT&\0itLevel\0chargerIDtoBatteryId\0"
-    "chargerId\0batteryIDtoArrayIndex\0"
-    "onRefreshUI\0releaseBatteryStateRefresh\0"
-    "chargingByLocalID\0strId\0int*\0iResult\0"
-    "showDebugInfo\0stopByLocalID\0"
-    "createClosetRadio\0createMenus\0serial_scan\0"
-    "createChargGrid\0createDebugInfoUI\0"
-    "adjustUI\0getBatteryState\0indexBattery\0"
-    "showTipsMessagebox\0iType\0strMsg\0"
-    "refreshCurrentUI\0updateListviewBatteryModel\0"
-    "indexMem\0onOpenOrCloseCanDevice\0"
-    "bOpenOrClose\0allClosetCharging\0"
-    "oneClosetCharging\0onPauseScand\0checked\0"
-    "onPauseSubmit\0onBtnCanDevice\0"
-    "onOneKeyCharger"
+    "MAP_LEVEL_IT&\0itLevel\0getCanDJIBattery\0"
+    "CANID\0pos\0chargerIDtoBatteryId\0chargerId\0"
+    "batteryIDtoArrayIndex\0onRefreshUI\0"
+    "releaseBatteryStateRefresh\0chargingByLocalID\0"
+    "strId\0int*\0iResult\0showDebugInfo\0"
+    "stopByLocalID\0createClosetRadio\0"
+    "createMenus\0serial_scan\0createChargGrid\0"
+    "createDebugInfoUI\0adjustUI\0getBatteryState\0"
+    "indexBattery\0showTipsMessagebox\0iType\0"
+    "strMsg\0refreshCurrentUI\0"
+    "updateListviewBatteryModel\0indexMem\0"
+    "onOpenOrCloseCanDevice\0bOpenOrClose\0"
+    "allClosetCharging\0oneClosetCharging\0"
+    "onPauseScand\0checked\0onPauseSubmit\0"
+    "onBtnCanDevice\0onOneKeyCharger"
 };
 #undef QT_MOC_LITERAL
 
@@ -373,7 +376,7 @@ static const uint qt_meta_data_charging[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      55,   14, // methods
+      56,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -381,63 +384,64 @@ static const uint qt_meta_data_charging[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  289,    2, 0x06 /* Public */,
-       3,    2,  290,    2, 0x06 /* Public */,
-       7,    1,  295,    2, 0x06 /* Public */,
-      10,    1,  298,    2, 0x06 /* Public */,
-      12,    1,  301,    2, 0x06 /* Public */,
+       1,    0,  294,    2, 0x06 /* Public */,
+       3,    2,  295,    2, 0x06 /* Public */,
+       7,    1,  300,    2, 0x06 /* Public */,
+      10,    1,  303,    2, 0x06 /* Public */,
+      12,    1,  306,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      14,    0,  304,    2, 0x0a /* Public */,
-      15,    0,  305,    2, 0x0a /* Public */,
-      16,    0,  306,    2, 0x0a /* Public */,
-      17,    1,  307,    2, 0x0a /* Public */,
-      19,    1,  310,    2, 0x0a /* Public */,
-      20,    1,  313,    2, 0x0a /* Public */,
-      21,    1,  316,    2, 0x0a /* Public */,
-      23,    0,  319,    2, 0x0a /* Public */,
-      24,    0,  320,    2, 0x0a /* Public */,
-      25,    0,  321,    2, 0x0a /* Public */,
-      26,    1,  322,    2, 0x0a /* Public */,
-      29,    0,  325,    2, 0x0a /* Public */,
-      30,    1,  326,    2, 0x0a /* Public */,
-      31,    0,  329,    2, 0x0a /* Public */,
-      32,    0,  330,    2, 0x0a /* Public */,
-      33,    3,  331,    2, 0x0a /* Public */,
-      36,    1,  338,    2, 0x0a /* Public */,
-      37,    0,  341,    2, 0x0a /* Public */,
-      38,    0,  342,    2, 0x0a /* Public */,
-      39,    0,  343,    2, 0x0a /* Public */,
-      40,    1,  344,    2, 0x0a /* Public */,
-      41,    0,  347,    2, 0x0a /* Public */,
-      42,    0,  348,    2, 0x0a /* Public */,
-      43,    1,  349,    2, 0x0a /* Public */,
-      44,    6,  352,    2, 0x0a /* Public */,
-      56,    1,  365,    2, 0x0a /* Public */,
-      58,    1,  368,    2, 0x0a /* Public */,
-      59,    1,  371,    2, 0x0a /* Public */,
-      60,    0,  374,    2, 0x0a /* Public */,
-      61,    3,  375,    2, 0x0a /* Public */,
-      61,    2,  382,    2, 0x2a /* Public | MethodCloned */,
-      66,    1,  387,    2, 0x0a /* Public */,
-      67,    0,  390,    2, 0x0a /* Public */,
-      68,    0,  391,    2, 0x0a /* Public */,
-      69,    1,  392,    2, 0x0a /* Public */,
-      70,    0,  395,    2, 0x0a /* Public */,
-      71,    0,  396,    2, 0x0a /* Public */,
-      72,    0,  397,    2, 0x0a /* Public */,
-      73,    1,  398,    2, 0x0a /* Public */,
-      75,    2,  401,    2, 0x0a /* Public */,
-      78,    0,  406,    2, 0x0a /* Public */,
-      79,    1,  407,    2, 0x0a /* Public */,
-      79,    0,  410,    2, 0x2a /* Public | MethodCloned */,
-      81,    1,  411,    2, 0x0a /* Public */,
-      83,    0,  414,    2, 0x0a /* Public */,
-      84,    0,  415,    2, 0x0a /* Public */,
-      85,    1,  416,    2, 0x0a /* Public */,
-      87,    1,  419,    2, 0x0a /* Public */,
-      88,    1,  422,    2, 0x0a /* Public */,
-      89,    1,  425,    2, 0x0a /* Public */,
+      14,    0,  309,    2, 0x0a /* Public */,
+      15,    0,  310,    2, 0x0a /* Public */,
+      16,    0,  311,    2, 0x0a /* Public */,
+      17,    1,  312,    2, 0x0a /* Public */,
+      19,    1,  315,    2, 0x0a /* Public */,
+      20,    1,  318,    2, 0x0a /* Public */,
+      21,    1,  321,    2, 0x0a /* Public */,
+      23,    0,  324,    2, 0x0a /* Public */,
+      24,    0,  325,    2, 0x0a /* Public */,
+      25,    0,  326,    2, 0x0a /* Public */,
+      26,    1,  327,    2, 0x0a /* Public */,
+      29,    0,  330,    2, 0x0a /* Public */,
+      30,    1,  331,    2, 0x0a /* Public */,
+      31,    0,  334,    2, 0x0a /* Public */,
+      32,    0,  335,    2, 0x0a /* Public */,
+      33,    3,  336,    2, 0x0a /* Public */,
+      36,    1,  343,    2, 0x0a /* Public */,
+      37,    0,  346,    2, 0x0a /* Public */,
+      38,    0,  347,    2, 0x0a /* Public */,
+      39,    0,  348,    2, 0x0a /* Public */,
+      40,    1,  349,    2, 0x0a /* Public */,
+      41,    0,  352,    2, 0x0a /* Public */,
+      42,    0,  353,    2, 0x0a /* Public */,
+      43,    1,  354,    2, 0x0a /* Public */,
+      44,    6,  357,    2, 0x0a /* Public */,
+      56,    2,  370,    2, 0x0a /* Public */,
+      59,    1,  375,    2, 0x0a /* Public */,
+      61,    1,  378,    2, 0x0a /* Public */,
+      62,    1,  381,    2, 0x0a /* Public */,
+      63,    0,  384,    2, 0x0a /* Public */,
+      64,    3,  385,    2, 0x0a /* Public */,
+      64,    2,  392,    2, 0x2a /* Public | MethodCloned */,
+      69,    1,  397,    2, 0x0a /* Public */,
+      70,    0,  400,    2, 0x0a /* Public */,
+      71,    0,  401,    2, 0x0a /* Public */,
+      72,    1,  402,    2, 0x0a /* Public */,
+      73,    0,  405,    2, 0x0a /* Public */,
+      74,    0,  406,    2, 0x0a /* Public */,
+      75,    0,  407,    2, 0x0a /* Public */,
+      76,    1,  408,    2, 0x0a /* Public */,
+      78,    2,  411,    2, 0x0a /* Public */,
+      81,    0,  416,    2, 0x0a /* Public */,
+      82,    1,  417,    2, 0x0a /* Public */,
+      82,    0,  420,    2, 0x2a /* Public | MethodCloned */,
+      84,    1,  421,    2, 0x0a /* Public */,
+      86,    0,  424,    2, 0x0a /* Public */,
+      87,    0,  425,    2, 0x0a /* Public */,
+      88,    1,  426,    2, 0x0a /* Public */,
+      90,    1,  429,    2, 0x0a /* Public */,
+      91,    1,  432,    2, 0x0a /* Public */,
+      92,    0,  435,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -472,31 +476,32 @@ static const uint qt_meta_data_charging[] = {
     QMetaType::Void,
     QMetaType::Bool, QMetaType::QString,   34,
     QMetaType::Bool, QMetaType::QString, 0x80000000 | 46, 0x80000000 | 48, 0x80000000 | 50, 0x80000000 | 52, 0x80000000 | 54,   45,   47,   49,   51,   53,   55,
-    QMetaType::Int, QMetaType::Int,   57,
+    QMetaType::Int, QMetaType::Int, QMetaType::Int,   57,   58,
+    QMetaType::Int, QMetaType::Int,   60,
     QMetaType::Int, QMetaType::QString,   13,
     QMetaType::Void, QMetaType::QString,   13,
     QMetaType::Void,
-    QMetaType::Bool, QMetaType::QString, 0x80000000 | 63, QMetaType::Bool,   62,   64,   65,
-    QMetaType::Bool, QMetaType::QString, 0x80000000 | 63,   62,   64,
-    QMetaType::Bool, QMetaType::QString,   62,
+    QMetaType::Bool, QMetaType::QString, 0x80000000 | 66, QMetaType::Bool,   65,   67,   68,
+    QMetaType::Bool, QMetaType::QString, 0x80000000 | 66,   65,   67,
+    QMetaType::Bool, QMetaType::QString,   65,
     QMetaType::Void,
     0x80000000 | 27,
     0x80000000 | 27, 0x80000000 | 27,    2,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::QString, QMetaType::Int,   74,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString,   76,   77,
+    QMetaType::QString, QMetaType::Int,   77,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString,   79,   80,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   80,
+    QMetaType::Void, QMetaType::Int,   83,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,   82,
+    QMetaType::Void, QMetaType::Bool,   85,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,   86,
-    QMetaType::Void, QMetaType::Bool,   86,
-    QMetaType::Void, QMetaType::Bool,   86,
-    QMetaType::Void, QMetaType::Bool,   86,
+    QMetaType::Void, QMetaType::Bool,   89,
+    QMetaType::Void, QMetaType::Bool,   89,
+    QMetaType::Void, QMetaType::Bool,   89,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -538,39 +543,41 @@ void charging::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         case 29: { bool _r = _t->getBatteryIdRelatedInfo((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< MAP_CLOSET_IT(*)>(_a[2])),(*reinterpret_cast< MAP_BATTERY_IT(*)>(_a[3])),(*reinterpret_cast< MAP_BATTERY_MODEL_IT(*)>(_a[4])),(*reinterpret_cast< MAP_CHARGER_IT(*)>(_a[5])),(*reinterpret_cast< MAP_LEVEL_IT(*)>(_a[6])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 30: { int _r = _t->chargerIDtoBatteryId((*reinterpret_cast< int(*)>(_a[1])));
+        case 30: { int _r = _t->getCanDJIBattery((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 31: { int _r = _t->batteryIDtoArrayIndex((*reinterpret_cast< QString(*)>(_a[1])));
+        case 31: { int _r = _t->chargerIDtoBatteryId((*reinterpret_cast< int(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 32: _t->onRefreshUI((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 33: _t->releaseBatteryStateRefresh(); break;
-        case 34: { bool _r = _t->chargingByLocalID((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])));
+        case 32: { int _r = _t->batteryIDtoArrayIndex((*reinterpret_cast< QString(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
+        case 33: _t->onRefreshUI((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 34: _t->releaseBatteryStateRefresh(); break;
+        case 35: { bool _r = _t->chargingByLocalID((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 35: { bool _r = _t->chargingByLocalID((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])));
+        case 36: { bool _r = _t->chargingByLocalID((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 36: { bool _r = _t->stopByLocalID((*reinterpret_cast< QString(*)>(_a[1])));
+        case 37: { bool _r = _t->stopByLocalID((*reinterpret_cast< QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 37: _t->createClosetRadio(); break;
-        case 38: { QAction* _r = _t->createMenus();
+        case 38: _t->createClosetRadio(); break;
+        case 39: { QAction* _r = _t->createMenus();
             if (_a[0]) *reinterpret_cast< QAction**>(_a[0]) = _r; }  break;
-        case 39: { QAction* _r = _t->serial_scan((*reinterpret_cast< QAction*(*)>(_a[1])));
+        case 40: { QAction* _r = _t->serial_scan((*reinterpret_cast< QAction*(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QAction**>(_a[0]) = _r; }  break;
-        case 40: _t->createChargGrid(); break;
-        case 41: _t->createDebugInfoUI(); break;
-        case 42: _t->adjustUI(); break;
-        case 43: { QString _r = _t->getBatteryState((*reinterpret_cast< int(*)>(_a[1])));
+        case 41: _t->createChargGrid(); break;
+        case 42: _t->createDebugInfoUI(); break;
+        case 43: _t->adjustUI(); break;
+        case 44: { QString _r = _t->getBatteryState((*reinterpret_cast< int(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 44: _t->showTipsMessagebox((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
-        case 45: _t->refreshCurrentUI(); break;
-        case 46: _t->updateListviewBatteryModel((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 47: _t->updateListviewBatteryModel(); break;
-        case 48: _t->onOpenOrCloseCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 49: _t->allClosetCharging(); break;
-        case 50: _t->oneClosetCharging(); break;
-        case 51: _t->onPauseScand((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 52: _t->onPauseSubmit((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 53: _t->onBtnCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 54: _t->onOneKeyCharger((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 45: _t->showTipsMessagebox((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
+        case 46: _t->refreshCurrentUI(); break;
+        case 47: _t->updateListviewBatteryModel((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 48: _t->updateListviewBatteryModel(); break;
+        case 49: _t->onOpenOrCloseCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 50: _t->allClosetCharging(); break;
+        case 51: _t->oneClosetCharging(); break;
+        case 52: _t->onPauseScand((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 53: _t->onPauseSubmit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 54: _t->onBtnCanDevice((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 55: _t->onOneKeyCharger(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -590,7 +597,7 @@ void charging::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAction* >(); break;
             }
             break;
-        case 39:
+        case 40:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -659,13 +666,13 @@ int charging::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 55)
+        if (_id < 56)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 55;
+        _id -= 56;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 55)
+        if (_id < 56)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 55;
+        _id -= 56;
     }
     return _id;
 }

@@ -87,8 +87,8 @@ void charging::OnClickMenuCom(QAction * action)
 			if (!meTimer->isActive())
 				meTimer->start();
 			if (m_bContinueScan)			
-				printfDebugInfo("开始扫描设备！\n", enDebugInfoPriority::DebugInfoLevelOne);	
-			beginScanBatteryState();  
+				printfDebugInfo("开始扫描串口设备！\n", enDebugInfoPriority::DebugInfoLevelOne);	
+			 
 		}
 		else{ 
 			printfDebugInfo("打开串口" + s_preStr + "失败", enDebugInfoPriority::DebugInfoLevelOne);
@@ -492,12 +492,37 @@ void charging::readSerial(QString type, QString strContent, int iError)
 	{
 	}
 }
-int getCanDJIBattery(int CANID, int pos)
+int charging::getCanDJIBattery(int CANID, int pos)
 {	
-	int temp1 = CANID / 100 * 100; //抹去个位十位数字
-	if (temp1){
-		temp1 += pos;
+	int temp1 = 0, temp2 = 1;
+	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
+	if (itCloset != m_mapCloset.end())
+	{ 
+		MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(CANID);
+		if (itCharger == itCloset->second.mapCharger.end())
+		{
+			printfDebugInfo(CANID + "未匹配充电器", enDebugInfoPriority::DebugInfoLevelOne, true);
+			return 0;
+		}
+		MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
+		if (itLevel == m_mapLevel.end()){
+			printfDebugInfo(CANID + "充电器未匹配层级", enDebugInfoPriority::DebugInfoLevelOne, true);
+			return 0;
+		} 
+
+		for (auto itBattery : itLevel->second.mapBattery){
+			if (itBattery.second.relatedCharger == CANID){
+				if (temp2 == pos)
+				{
+					temp1 = itBattery.first;					
+					break;
+				}
+				temp2++;
+
+			}
+		}
 	}
+
 	return temp1;
 }
 // 解析接收到的CAN的内容param 1 内容。
@@ -512,6 +537,7 @@ void charging::onReadCAN(QString strContent)
 
 			if (strList[2].compare("0") == 0){
 				GET_CAN->m_bOpenCanDevice = true;
+				isOpenCANProcess = true;
 				m_menuItemCan->blockSignals(true);
 				m_menuItemCan->setChecked(true);
 				m_menuItemCan->blockSignals(false);

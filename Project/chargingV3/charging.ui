@@ -27,7 +27,7 @@
      <string>操作</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnMenuCom">
+   <widget class="QPushButton" name="btnOneKey">
     <property name="geometry">
      <rect>
       <x>1120</x>
@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>串口</string>
+     <string>一键</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnSysMin">

@@ -66,11 +66,17 @@ void charging::init_now()
 	//qtime1.restart();
 	printfDebugInfo("***********初始化完成**************");
 
-
+	//打开串口
 	if (actionBase != NULL){
 		//打开串口
 		OnClickMenuCom(actionBase);
 	} 
+	//打开can进程
+	onOpenOrCloseCanDevice(true);
+
+	printfDebugInfo("***********开始扫描设备**************");
+	//开始扫描设备
+	beginScanBatteryState();
 	
 }
 
@@ -189,7 +195,7 @@ void charging::initConnectWidget()
 	QObject::connect(ui.btnNextPage, &QPushButton::clicked, this, &charging::OnClickNextPage);
 	
 	QObject::connect(ui.btnMenuSys, &QPushButton::clicked, this, &charging::OnBtnShowSysMenu);
-	//QObject::connect(ui.btnMenuCom, &QPushButton::clicked, this, &charging::OnBtnShowComMenu);
+	QObject::connect(ui.btnOneKey, &QPushButton::clicked, this, &charging::onOneKeyCharger);
 	QObject::connect(ui.btnSysMin, &QPushButton::clicked, this, &charging::OnBtnSysMin);
 	QObject::connect(ui.btnSysClose, &QPushButton::clicked, this, &charging::OnBtnSysClose);
 

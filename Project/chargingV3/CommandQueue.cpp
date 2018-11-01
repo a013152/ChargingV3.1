@@ -33,29 +33,29 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 	strPrint = "启动can进程";
 	emit printfed(strPrint);
 
-	// 打开can进程	
-	bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
-	emit printfed(QString::fromLocal8Bit(szPrintf));
-	::Sleep(100);
-	char sztemp[256] = { 0 }, szReceive[MAX_BUF_SIZE] = { 0 };
-	sprintf_s(sztemp, 256, "%s,F1", C2S);
-	if (0 == GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf)){
-		emit printfed(QString::fromLocal8Bit(szPrintf));
-	}
-	else{
-		::Sleep(100);
-		if (0 != GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
-		{
-			strPrint = "打开can进程完成，接收：" + QString::fromLocal8Bit(szPrintf);
-			emit printfed(strPrint);
-			//emit printfed(QString::fromLocal8Bit(szPrintf));
-			emit readedCAN(QString::fromLocal8Bit(szPrintf));
-		}
-	}
+	//// 打开can进程	
+	//bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
+	//emit printfed(QString::fromLocal8Bit(szPrintf));
+	//::Sleep(100);
+	//char sztemp[256] = { 0 }, szReceive[MAX_BUF_SIZE] = { 0 };
+	//sprintf_s(sztemp, 256, "%s,F1", C2S);
+	//if (0 == GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf)){
+	//	emit printfed(QString::fromLocal8Bit(szPrintf));
+	//}
+	//else{
+	//	::Sleep(100);
+	//	if (0 != GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf))
+	//	{
+	//		strPrint = "打开can进程完成，接收：" + QString::fromLocal8Bit(szPrintf);
+	//		emit printfed(strPrint);
+	//		//emit printfed(QString::fromLocal8Bit(szPrintf));
+	//		emit readedCAN(QString::fromLocal8Bit(szPrintf));
+	//	}
+	//}
 
 	while (!stopped)
 	{ 	
-		while (!m_queComman.isEmpty() && SERIAL_PORT->isOpen())
+		while (!m_queComman.isEmpty() /*&& SERIAL_PORT->isOpen()*/)
 		{ 
 			if (!m_bContinueRun)
 				break;
@@ -331,6 +331,9 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 void CCommandQueue::detectFinishOneCloset(stCommand currentCommand)
 { 	 
 	if (currentCommand.lastCommandFlag == true ){		  
+		emit printfed("\r\n");
+		Sleep(1000);
+
 		emit readyGetBatteryState(1);  //当前改动：只有1个柜子		
 	} 
 }
