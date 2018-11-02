@@ -15,3 +15,5 @@ Project/ipch/chargerdebuger-50854523/chargerdebuger-a6c56d86.ipch
 *.pch
 *.res
 *.idb
+*.pch
+*.idb

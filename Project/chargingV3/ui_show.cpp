@@ -1231,7 +1231,7 @@ void charging::OnRefreshState(enRefreshType type, int index)
 
 
 			if (type == enRefreshType::ChargerState && battery_state_enable_refresh[index])
-			{
+			{ 
 				if (itCharger->second.isOverHeat )
 					m_vtUiChargGrid[uiIndex]->setChargerState(STATE_OVER_HEAT);
 				else
@@ -1243,11 +1243,13 @@ void charging::OnRefreshState(enRefreshType type, int index)
 
 			}
 			else if (type == enRefreshType::ChargerOnlineState)
-			{ 
+			{  
 				if (itCharger->second.isOverHeat)
 					m_vtUiChargGrid[uiIndex]->setChargerState(STATE_OVER_HEAT);
 				else
+				{ 
 					m_vtUiChargGrid[uiIndex]->setChargerState(charger_state[index]);
+				}
 				updateListviewBatteryModel(index);
 			}
 			else if (enRefreshType::BatteryVol == type){

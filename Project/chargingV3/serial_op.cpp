@@ -635,7 +635,7 @@ void charging::onReadCAN(QString strContent)
 						}
 					}
 
-					QVector<int> idTemp ; int pos_ = 0;
+					QVector<int> vtnBatteryId; int pos_ = 0;
 					//电池动态信息
 					if (strList.size() >= 6)
 					{						
@@ -648,7 +648,7 @@ void charging::onReadCAN(QString strContent)
 							//pos:%d state:%d vol:%3.1fV T:%3.1f
 							
 							int pos = strList2[0].toInt();
-							idTemp.append(pos);
+							
 							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
 							
 							
@@ -656,6 +656,7 @@ void charging::onReadCAN(QString strContent)
 							float tem = strList2[3].toFloat();//温度
 							//赋值给内存中的电池映射
 							int nBatteryId = getCanDJIBattery(CANID, pos);
+							vtnBatteryId.append(nBatteryId);
 							itBattery = itLevel->second.mapBattery.find(nBatteryId);
 							if (itBattery != itLevel->second.mapBattery.end()){
 								//赋值
@@ -698,18 +699,20 @@ void charging::onReadCAN(QString strContent)
 					////电池在位情况
 					for (auto itBattery : itLevel->second.mapBattery)
 					{
+						//跳过跟新
 						bool nextId = false;
-						for (auto iD : idTemp)
+						for (auto iD : vtnBatteryId)
 						{
-							if (itBattery.first == itBattery.second.relatedCharger/100*100 + iD)
+							if (itBattery.first == iD)
 							{
 								nextId = true;
 								break;
 							}
 						}
+						
 						if (nextId )
 							continue;
-						if (itBattery.second.timeLockUI.elapsed() > 10000){
+						if (itBattery.second.timeLockUI.elapsed() > 10000				){
 							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
 
 							charger_state[indexArray] = STATE_FREE;//"充电闲置";
