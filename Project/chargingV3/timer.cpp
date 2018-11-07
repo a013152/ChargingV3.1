@@ -101,7 +101,7 @@ void charging::scanOneBatteryState(unsigned int nClosetId, stCommand::enPriority
 	static char ChargerSum = 0;
 	if (itCloset != m_mapCloset.end())
 	{  
-		if (ChargerSum == 0){  //计算有需要发送多少数量充电器
+		if (ChargerSum == 0){  //计算有需要发送多少数量充电器，用于判断最后一条标志
 			for (auto itCharger : itCloset->second.mapCharger){
 				if (itCharger.second.chargerType == NF_Charger  && isOpenSerialPort)
 					ChargerSum++;

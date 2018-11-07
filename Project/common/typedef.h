@@ -101,7 +101,7 @@ struct  stBatteryInfo
 	bool online;		      //是否使用  //false 的话跳过处理逻辑
 	char user[256];				//申请使用者
 	unsigned int relatedCharger;  //关联充电器 地址
-	int state;   //状态 （针对DJI电池 的充电状态）
+	int state;   //状态 （针对DJI电池 的充电状态）电池状态	0x00 满电	0x01 充电中		0x02 放电中		0x03 静默
 	//unsigned int relatedRelay;  //关联继电器控制板 地址
 	//char relatedLoop;  //关联回路  
 	bool isExisted;				//是否存在

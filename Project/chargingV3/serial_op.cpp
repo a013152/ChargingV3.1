@@ -82,10 +82,8 @@ void charging::OnClickMenuCom(QAction * action)
 			//m_CommandQueue.init(&my_Serial , m_mapBattery.size()); 
 			m_CommandQueue.init( m_mapBattery.size()); 
 			printfDebugInfo("打开串口" + s_preStr + "成功", enDebugInfoPriority::DebugInfoLevelOne);
+			 
 			
-
-			if (!meTimer->isActive())
-				meTimer->start();
 			if (m_bContinueScan)			
 				printfDebugInfo("开始扫描串口设备！\n", enDebugInfoPriority::DebugInfoLevelOne);	
 			 
@@ -362,7 +360,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 						str = itBatteryModel->second.connectType;
 						int iConnectType = str.left(str.indexOf("S")).toInt();
 						int nCommlength = strContent.length();
-						if (nCommlength >= 27 && nCommlength < 77)  {  // 短命令大于等于27，小于77 
+						if (nCommlength >= 27 && nCommlength < 77) 
+						{  // 短命令大于等于27，小于77 
 							//智能电池 总电压除与电池结构数
 							str = get_back_message_at(strContent2, 3);
 							vol = str.toFloat();
@@ -699,7 +698,7 @@ void charging::onReadCAN(QString strContent)
 					////电池在位情况
 					for (auto itBattery : itLevel->second.mapBattery)
 					{
-						//跳过跟新
+						//如果之前有动态信息，则跳过更新
 						bool nextId = false;
 						for (auto iD : vtnBatteryId)
 						{
@@ -708,10 +707,11 @@ void charging::onReadCAN(QString strContent)
 								nextId = true;
 								break;
 							}
-						}
-						
+						}						
 						if (nextId )
 							continue;
+
+						//
 						if (itBattery.second.timeLockUI.elapsed() > 10000				){
 							int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
 

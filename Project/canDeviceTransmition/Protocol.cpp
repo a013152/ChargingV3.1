@@ -5,6 +5,7 @@
 
 BYTE g_CAN_ID_Default[2] = { 0};//临时的CAN ID 写入与读取;  //如果CAN ID =0x111设置 { 0x11, 0x01 }
 BYTE g_CAN_ID_Common[2] = { 0xff, 0x07 };//通用的CAN ID 设置DJI 充电槽的can id时使用
+BYTE g_Key02[32] = { 0x55, 0xc1, 0x0b, 0x4c, 0xb9, 0x04, 0xe0, 0x77, 0x19, 0xdc, 0x06, 0xec, 0xb6, 0x91, 0x41, 0x54, 0x67, 0xa0, 0x57, 0xb1, 0x71, 0xcd, 0xcc, 0x08, 0x5a, 0x90, 0xd2, 0x86, 0x68, 0xd1, 0xe4, 0x3f };
 
 BYTE g_DefaultKey = 0xff; //默认密匙 0xff
 char g_AppPath[256] = { 0 };
@@ -18,8 +19,10 @@ UINT  Uint8ToUint16(uint8_t * canID)
 
 CProtocol::CProtocol()
 {
-	for (int i = 0; i <32; i++)
-		m_szKeyDefault[i] = g_DefaultKey; //默认密匙
+	//for (int i = 0; i <32; i++)
+	//	m_szKeyDefault[i] = g_DefaultKey; //默认密匙
+	//新密钥
+	memcpy(m_szKeyDefault, g_Key02, 32);
 	memset(szTemp, 0, 256);
 }
 
@@ -63,10 +66,8 @@ void CProtocol::getCommandWriteCanId(stCAN_DevData& dataObj, BYTE* canID)
 	byteCANID[0] = canID[0];
 	byteCANID[1] = canID[1]; 
 	
-	aes256_context ctx;
-	uint8_t key[32];
-	for (int i = 0; i < sizeof(key); i++) key[i] = g_DefaultKey; //默认密匙
-	aes256_init(&ctx, key);
+	aes256_context ctx; 
+	aes256_init(&ctx, getKey());
 	aes256_encrypt_ecb(&ctx, byteCANID);
 
 	BYTE byteCANID_1[16] = { 0 };
@@ -627,12 +628,9 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 		if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 	}
 	if (dataObj.CMD_ == 0x0b){
-		//设置放电
-		if (0x00 == dataObj.Data_[0])
-		{
-			sprintf_s(szTemp, 256, "%s,F11,%s,%d,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]);
-			m_strDebugData = szTemp;
-		}
+		//设置自放电 
+		sprintf_s(szTemp, 256, "%s,F11,%s,%d,%s,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success, dataObj.Data_[0]==0?"设置成功":"设置失败");
+		m_strDebugData = szTemp; 
 		if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 	}
 }
@@ -724,9 +722,8 @@ void CProtocol::verifyStepOne(stCAN_DevData& dataObj)
 		str += szTemp;
 	}
 	//加密数据段
-	uint8_t key[32];
-	for (int i = 0; i < sizeof(key); i++) key[i] = g_DefaultKey; //默认密匙
-	asc256_enCode( key, byteVerify, 272); 
+	 
+	asc256_enCode( getKey(), byteVerify, 272); 
 	 
 	memcpy(dataObj.Data_, byteVerify, 272);
 

@@ -216,7 +216,7 @@ void ui_charg_grid::setBatteryState(QString strState, QString strVol, QString st
 	else if (strState == "Î´·ÅÖÃµç³Ø")
 	{ 
 		labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_1_not_online.png);}");
-
+		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
 	}
 	label->setText(strTem + "¡ã " + strVol + "v");
 }

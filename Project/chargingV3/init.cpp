@@ -77,7 +77,9 @@ void charging::init_now()
 	printfDebugInfo("***********开始扫描设备**************");
 	//开始扫描设备
 	beginScanBatteryState();
-	
+	//开始定时器
+	if ((isOpenSerialPort || isOpenCANProcess)&&!meTimer->isActive())
+		meTimer->start();
 }
 
 //初始化读取配置

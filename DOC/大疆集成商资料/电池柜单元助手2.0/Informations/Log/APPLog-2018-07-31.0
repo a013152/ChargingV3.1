@@ -1,0 +1,12 @@
+[2018-07-31 20:03:10.5650] [bb.b] [Error]:       
+等待响应超时       
+[] [ExecutionContext.RunInternal => ThreadHelper.ThreadStart_Context => bb.b] []
+
+[2018-07-31 20:03:31.3560] [bb.b] [Error]:       
+等待响应超时       
+[] [ExecutionContext.RunInternal => ThreadHelper.ThreadStart_Context => bb.b] []
+
+[2018-07-31 20:03:58.7975] [bb.b] [Error]:       
+等待响应超时       
+[] [ExecutionContext.RunInternal => ThreadHelper.ThreadStart_Context => bb.b] []
+

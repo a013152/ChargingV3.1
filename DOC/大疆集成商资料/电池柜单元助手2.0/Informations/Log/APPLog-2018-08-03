@@ -1,0 +1,4 @@
+[2018-08-03 11:11:03.0138] [bb.b] [Error]:       
+打开设备失败,请检查设备类型和设备索引号是否正确       
+[] [ExecutionContext.RunInternal => ThreadHelper.ThreadStart_Context => bb.b] []
+

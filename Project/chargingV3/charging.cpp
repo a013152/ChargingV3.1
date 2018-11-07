@@ -217,7 +217,7 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 			return false;
 		}
 
-		//非智能电池根据电压判断电池是否存在	
+			
 		if (itCharger->second.chargerType == DJI_Charger){
 			MAP_BATTERY_IT itBattery1 = itLevel->second.mapBattery.find(itBattery->first);
 			if (itBattery1->second.isExisted == false){
@@ -230,8 +230,21 @@ bool charging::detectChargingCondition(QString strBatteryId, int* iResult, bool 
 				return false;
 			}
 		}
+		//智能电池压判断是否存在位
+		if (itCharger->second.chargerType == NF_Charger){
+			//MAP_BATTERY_IT itBattery1 = itLevel->second.mapBattery.find(itBattery->first);
+			if (itBatteryModel->second.balance == true && itBattery->second.isExisted == false){
+				if (showDebugInfo)
+				{
+					printfDebugInfo(strBatteryId + "电池未检测，命令无效", enDebugInfoPriority::DebugInfoLevelOne, true);
+					showTipsMessagebox(1, strBatteryId + "电池未检测，充电命令无效!");
+				}
+				*iResult = ERROR_NO_BATTERY;
+				return false;
+			}
+		}
 
-				
+		//非智能电池根据电压判断电池是否存在		
 		/*if (itBatteryModel->second.balance == false)
 		{
 			if (itCharger->second.getAverage(itCharger->second.fVoltage) <3.1)

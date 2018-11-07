@@ -172,7 +172,7 @@ void charging::onPauseScand(bool checked)
 //一键充电
 void charging::onOneKeyCharger()
 {
-	MAP_CLOSET_IT itCloset2;	MAP_BATTERY_IT itBattery2; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
+	MAP_CLOSET_IT itCloset2;	MAP_BATTERY_IT itBattery2, itBattery3; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	QString strId; int iResult = 0;
 	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 	for (MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.begin(); itBattery != itCloset->second.mapBattery.end(); itBattery++)
@@ -232,8 +232,8 @@ void charging::onOneKeyCharger()
 				int indexArray = batteryIDtoArrayIndex(strId);
 				battery_state_enable_refresh[indexArray] = false;
 				itBattery2->second.timeLockUI.restart();
-				itBattery2 = itLevel->second.mapBattery.find(itBattery2->first);
-				itBattery2->second.timeLockUI.restart();
+				itBattery3 = itLevel->second.mapBattery.find(itBattery2->first); //这里更新锁ui时间
+				itBattery3->second.timeLockUI.restart();
 
 				if (itBattery2->second.state == 3){
 					charger_state[indexArray] = STATE_CHARGING;//"充电中";
