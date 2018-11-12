@@ -19,7 +19,7 @@
 
 
 //打开CAN设备
-void openCAN(char * resultString);
+bool openCAN(char * resultString);
 
 //关闭CAN设备
 void closeCAN(char * resultString);
@@ -34,9 +34,8 @@ bool verifyDevice(VT_STR vtStrCommand, char* resultString);
 bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString);
 
 
-//读取电池信息
-
-bool readBatteryInfo(VT_STR vtStrCommand, char* resultString);
+//读取电池信息动态 
+bool readDanyBatteryInfo(VT_STR vtStrCommand, char* resultString);
 
 
 //读取/写入充电状态
@@ -48,3 +47,6 @@ bool readOrWriteDisChargeState(VT_STR vtStrCommand, char* resultString);
 
 //读取/写入放电状态
 bool writeAutoDischargeDay(VT_STR vtStrCommand, char* resultString);
+
+//读取电池信息静态 
+bool readStaticBatteryInfo(VT_STR vtStrCommand, char* resultString);

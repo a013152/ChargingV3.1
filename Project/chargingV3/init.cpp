@@ -74,7 +74,8 @@ void charging::init_now()
 	//打开can进程
 	onOpenOrCloseCanDevice(true);
 
-	printfDebugInfo("***********开始扫描设备**************");
+	if (isOpenSerialPort || isOpenCANProcess)
+		printfDebugInfo("***********开始扫描设备**************");
 	//开始扫描设备
 	beginScanBatteryState();
 	//开始定时器

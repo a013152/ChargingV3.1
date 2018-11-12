@@ -312,7 +312,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 							toSend("P," + QString::number(itCharger->second.id), stCommand::hight);
 						} 
 					} 
-					//充电器在一下情况读取电压
+					//充电器在以下情况读取电压
 					//	1：智能电池在位并且充电时
 					//	2：非智能电池
 					bool readVol = false;
@@ -540,7 +540,10 @@ void charging::onReadCAN(QString strContent)
 				m_menuItemCan->blockSignals(true);
 				m_menuItemCan->setChecked(true);
 				m_menuItemCan->blockSignals(false);
-
+				printfDebugInfo(strList[3], enDebugInfoPriority::DebugInfoLevelOne);
+			}
+			else{
+				printfDebugInfo(strList[3], enDebugInfoPriority::DebugInfoLevelOne, true);
 			}
 		}
 		else if (strList[1].compare("F4") == 0)
@@ -730,9 +733,14 @@ void charging::onReadCAN(QString strContent)
 							}
 						}
 					}
+					//发送读取电池静态数据命令
+					QString strCommad;	strCommad.sprintf("C2S,F12,%d,R", itCharger->second.id);
+					stCommand stComm(strCommad, stCommand::enPriority::front); 
+					stComm.chargerType = DJI_Charger;
+					m_CommandQueue.addCommamd(stComm);
+
 				}
-			}
-			
+			} 
 		}
 		else if (strList[1].compare("F9") == 0)
 		{
@@ -743,6 +751,64 @@ void charging::onReadCAN(QString strContent)
 		{
 			//放电反馈
 			int CANID = strList[2].toInt();
+		}
+
+		else if (strList[1].compare("F12") == 0)
+		{
+			//电池静态数据
+			int CANID = strList[2].toInt();
+			MAP_CLOSET_IT itCloset; itCloset = m_mapCloset.find(1);
+			if (itCloset != m_mapCloset.end())
+			{
+				MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(CANID); MAP_LEVEL_IT itLevel;
+				if (itCharger != itCloset->second.mapCharger.end())
+				{
+					itLevel = m_mapLevel.find(itCharger->second.nLevel);
+					if (strList[3].toInt() == 0)//返回成功
+					{
+						itCharger->second.bOnline = true;
+						itCharger->second.nScanWatchDog = 0;
+
+					}
+					else if (strList[3].toInt() == 2) //超时
+					{
+						if (strList[4] == "收到数据：空")
+							itCharger->second.bOnline = false;
+						else{
+
+						}
+					}
+				}
+				if (itLevel != m_mapLevel.end() && strList[3].toInt() == 0)//返回成功
+				{ 
+					//解析静态电池动态信息
+					if (strList.size() >= 5)
+					{
+						QString strBattery;
+						for (int i = 4; i < strList.size(); i++){
+							strBattery = strList[i];
+							QStringList strList2 = strBattery.split(" ");
+							if (strList2.size() < 7)
+								continue;
+							//[0]位置,[1]寿命百分比, [2]循环次数,[3]SN,[4]生产时间,[5]容量,[6]loader版本, [7]app版本  
+							int pos = strList2[0].toInt();
+							int nBatteryId = getCanDJIBattery(CANID, pos);
+							strBattery = "电池编号:" + QString::number(nBatteryId);
+							strBattery += ", 寿命百分比:" + strList2[1];
+							strBattery += "%%, 循环次数:" + strList2[2];
+							strBattery += ", SN:" + strList2[3];
+							strBattery += ", 生产时间:" + strList2[4];
+							strBattery += ", 容量:"+strList2[5];
+							strBattery += "mAh, loader版本:" + strList2[6];
+							strBattery += ", app版本 :"+strList2[7];
+
+							int k = 0;
+							k = 1;
+						}
+					}
+
+				}
+			}
 		}
 
 	}

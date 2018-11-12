@@ -242,18 +242,13 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F8") == 0)
 				{
-					SET_TYPE_AND_ID
-					GET_P->setCurrentCANID(vtStrCommand[2]);
-					GET_T->setCurrentCANID(vtStrCommand[2]);
-					GET_P->setCurrentCommandType(vtStrCommand[1]);
-					GET_T->setCurrentCommandType(vtStrCommand[1]);
-					//读取电池信息
-					if (readBatteryInfo(vtStrCommand, wbuf))
+					SET_TYPE_AND_ID						
+					//读取电池动态信息
+					if (readDanyBatteryInfo(vtStrCommand, wbuf))
 						s_sendFlg = false;
 					else
 						s_sendFlg = true;
 
-					GET_P->setCurrentCANID(vtStrCommand[2]);
 				}
 				else if (strcmp(vtStrCommand[1].c_str(), "F9") == 0)
 				{
@@ -284,6 +279,16 @@ int _tmain(int argc, _TCHAR* argv[])
 						s_sendFlg = true;
 
 				}
+				else if (strcmp(vtStrCommand[1].c_str(), "F12") == 0)
+				{
+					SET_TYPE_AND_ID
+						//读取电池静态信息
+					if (readStaticBatteryInfo(vtStrCommand, wbuf))
+						s_sendFlg = false;
+					else
+						s_sendFlg = true;
+
+				}
 
 				static char waitTime = 0; waitTime = 0;
 				bool flag = true;
@@ -294,7 +299,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					flag = (s_sendFlg == false && waitTime < 30);  //回收线程有相应，或者超时300ms退出循环。					
 				}  
 				if (waitTime >=30)
-					sprintf_s(wbuf, 256, "%s,%d,%s%s", S2C, enCANDevieErrorCode::DetailError, vtStrCommand[1].c_str(),"命令等待超时。\n");
+					sprintf_s(wbuf, 256, "%s,%d,%s,%s", S2C, enCANDevieErrorCode::DetailError, vtStrCommand[1].c_str(),"命令等待超时。\n");
 				 
 				sendToClint(); 
 			}
@@ -302,59 +307,5 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	CloseHandle(hPipe);
 	return 0;
-
-
-
-	int a = 0;
-	displayOption();
-	while (true)
-	{
-		scanf_s("%d", &a);
-		switch (a)
-		{
-		case  0:
-			return 0;
-			break;
-		case  1:
-			//openCAN();
-			break;
-		case  2:
-			//readCanId();
-			break;
-		case  3:
-			//writeCanId();
-			break; 
-		case  4:
-				//sendVerify();
-				break;
-		case  5:
-			readBeginMode();
-			break;
-		case  6:
-			readMaxCharge();
-			break;
-		case  7:
-			//readOrWriteCharge();
-			break;
-		case  8:
-			readLoadAppInfo();
-			break;
-		case  9:
-			readStaticData();
-			break;
-		case  10:
-			readDynaData();
-			break;
-		case  11:
-			//readOrWriteDisC();
-			break;
-		default:
-			printf("未知命令，请重新输入\n");
-			break;
-		}
-	}
-	
-	
-	 
 }
 

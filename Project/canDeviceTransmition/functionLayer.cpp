@@ -47,20 +47,20 @@ void str_to_hex(const std::string& str , BYTE * szCanId)
 	szCanId[1] = vec[0];
 	return ;
 }
-void openCAN(char * resultString)
+bool openCAN(char * resultString)
 {
 	//打开设备
 	int result = GET_T->openCanDev();
 	if (result == 0){
-		printf("打开设备成功。\n");
-		sprintf_s(resultString, 256, "%s,F1,%d,%s", S2C, enCANDevieErrorCode::Success, "打开设备成功。\n");
+		printf("打开CAN设备成功。\n");
+		sprintf_s(resultString, 256, "%s,F1,%d,%s", S2C, enCANDevieErrorCode::Success, "打开CAN设备成功。\n");
 
 
 	}
 	else if (result == -1)
 	{
-		printf("打开设备失败。\n");
-		sprintf_s(resultString, 256, "%s,F1,%d,%s", S2C, enCANDevieErrorCode::DetailError, "打开设备失败。\n");
+		printf("打开CAN设备失败。\n");
+		sprintf_s(resultString, 256, "%s,F1,%d,%s", S2C, enCANDevieErrorCode::DetailError, "打开CAN设备失败。\n");
 	}
 	else if (result == -2){
 		printf("初始化设备库失败。\n");
@@ -71,6 +71,7 @@ void openCAN(char * resultString)
 		printf("启动CAN设备库失败。\n");
 		sprintf_s(resultString, 256, "%s,F1,%d,%s", S2C, enCANDevieErrorCode::DetailError, "启动CAN设备库失败。\n");
 	}
+	return result == 0;
 }
 
 void closeCAN(char * resultString)
@@ -163,7 +164,7 @@ bool readOrWriteBeginMode(VT_STR vtStrCommand, char* resultString)
 	return true;
 }
 
-bool readBatteryInfo(VT_STR vtStrCommand, char* resultString)
+bool readDanyBatteryInfo(VT_STR vtStrCommand, char* resultString)
 {
 	if (false == decideCANID(vtStrCommand, resultString))
 	{
@@ -248,6 +249,26 @@ bool writeAutoDischargeDay(VT_STR vtStrCommand, char* resultString)
 		str_to_hex(vtStrCommand[2], szTempCanID); g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
 		stCAN_DevData dataObj;
 		GET_P->getCommandAutoDischargeDay(dataObj, std::stoi(vtStrCommand[4], nullptr, 10));
+		uintTempCanID = Uint8ToUint16(szTempCanID);
+		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
+		printf("转换后的CAN ID:%04X\n", uintTempCanID);
+		GET_T->sendCanData(dataObj, uintTempCanID);
+	}
+	return true;
+}
+
+//读取电池信息静态 
+bool readStaticBatteryInfo(VT_STR vtStrCommand, char* resultString)
+{
+	if (false == decideCANID(vtStrCommand, resultString))
+	{
+		return false;
+	}
+	else
+	{
+		str_to_hex(vtStrCommand[2], szTempCanID); g_CAN_ID_Default[0] = szTempCanID[0]; g_CAN_ID_Default[1] = szTempCanID[1];
+		stCAN_DevData dataObj;
+		GET_P->getCommandStaticData(dataObj);
 		uintTempCanID = Uint8ToUint16(szTempCanID);
 		uintTempCanID |= 0x400;   //v1.3后的版本 认证之后的命令 can id需要或上0x400
 		printf("转换后的CAN ID:%04X\n", uintTempCanID);

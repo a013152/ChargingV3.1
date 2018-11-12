@@ -31,57 +31,6 @@ void charging::onOpenOrCloseCanDevice(bool bOpenOrClose)
 				printfDebugInfo(QString::fromLocal8Bit(szPrintf), enDebugInfoPriority::DebugInfoLevelOne, true);
 			else{ 
 				onReadCAN(QString::fromLocal8Bit(szPrintf));
-				//打开can 设备成功，循环认证can充电器。
-				 
-				//for (auto itCharger : m_mapCharger)
-				//{
-				//	if (itCharger.second.chargerType == DJI_Charger){
-				//		char count_ = 0; int wLen = 0;
-				//		sprintf_s(sztemp, 256, "C2S,F4,%d", itCharger.second.id);
-				//		do  						
-				//		{
-				//			wLen = GET_CAN->sendToCanDeviceProcess(sztemp, 256, szPrintf);
-				//			if (wLen == 0)
-				//			{
-				//				printfDebugInfo(QString::fromLocal8Bit("主进程：CAN进程未应答！") , enDebugInfoPriority::DebugInfoLevelOne, true);
-				//				break;
-				//			}
-				//			if (wLen != 0){
-				//				Sleep(200);
-				//				wLen = GET_CAN->receiveFromCanDeviceProcess(szReceive, szPrintf);
-				//				printfDebugInfo(QString::fromLocal8Bit(szPrintf), enDebugInfoPriority::DebugInfoLevelOne, wLen == 0);
-				//				QString strReceiv = QString::fromLocal8Bit(szReceive);
-				//				QStringList strReceiveList = strReceiv.split(",");
-				//				if (strReceiveList.size() > 4){
-				//					if (strReceiveList[3] == "0")
-				//					{
-				//						//更新ui在线状态
-				//						itCharger.second.bOnline = true;
-				//						MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger.second.nLevel);
-				//						if (itLevel != m_mapLevel.end())
-				//						{
-				//							//电池在位情况
-				//							for (auto itBattery : itLevel->second.mapBattery)
-				//							{
-				//								int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
-				//								charger_state[indexArray] = STATE_FREE;//"在线闲置";
-				//								emit RefreshState(enRefreshType::ChargerOnlineState, \
-				//									batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id))); //更新在线状态
-				//							}
-				//						}
-				//						break;
-				//					}
-				//					else{
-				//						//失败
-				//						if (strReceiveList[4] == "收到数据：空"){
-				//							printfDebugInfo(QString::fromLocal8Bit("CAN进程：发送认证命令等待应答超时！"), enDebugInfoPriority::DebugInfoLevelOne, true);
-				//						}										
-				//					}
-				//				}
-				//			}
-				//		} while (0);
-				//	}
-				//} 
 			}			
 		}		
 	}

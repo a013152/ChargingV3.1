@@ -329,10 +329,10 @@ void charging::onOpenOptionWin( )
 		//m_pProcess->execute(strPath);//阻塞启动进程
 	} 
 }
-//打开登录窗口
-void charging::onOpenLoginDialog()
+//打开数据窗口
+void charging::onOpenDataDialog()
 {
-	m_loginDlg->show();
+	m_dataDlg->show();
 }
 
 
@@ -708,9 +708,9 @@ QAction * charging::createMenus()
 	m_menuSys->addAction(action10);
 	connect(action10, SIGNAL(triggered()), this, SLOT(OnBtnShowDebugInfo()));
 
-	//QAction * action12 = new QAction("一键充电", m_menuSys);
-	//connect(action12, SIGNAL(triggered(bool)), this, SLOT(onOneKeyCharger(bool)));
-	//m_menuSys->addAction(action12);
+	QAction * action12 = new QAction("显示电池信息", m_menuSys);
+	connect(action12, SIGNAL(triggered()), this, SLOT(onOpenDataDialog()));
+	m_menuSys->addAction(action12);
 
 	m_menuItemCan = new QAction("CAN设备", m_menuSys);
 	m_menuSys->addAction(m_menuItemCan); 
@@ -1060,6 +1060,7 @@ void charging::adjustUI()
 
 	tablePage_DebugInfo->setGeometry(QRect(0, 40, 350, 490));
 	m_TextEdit_DebugInfo->setGeometry(QRect(0, 0, 348, 466));
+	m_TextEdit_DebugInfo->setReadOnly(true);
 	m_listview_Battery->setGeometry(QRect(0, 0, 348, 466));
 
 

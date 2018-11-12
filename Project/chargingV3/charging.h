@@ -34,7 +34,7 @@
 #include "data_send.h"
 #include "ReadIniFile.h"
 #include "MessageBoxCus.h"
-#include "LoginDialog.h"
+#include "dataDialog.h"
 
 
 
@@ -297,8 +297,8 @@ public slots :
 	//重新打开串口
 	void OnClickMenuDebugInfoLeve(QAction * action);
 
-	//打开登录窗口
-	void onOpenLoginDialog();
+	//打开数据窗口（阻塞)
+	void onOpenDataDialog();
 
 
 	//定时器超时
@@ -409,7 +409,7 @@ private:
 	QAction * m_menuItemCan = nullptr; //can 设备 菜单项目
 
 	CMessageBoxCus* m_msgDlg = nullptr; //消息提示框
-	CLoginDialog* m_loginDlg = nullptr; //登录框
+	CDataDialog* m_dataDlg = nullptr; //电池数据框
 
 	
 

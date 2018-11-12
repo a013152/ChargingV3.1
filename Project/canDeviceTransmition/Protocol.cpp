@@ -214,9 +214,7 @@ void CProtocol::getCommandStaticData(stCAN_DevData& dataObj)
 	dataObj.Enc = 0;
 	dataObj.Seq_ = 9;
 	dataObj.CRC8_ = calulataCRC8(dataObj);
-
-	dataObj.Data_[0] = 0x01;
-
+	dataObj.Data_[0] = 0x01;//请求一次
 	UnionCRC unionObj = calulataCRC16(dataObj);
 	dataObj.CRC16_[0] = unionObj.crcArray[0];
 	dataObj.CRC16_[1] = unionObj.crcArray[1];
@@ -503,6 +501,7 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 	if (dataObj.CMD_ == 0x09){
 		//读取 静态数据
 		if (0x00 == dataObj.Data_[0]){
+			m_strDebugData = "";
 			//电池在线情况
 			uint16_t batteryOnline = Uint8ToUint16(&dataObj.Data_[2]);
 			uint16_t temp1 = 0x01;
@@ -510,11 +509,29 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			{
 				m_BatteryArray[i].isOline_ = (((temp1 << i) & batteryOnline)>>i == 0x01);
 			}
+			sprintf_s(szTemp, 256, "%s,F12,%s,%d", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success );
+			m_strDebugData += szTemp;
+
 			//具体电池情况
-			//待添加
-
-
-			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
+			///获取电池的静态数据（一个电池一组数据，一组数据长29bytes）： 
+			int  dataDynaLength = dataObj.getLen() - 7 - 4 - 2; //数据头长度7，数据体前4（返回码+操作类型+电池1~15在位信息），数据CRC16长度2
+			if (dataDynaLength >0 && dataDynaLength % 30 == 0){
+				int loop = dataDynaLength / 30;
+				for (int i = 0; i < loop; i++){
+					uint8_t szTempData[30] = { 0 };
+					memcpy(szTempData, &dataObj.Data_[4 + i * 30], 30);
+					stDji_StaticBatteryData stObj;
+					stObj.packetUp(szTempData, 30);
+					//电池生产日期
+					int day_ = stObj.productDate & 0x1f;	int	month_ = (stObj.productDate >> 5) & 0x0f; int year_ = ((stObj.productDate >> 9) & 0x7F) + 1980;
+					//位置,寿命百分比, 循环次数,SN,生产时间,容量,loader版本, app版本
+					sprintf_s(szTemp, 256, ",%d %02d %d %s %04d/%02d/%02d %d %02d.%02d.%02d.%02d %02d.%02d.%02d.%02d", \
+						stObj.position_, stObj.life, stObj.loopTime, stObj.SN, year_, month_, day_, stObj.capacity, stObj.loaderVersion[0], stObj.loaderVersion[1], stObj.loaderVersion[2], stObj.loaderVersion[3], \
+						stObj.appVersion[0], stObj.appVersion[1], stObj.appVersion[2], stObj.appVersion[3] );
+					m_strDebugData += szTemp;
+				}
+				if (m_pPrintfFun){ m_pPrintfFun(1, true); }
+			}
 		}
 	}
 	if (dataObj.CMD_ == 0x0a){

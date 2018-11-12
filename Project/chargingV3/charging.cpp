@@ -29,8 +29,8 @@ charging::charging(QWidget *parent)
 	m_msgDlg = new CMessageBoxCus(this, 1500); //
 	m_msgDlg->setWindowModality(Qt::WindowModal);
 
-	m_loginDlg = new CLoginDialog(this);
-	m_loginDlg->setWindowModality(Qt::WindowModal);
+	m_dataDlg = new CDataDialog(this);
+	m_dataDlg->setWindowModality(Qt::WindowModal);
 
 
 	//init_now();
@@ -84,14 +84,19 @@ int charging::batteryIDtoArrayIndex(QString strID )
 int charging::chargerIDtoBatteryId(int chargerId)
 {
 	int nBatteryID = -1, nTheUint = chargerId % 100;
-	MAP_CLOSET_IT itCloset = m_mapCloset.find(chargerId / 100);
+	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 	if (itCloset != m_mapCloset.end()){
 		MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(chargerId);
-		MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.find(chargerId);
-		if (itCharger != itCloset->second.mapCharger.end()
-			&&	itBattery != itCloset->second.mapBattery.end())
+		//MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.find(chargerId);
+		if (itCharger != itCloset->second.mapCharger.end()	)
 		{
-			nBatteryID = itBattery->first;
+			for (auto itBattery : itCloset->second.mapBattery){
+				if (itBattery.second.relatedCharger == itCharger->first)
+				{
+					nBatteryID = itBattery.first;
+					break;
+				}
+			} 
 		}
 	}
 	return nBatteryID;

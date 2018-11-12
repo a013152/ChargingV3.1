@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="CanProcess.cpp" />
     <ClCompile Include="CommonFunction.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_dataDialog.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="ToCanDeviceProcess.cpp" />
     <ClCompile Include="charging.cpp" />
@@ -162,7 +163,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_DoubleClickedButton.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_LoginDialog.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MessageBoxCus.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_qextserialbase.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -187,7 +187,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="init.cpp" />
-    <ClCompile Include="LoginDialog.cpp" />
+    <ClCompile Include="dataDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageBoxCus.cpp" />
     <ClCompile Include="operatoreDBFile.cpp" />
@@ -748,7 +748,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="loginDialog.ui">
+    <CustomBuild Include="dataDialog01.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\Qt5.3.0\5.3\msvc2013_64\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
@@ -768,37 +768,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="GeneratedFiles\ui_loginDialog.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="LoginDialog.h">
+    <CustomBuild Include="dataDialog.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Qt\Qt5.3.0\5.3\msvc2013_64\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIA_LIB -DQT_MULTIMEDIAWIDGETS_LIB -DQT_NETWORK_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_SQL_LIB -DQT_TESTLIB_LIB -DQT_BLUETOOTH_LIB -DQT_CONCURRENT_LIB -DQT_HELP_LIB -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_DECLARATIVE_LIB -DQT_SCRIPT_LIB -DQT_SENSORS_LIB -DQT_SVG_LIB -DQT_WEBKITWIDGETS_LIB -DQT_WIDGETS_LIB -DQT_XML_LIB -DQT_XMLPATTERNS_LIB -D_MBCS  "-I.\GeneratedFiles" "-I." "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtCore" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtGui" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimedia" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtMultimediaWidgets" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtNetwork" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQml" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtQuick" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSql" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtTest" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebKit" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\ActiveQt" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtBluetooth" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtConcurrent" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtHelp" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtOpenGL" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtPrintSupport" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtDeclarative" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtScript" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSensors" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtSvg" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWebkitWidgets" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtWidgets" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXml" "-IC:\Qt\Qt5.3.0\5.3\msvc2013_64\include\QtXmlPatterns"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing LoginDialog.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
@@ -889,6 +859,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_dataDialog01.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite3ext.h" />
   </ItemGroup>

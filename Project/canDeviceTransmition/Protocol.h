@@ -407,7 +407,45 @@ struct stCAN_DevData
 		}
 	}
 };
+//结构体：DJI充电槽的电池静态数据
+struct stDji_StaticBatteryData{
+	uint8_t position_;	//位置
+	uint16_t productDate;		//电池生产日期
+	uint16_t loopTime;		//循环次数
+	uint16_t capacity;		//容量
+	uint8_t	loaderVersion[4];		//loader版本
+	uint8_t appVersion[4];		//app版本
+	uint8_t life;		//寿命百分比
+	uint8_t SN[15];    //流水码
+	stDji_StaticBatteryData() :position_(0), productDate(0), loopTime(0),
+		capacity(0), life(0){
+		memset(loaderVersion, 0, 4);
+		memset(appVersion, 0, 4);
+		memset(SN, 0, 15);
+	}
+	stDji_StaticBatteryData(const stDji_StaticBatteryData& other){
+		this->position_ = other.position_;
+		this->productDate = other.productDate;
+		this->capacity = other.capacity;
+		memcpy(this->loaderVersion, other.loaderVersion, 4);
+		memcpy(this->appVersion, other.appVersion, 4);
+		this->life = other.life;
+		memcpy(this->SN, other.SN, 14);
+	}
+	void packetUp(BYTE * pData, int dataLen){
+		for (int i = 0; i < dataLen; i++){
+			if (i == 0){ position_ = pData[i];		continue; }
+			if (i == 1){ productDate = Uint8ToUint16(&pData[i]);		continue; }
+			if (i == 3){ loopTime = Uint8ToUint16(&pData[i]);		continue; }
+			if (i == 5){ capacity = Uint8ToUint16(&pData[i]);		continue; }
+			if (i == 7){ memcpy(loaderVersion, &pData[i], 4); continue; }
+			if (i == 11){ memcpy(appVersion, &pData[i], 4); continue; }
+			if (i == 15){ life = pData[i];		continue; }
+			if (i == 16){ memcpy(SN, &pData[i], 14); continue; }
+		}
+	}
 
+};
 //结构体：DJI充电槽的电池动态数据
 struct stDJI_DanyBatteryData{
 	uint8_t position_;	//位置
