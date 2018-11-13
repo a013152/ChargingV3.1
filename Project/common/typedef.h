@@ -466,3 +466,14 @@ enum enChargeRecordStateType{
 	StateEnd,		 //停止充电
 	 
 };
+
+//数据结构体，更新电池数据用
+struct stBatteryData{
+	int nBatteryId;
+	QString strData;  //保存电池 SN、寿命百分比
+	bool bNeedRefresh;  //跟新标志
+	stBatteryData() :nBatteryId(0), bNeedRefresh(0){
+
+	}
+	
+};
