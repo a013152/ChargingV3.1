@@ -474,6 +474,7 @@ struct stBatteryData{
 	bool bNeedRefresh;  //跟新标志
 	stBatteryData() :nBatteryId(0), bNeedRefresh(0){
 
-	}
-	
+	} 
 };
+typedef std::map<int, stBatteryData> MAP_BtData; //数据
+typedef std::map<int, stBatteryData>::iterator MAP_BtData_IT;

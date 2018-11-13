@@ -346,7 +346,8 @@ void chargingOption::initTabWidget(QVector<stChargeRecord> &vtChargeRecord)
 
 		ui.tableChargeRecord->setItem(iRow, 6, pNewTableWidgetItem(it->strRemrk));  //备注
 	}
-
+	QString str; str.sprintf("次数:%d次", iRow);
+	ui.labCount->setText(str);
 
 }
 
@@ -517,11 +518,11 @@ void chargingOption::OnBtnSave3()
 void chargingOption::OnBtnQuery_1()
 {
 	//检测ui勾选项
-	int nChargerId = 0; QDateTime* beginTime = nullptr; QDateTime *endTime = nullptr;
+	int nBatteryId = 0; QDateTime* beginTime = nullptr; QDateTime *endTime = nullptr;
 	//
 	if (Qt::Checked == ui.checkBox_1->checkState())
 	{
-		nChargerId = ui.cmbCharger->currentText().toInt();
+		nBatteryId = ui.cmbCharger->currentText().toInt();
 	}
 	if (Qt::Checked == ui.checkBox_2->checkState())
 	{
@@ -545,7 +546,7 @@ void chargingOption::OnBtnQuery_1()
 		}
 	}
 	//重新查询数据库
-	m_OperatoreDB.onQueryChargedRecord(m_vtChargeRecord, nChargerId, beginTime, endTime);
+	m_OperatoreDB.onQueryChargedRecord(m_vtChargeRecord, nBatteryId, beginTime, endTime);
 
 	//更新ui
 	initTabWidget(m_vtChargeRecord);

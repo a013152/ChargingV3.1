@@ -48,7 +48,7 @@ public:
 
 	void initTabWidget(MAP_BATTERY &mapBattery, MAP_BATTERY_MODEL& mapBatteryModel);  //初始化Tab控件
 
-	void initTabWidget(QVector<stChargeRecord> &vtChargeRecord);
+	void initTabWidget(QVector<stChargeRecord> &vtChargeRecord);//初始化充电记录列表ui
 
 	void initComboBoxWidget();
 

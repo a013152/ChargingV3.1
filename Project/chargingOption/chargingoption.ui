@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
@@ -253,7 +253,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>使能</string>
+       <string/>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBox_2">
@@ -316,6 +316,19 @@
       </property>
       <property name="text">
        <string>结束时间：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labCount">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>230</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>次数：</string>
       </property>
      </widget>
     </widget>

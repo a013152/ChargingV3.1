@@ -62,6 +62,7 @@ public:
     QDateTimeEdit *dateTime_End;
     QCheckBox *checkBox_3;
     QLabel *label_10;
+    QLabel *labCount;
     QWidget *tab_3;
     QGroupBox *groupBox;
     QLabel *label_2;
@@ -168,6 +169,9 @@ public:
         label_10 = new QLabel(tab);
         label_10->setObjectName(QStringLiteral("label_10"));
         label_10->setGeometry(QRect(655, 170, 61, 16));
+        labCount = new QLabel(tab);
+        labCount->setObjectName(QStringLiteral("labCount"));
+        labCount->setGeometry(QRect(660, 230, 101, 16));
         tablePage->addTab(tab, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QStringLiteral("tab_3"));
@@ -228,7 +232,7 @@ public:
 
         retranslateUi(chargingOptionClass);
 
-        tablePage->setCurrentIndex(3);
+        tablePage->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(chargingOptionClass);
@@ -250,11 +254,12 @@ public:
         tablePage->setTabText(tablePage->indexOf(tab_2), QApplication::translate("chargingOptionClass", "\347\224\265\346\261\240\345\236\213\345\217\267", 0));
         btnQuery_1->setText(QApplication::translate("chargingOptionClass", "\346\237\245\350\257\242", 0));
         label_8->setText(QApplication::translate("chargingOptionClass", "\347\224\265\346\261\240\357\274\232", 0));
-        checkBox_1->setText(QApplication::translate("chargingOptionClass", "\344\275\277\350\203\275", 0));
+        checkBox_1->setText(QString());
         checkBox_2->setText(QString());
         label_9->setText(QApplication::translate("chargingOptionClass", "\345\274\200\345\247\213\346\227\266\351\227\264\357\274\232", 0));
         checkBox_3->setText(QString());
         label_10->setText(QApplication::translate("chargingOptionClass", "\347\273\223\346\235\237\346\227\266\351\227\264\357\274\232", 0));
+        labCount->setText(QApplication::translate("chargingOptionClass", "\346\254\241\346\225\260\357\274\232", 0));
         tablePage->setTabText(tablePage->indexOf(tab), QApplication::translate("chargingOptionClass", "\345\205\205\347\224\265\350\256\260\345\275\225", 0));
         groupBox->setTitle(QApplication::translate("chargingOptionClass", "\350\256\276\347\275\256", 0));
         label_2->setText(QApplication::translate("chargingOptionClass", "\345\205\205\347\224\265\346\227\266\351\231\220\357\274\232", 0));

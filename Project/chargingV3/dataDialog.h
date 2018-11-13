@@ -15,7 +15,9 @@ private:
 
 	QTextEdit *m_TextEdit_data = nullptr;   //信息文本框
 
-	QTimer * m_timer;  //定时器
+	QTimer * m_timer = NULL;  //定时器
+
+	MAP_BtData m_mapBtDataA, m_mapBtDataB; //A版本负责刷新UI, B版本负责接收can设备读取的电池静态信息
 public:
 	CDataDialog(QWidget* parent = 0);
 	~CDataDialog();
@@ -24,10 +26,10 @@ public:
 	
 	void timer_out();//定时器响应函数
 
-	bool compareMemory();  //比较内存中两，不相同返回false
+	bool compareMemory();  //比较内存中AB两版本，不相同返回false
 
 	void refreshDataUi();  //刷新ui
 
-	void addData(stBatteryData& obj);
+	void addData(int nBatteryId, QString& strData);
 };
 

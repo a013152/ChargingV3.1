@@ -37,8 +37,7 @@ bool COperatoreDBFile::onOpenDbFile()
 		qDebug() << "Open database fail: " << sqlite3_errmsg(m_sqliteDB);
 		bResult = false;
 	}
-	m_openSqliteFlag = bResult;
-	QSqlError error1 = m_database.lastError();
+	m_openSqliteFlag = bResult; 
 	return bResult;
 }
 //关闭
@@ -89,12 +88,12 @@ void COperatoreDBFile::onAddChargedRecord(int nChargerId, float fvol,QString str
 }
 
 int tempChargerId = 0;
+char szBeginVol[10] = {0};
 static int checkChargerRecordResult(void *NotUsed, int argc, char **argv, char **azColName)
 {
-	for (int i = 0; i < argc; i++)
-	{
-		tempChargerId = (argv[i] ? atoi(argv[i]) : 0);
-	}
+	tempChargerId = (argv[0] ? atoi(argv[0]) : 0);
+	strcpy_s(szBeginVol, 10, (argv[1] ? argv[1] : ""));
+	
 	return 0;
 } 
 //更新充电停止记录： 参数1 电池ID, 参数2 电压 ,参数3 开始 时间，参数4 错误码
@@ -110,7 +109,7 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 	//m_sql_query = tmpQuery;
 
 	QString strSql, strTemp; char szSQL[512] = { 0 };	char* cErrMsg;
-	strSql = "SELECT id FROM chargedRecord WHERE state_=0 AND chargerId=" + QString::number(nChargerId);
+	strSql = "SELECT id,beginVol FROM chargedRecord WHERE state_=0 AND chargerId=" + QString::number(nChargerId);
 	strSql += " ORDER BY id DESC LIMIT 1;";
 	QByteArray ba = strSql.toLocal8Bit();
 	memcpy(szSQL, ba.data(), ba.size());	
@@ -127,7 +126,10 @@ void  COperatoreDBFile::onAddStopChargedRecord(int nChargerId, float fvol, QStri
 		{
 			//有则更新		
 			strSql = "UPDATE chargedRecord  SET endVol=";
-			strTemp.sprintf(" %4.2f, ", fvol);
+			if (fvol != 0)
+				strTemp.sprintf(" %4.2f, ", fvol);
+			else
+				strTemp += QString::fromLocal8Bit(szBeginVol);
 			strSql += strTemp;  //结束电压
 			strSql += " state_=1, end_charge=\'";  //结束状态
 			strSql += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");  //结束时间
@@ -179,7 +181,7 @@ static int checkChargerRecordResultTotal(void *NotUsed, int argc, char **argv, c
 	return 0;
 }
 //查询记录：参数1 充电器ID , 参数2开始时间， 参数3结束时间
-bool COperatoreDBFile::onQueryChargedRecord(QVector<stChargeRecord>& vtRecord, int nChargerId, QDateTime* beginTime, QDateTime *endTime)
+bool COperatoreDBFile::onQueryChargedRecord(QVector<stChargeRecord>& vtRecord, int nBatteryId, QDateTime* beginTime, QDateTime *endTime)
 {
 	if (m_openSqliteFlag == false)
 		return false;
@@ -187,8 +189,8 @@ bool COperatoreDBFile::onQueryChargedRecord(QVector<stChargeRecord>& vtRecord, i
 	bool bResult = false;
 	 
 	QString strSql = "SELECT * FROM chargedRecord WHERE state_ = 1"; 
-	if (nChargerId != 0){ 
-		strSql += " AND  chargerId=" + QString::number(nChargerId);
+	if (nBatteryId != 0){
+		strSql += " AND  chargerId=" + QString::number(nBatteryId);
 	}
 	if (beginTime != nullptr){ 
 		strSql += " AND  begin_charge >=\'" + beginTime->toString("yyyy-MM-dd hh:mm:ss") +"\'";
@@ -200,7 +202,10 @@ bool COperatoreDBFile::onQueryChargedRecord(QVector<stChargeRecord>& vtRecord, i
 
 	char szSQL[512] = { 0 };	char* cErrMsg;
 	//strSql = "select id from chargedRecord where state_=0 and chargerId=" + QString::number(nChargerId);
-	strSql += " ORDER BY id DESC LIMIT 200;";   //逆序id读取前200条
+	strSql += " ORDER BY id DESC ";   //逆序id读取
+	if (nBatteryId == 0 && beginTime == nullptr&& endTime == nullptr)
+		strSql += "LIMIT 20";		//如果没加筛选条件，只读取前500条
+	strSql += ";";
 	QByteArray ba = strSql.toLocal8Bit();
 	memcpy(szSQL, ba.data(), ba.size());
 	int nRes = sqlite3_exec(m_sqliteDB, szSQL, checkChargerRecordResultTotal, 0, &cErrMsg);

@@ -16,16 +16,10 @@ void charging::init_now()
 	m_ConnectDBThread.doTestConnectDB();
 	m_ConnectDBThread.setMainProcess(this);
 
-	m_OperDB.onOpenDbFile();
+	if(m_OperDB.onOpenDbFile() == false)
+		printfDebugInfo("打开Sqlite失败，充电记录失效！", DebugInfoLevelOne, true);
 	printfDebugInfo("01开启测试连接服务器线程，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	qtime1.restart();
-
-	//读取配置内容到内存中
-	//readConfig();
-	//printfDebugInfo("02读取文件配置，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
-	//qtime1.restart();
-
-	
 
 	//初始化定时器
 	initTimer();

@@ -163,7 +163,14 @@ void charging::onPauseScand(bool checked)
 		action->blockSignals(true);
 		action->setChecked(!checked);
 		action->blockSignals(false);
-		printfDebugInfo("串口未打开", enDebugInfoPriority::DebugInfoLevelOne, true);
+		QString str;
+		if (isOpenSerialPort == false)
+			str = "串口设备";
+		if (isOpenCANProcess == false)
+			str += (isOpenSerialPort ? "" : "+");
+			str += "CAN设备";
+		str += "未打开";
+		printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne, true);
 	}	
 	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueScan", QString("%1").arg(m_bContinueScan), QString(g_AppPath) + "\\set.ini", &iError);
 

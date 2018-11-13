@@ -801,9 +801,10 @@ void charging::onReadCAN(QString strContent)
 							strBattery += ", 容量:"+strList2[5];
 							strBattery += "mAh, loader版本:" + strList2[6];
 							strBattery += ", app版本 :"+strList2[7];
-
-							int k = 0;
-							k = 1;
+							//添加到 数据显示对话框
+							if (m_dataDlg)
+								m_dataDlg->addData(nBatteryId, strBattery);
+							 
 						}
 					}
 

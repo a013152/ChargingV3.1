@@ -32,8 +32,6 @@ charging::charging(QWidget *parent)
 	m_dataDlg = new CDataDialog(this);
 	m_dataDlg->setWindowModality(Qt::WindowModal);
 
-
-	//init_now();
 }
 
 charging::~charging()
