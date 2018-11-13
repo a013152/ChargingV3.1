@@ -552,6 +552,10 @@ void charging::OnReadyGetBatteryState(int nClosetId)
 	//}
 	//else
 	{
+		//刷新一次电池静态数据
+		m_dataDlg->doRefreshUI();
+		m_dataDlg->clearMemoryB();
+
 		//读取当前柜子 
 		scanOneBatteryState(m_iCurrentCloset, stCommand::normal);
 	}  

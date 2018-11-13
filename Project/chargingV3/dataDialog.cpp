@@ -20,19 +20,15 @@ CDataDialog::~CDataDialog()
 void CDataDialog::init()
 {
 	m_TextEdit_data = new QTextEdit(this);
-	m_TextEdit_data->setGeometry(QRect(10, 10, 680, 480));
+	m_TextEdit_data->setGeometry(QRect(10, 10, 740, 500));
 	m_TextEdit_data->setReadOnly(true);
 
-	if (m_timer == NULL)
-		m_timer = new QTimer();
-	m_timer->setInterval(3*1000); //3秒
-	QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_out()));
 }
 
-void CDataDialog::timer_out()
+void CDataDialog::doRefreshUI()
 {
 	//更新一次
-	if (false == compareMemory()){
+	if (compareMemory()){
 		refreshDataUi();
 	}
 }
@@ -78,9 +74,12 @@ bool CDataDialog::compareMemory()
 void CDataDialog::refreshDataUi()
 {
 	m_TextEdit_data->clear();
+	QString str;
+	int icount = 0;
 	//插入ui
 	for (auto itA : m_mapBtDataA){
-		m_TextEdit_data->append(itA.second.strData);
+		str = (++icount) % 2 ? "\n":"";str += "<p><font size=\"4\" color=\"black\">" + itA.second.strData + "</font></p>";
+		m_TextEdit_data->append(str);
 	}
 
 }

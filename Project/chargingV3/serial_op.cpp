@@ -799,8 +799,8 @@ void charging::onReadCAN(QString strContent)
 							strBattery += ", SN:" + strList2[3];
 							strBattery += ", 生产时间:" + strList2[4];
 							strBattery += ", 容量:"+strList2[5];
-							strBattery += "mAh, loader版本:" + strList2[6];
-							strBattery += ", app版本 :"+strList2[7];
+							strBattery += "mAh";//", loader版本:" + strList2[6];
+							//strBattery += ", app版本 :"+strList2[7];
 							//添加到 数据显示对话框
 							if (m_dataDlg)
 								m_dataDlg->addData(nBatteryId, strBattery);

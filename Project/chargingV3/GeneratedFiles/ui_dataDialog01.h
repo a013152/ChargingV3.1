@@ -26,7 +26,7 @@ public:
     {
         if (dataDialog01->objectName().isEmpty())
             dataDialog01->setObjectName(QStringLiteral("dataDialog01"));
-        dataDialog01->resize(700, 500);
+        dataDialog01->resize(760, 540);
 
         retranslateUi(dataDialog01);
 
