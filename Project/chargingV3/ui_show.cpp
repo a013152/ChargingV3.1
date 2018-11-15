@@ -613,7 +613,7 @@ void charging::OnBtnLevel()
 			levelBtnData* pData = (levelBtnData*)itpBtnLevel->userData(tempLevel++);
 			if (pData->nlevel == m_nCurrentLevel)  //选中的层级
 			{
-				itpBtnLevel->setStyleSheet("QPushButton{font-size:22px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
 					"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
 					"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
 			}
@@ -694,7 +694,7 @@ void charging::releaseBatteryStateRefresh()
 QAction * charging::createMenus()
 { 
 	m_menuSys = new QMenu(ui.btnMenuSys);
-	QAction * action = new QAction("暂停串口通信", m_menuSys);
+	QAction * action = new QAction("暂停设备通信", m_menuSys);
 	action->setCheckable(true);	
 	connect(action, SIGNAL(triggered(bool )), this, SLOT(onPauseScand(bool)));
 	action->setChecked(!m_bContinueScan);
@@ -904,13 +904,13 @@ void charging::createChargGrid()
 		QPushButton* pushButton = new QPushButton(strPushButton, this);
 		//设置位置
 		rect_.setLeft(10);
-		rect_.setTop(70 + 65 * count++);
+		rect_.setTop(70 + 55 * count++);
 		rect_.setWidth(110);
 		rect_.setHeight(40);
 		pushButton->setGeometry(rect_);
 		if (itLevel.first == m_nCurrentLevel)  //选中的层级
 		{
-			pushButton->setStyleSheet("QPushButton{font-size:20px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+			pushButton->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
 				"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
 				"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
 		}else
