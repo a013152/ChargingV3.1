@@ -67,14 +67,19 @@ void charging::init_now()
 	} 
 	//打开can进程
 	onOpenOrCloseCanDevice(true);
-
-	if (isOpenSerialPort || isOpenCANProcess)
+	if (isOpenSerialPort == false && isOpenCANProcess == false){
+		printfDebugInfo("***********未打开串口或者CAN设备**************", DebugInfoLevelOne, true);
+	}
+	else if (isOpenSerialPort || isOpenCANProcess){
 		printfDebugInfo("***********开始扫描设备**************");
-	//开始扫描设备
-	beginScanBatteryState();
-	//开始定时器
-	if ((isOpenSerialPort || isOpenCANProcess)&&!meTimer->isActive())
-		meTimer->start();
+
+		//开始扫描设备
+		beginScanBatteryState();
+		//开始定时器
+		if ((isOpenSerialPort || isOpenCANProcess) && !meTimer->isActive())
+			meTimer->start();
+	}
+	
 }
 
 //初始化读取配置

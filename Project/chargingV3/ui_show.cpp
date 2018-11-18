@@ -719,16 +719,37 @@ QAction * charging::createMenus()
 	connect(action12, SIGNAL(triggered()), this, SLOT(onOpenDataDialog()));
 	m_menuSys->addAction(action12);
 
-	m_menuItemCan = new QAction("CAN设备", m_menuSys);
-	m_menuSys->addAction(m_menuItemCan); 
-	m_menuItemCan->setCheckable(true);
-	connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
-	//action12->setVisible(false);
-
+	bool flagDJI = false; MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
+	for (auto itCharger : itCloset->second.mapCharger){
+		if (itCharger.second.chargerType == NF_Charger)
+		{
+			flagDJI = true;
+			break;
+		}
+	}
+	if (flagDJI){
+		m_menuItemCan = new QAction("CAN设备", m_menuSys);
+		m_menuSys->addAction(m_menuItemCan);
+		m_menuItemCan->setCheckable(true);
+		connect(m_menuItemCan, SIGNAL(triggered(bool)), this, SLOT(onBtnCanDevice(bool)));
+		//action12->setVisible(false);
+	}
 
 	//扫描串口，将扫描结果加入菜单栏，自动打开串口号最大的一个串口
-	QAction * action11 = new QAction("串口设备", m_menuSys);
-	m_menuSys->addAction(action11);
+	QAction * action11 = NULL;
+	
+	bool flagNF = false; 
+	for (auto itCharger : itCloset->second.mapCharger){
+		if (itCharger.second.chargerType == NF_Charger)
+		{
+			flagNF = true;
+			break;
+		}
+	}
+	if (flagNF){		
+		action11 = new QAction("串口设备", m_menuSys);
+		m_menuSys->addAction(action11);
+	}
 
 
 	QAction * action4 = new QAction("显示信息等级", m_menuSys);

@@ -6,6 +6,8 @@ static QString s_preStr;
 
 QAction * charging::serial_scan(QAction * parentMenu)
 {
+	if (parentMenu == NULL)
+		return NULL;
 	QAction * action = new QAction("¹Ø±ÕÉè±¸", m_menuCom);
 	action->setCheckable(true); action->setChecked(true);
 	m_menuCom->addAction(action);
@@ -537,9 +539,11 @@ void charging::onReadCAN(QString strContent)
 			if (strList[2].compare("0") == 0){
 				GET_CAN->m_bOpenCanDevice = true;
 				isOpenCANProcess = true;
-				m_menuItemCan->blockSignals(true);
-				m_menuItemCan->setChecked(true);
-				m_menuItemCan->blockSignals(false);
+				if (m_menuItemCan != nullptr){
+					m_menuItemCan->blockSignals(true);
+					m_menuItemCan->setChecked(true);
+					m_menuItemCan->blockSignals(false);
+				}				
 				printfDebugInfo(strList[3], enDebugInfoPriority::DebugInfoLevelOne);
 			}
 			else{
