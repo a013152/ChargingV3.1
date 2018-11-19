@@ -532,6 +532,9 @@ void charging::onReadCAN(QString strContent)
 	QStringList strList = strContent.split(",");
 	if (strList.size() > 3)
 	{
+		LOG3(g_logBuf);
+		//COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString(" hh:mm:ss") + QString::fromLocal8Bit(g_logBuf) + " 接收到:" + strContent);
+
 		//分析命令类型
 		if (strList[1].compare("F1") == 0){
 			//"S2C,F1,2,打开设备失败。" /"S2C,F1,0,打开设备成功。"

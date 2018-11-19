@@ -1,4 +1,5 @@
 #include "operatorfile.h"
+#include "ReadIniFile.h"
 #pragma execution_character_set("utf-8")
 static COperatorFile* s_this = nullptr;
 COperatorFile::COperatorFile()
@@ -90,6 +91,7 @@ void COperatorFile::readBatteryInfo(MAP_BATTERY& mapBattery, int* iError)
 		*iError = ChargingClosetError::filePathError;
 		return;
 	}
+	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit", QString(g_AppPath) + "\\set.ini", iError).toInt();
 	QByteArray qba1, qba2; QString qstr1, qstr2; QStringList qstrlist; char szTemp[256] = { 0 }; int nIndexMap = 0;
 	 
 	while (!file.atEnd())
@@ -111,19 +113,15 @@ void COperatorFile::readBatteryInfo(MAP_BATTERY& mapBattery, int* iError)
 		batteryInfo.online = atoi(&szTemp[0]);
 
 		transitionContent1(qstrlist[3], qstr2, qba2, szTemp);  //modelId	 
-		batteryInfo.modelId = atoi(&szTemp[0]);
+		batteryInfo.modelId = atoi(&szTemp[0]); 
 
-		transitionContent1(qstrlist[4], qstr2, qba2, szTemp);  //user	 
-		strncpy(batteryInfo.user, szTemp, strlen(szTemp));
-
-		transitionContent1(qstrlist[5], qstr2, qba2, szTemp);  //relatedCharger;  //关联充电器控制板 地址 		
+		transitionContent1(qstrlist[4], qstr2, qba2, szTemp);  //relatedCharger;  //关联充电器控制板 地址 		
 		batteryInfo.relatedCharger = atoi(&szTemp[0]);
 
-		//transitionContent1(qstrlist[6], qstr2, qba2, szTemp);   //relatedRelay 关联继电器控制板 地址		
-		//batteryInfo.relatedRelay = atoi(&szTemp[0]); 
-
-		//transitionContent1(qstrlist[7], qstr2, qba2, szTemp);  //relatedLoop 关联回路 地址
-		//batteryInfo.relatedLoop = atoi(&szTemp[0]);
+		transitionContent1(qstrlist[5], qstr2, qba2, szTemp);  //nlevel	//层级 
+		batteryInfo.nlevel = atoi(&szTemp[0]); 
+		if (nLevelLimit < batteryInfo.nlevel && nLevelLimit > 0)
+			break;
 		 
 		mapBattery.insert(MAP_BATTERY::value_type(atoi(batteryInfo.id), batteryInfo));		
 	}
@@ -148,8 +146,8 @@ void COperatorFile::readBatteryModel(MAP_BATTERY_MODEL& mapBatteryModel, int* iE
 		qstrlist = qstr1.split(",");
 		if (qstrlist.size() == 1  )
 			continue;
-		else if (qstrlist.size() != 9){
-			QString text = qstr1 + "\n电池配置信息不足,请重检查。";
+		else if (qstrlist.size() < 9){
+			QString text = qstr1 + "\n电池型号配置信息不足9列,请重检查。";
 			QMessageBox::warning(NULL, "提示", text);
 			*iError = ChargingClosetError::configInfoError;
 			return;
@@ -198,6 +196,7 @@ void COperatorFile::readChargerInfo(MAP_CHARGER& mapCharger, int* iError)
 		*iError = ChargingClosetError::filePathError;
 		return;
 	}
+	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit", QString(g_AppPath) + "\\set.ini", iError).toInt();
 	QByteArray qba1, qba2; QString qstr1, qstr2; QStringList qstrlist; char szTemp[256] = { 0 };
 	while (!file.atEnd())
 	{
@@ -212,6 +211,8 @@ void COperatorFile::readChargerInfo(MAP_CHARGER& mapCharger, int* iError)
 		obj.id = atoi(szTemp);
 		transitionContent1(qstrlist[1], qstr2, qba2, szTemp); // 层级
 		obj.nLevel = atoi(szTemp);
+		if (obj.nLevel > nLevelLimit && nLevelLimit > 0)
+			break;
 		transitionContent1(qstrlist[2], qstr2, qba2, szTemp); // 类型
 		obj.chargerType = (enChargerType)atoi(szTemp);
 		
@@ -371,7 +372,7 @@ void COperatorFile::writeChargingInfo(MAP_BATTERY& mapBattery, int* iError)
 	}
 	QTextStream in(&file);
 	QString str, strTemp;
-	//dbid="1",id="0101",gridNO="0101",online="1",model="1002",purchasing_time="2016-06-12",user="super",enter_time="2017-08-24 14:37:00",relatedLoop="0"
+	//dbid="1",id="0101",gridNO="0101",online="1",model="1002",purchasing_time="2016-06-12",elatedLoop="0"
 	for (MAP_BATTERY_IT it = mapBattery.begin(); it != mapBattery.end(); it++)
 	{
 		str += "dbid=\"";
@@ -382,11 +383,11 @@ void COperatorFile::writeChargingInfo(MAP_BATTERY& mapBattery, int* iError)
 		str += "\",online=\"";
 		str += QString::number(it->second.online);
 		str += "\",model=\"";
-		str += QString::number(it->second.modelId); 
-		str += "\",user=\"";
-		str += QString(it->second.user); 
+		str += QString::number(it->second.modelId);  
 		str += "\",relatedCharger=\"";
 		strTemp = QString::number(it->second.relatedCharger);
+		str += "\",nlevel=\"";
+		str += QString::number(it->second.nlevel);
 		str += strTemp;
 		//str += "\",relatedRelay=\"";
 		//strTemp = QString::number(it->second.relatedRelay);

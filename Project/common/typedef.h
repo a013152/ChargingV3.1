@@ -102,6 +102,7 @@ struct  stBatteryInfo
 	char user[256];				//申请使用者
 	unsigned int relatedCharger;  //关联充电器 地址
 	int state;   //状态 （针对DJI电池 的充电状态）电池状态	0x00 满电	0x01 充电中		0x02 放电中		0x03 静默
+	int nlevel;   //所在层级
 	//unsigned int relatedRelay;  //关联继电器控制板 地址
 	//char relatedLoop;  //关联回路  
 	bool isExisted;				//是否存在
@@ -112,7 +113,7 @@ struct  stBatteryInfo
 	QTime timeLockChargeRecord;   //禁止刷新充电记录标志计时器
 	stChargeRecord stRecord;
 	stBatteryInfo() : dbid(0), online(1), modelId(0), state(0),\
-		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false){
+		relatedCharger(0), isExisted(false), isChanged(false), isApplyCharging(false), nlevel(0){
 		memset(id, 0, 10);	
 		memset(user, 0, 256);
 		timeLockCloseLoop.start();
@@ -137,6 +138,7 @@ struct  stBatteryInfo
 		this->timeLockUI = other.timeLockUI;
 		this->timeLockChargeRecord = other.timeLockChargeRecord;
 		this->stRecord = other.stRecord;
+		this->nlevel = other.nlevel;
 	}
 };
 //充电器类型 add 20180920

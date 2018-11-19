@@ -721,7 +721,7 @@ QAction * charging::createMenus()
 
 	bool flagDJI = false; MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 	for (auto itCharger : itCloset->second.mapCharger){
-		if (itCharger.second.chargerType == NF_Charger)
+		if (itCharger.second.chargerType == DJI_Charger)
 		{
 			flagDJI = true;
 			break;

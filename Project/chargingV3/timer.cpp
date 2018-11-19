@@ -15,7 +15,7 @@ void charging::timer_out()
 		detectChargeRecord();  //检测判断需要记录充电/停止充电 add 20181008
 	}
 
-	if (m_bConnectServerIsSeccuss && SERIAL_PORT->isOpen())
+	if (m_bConnectServerIsSeccuss )
 	{
 		static QTime s_Qtime;
 		static bool first = true;
@@ -23,19 +23,12 @@ void charging::timer_out()
 			first = false;
 			s_Qtime.start(); 
 		}
-		int iElaped = s_Qtime.elapsed();
-		//qDebug() << "detect submit battery elaped:" << iElaped;
 		if (s_Qtime.elapsed() >= m_SubmitInterval && m_bContinueSubmit)	//大于检测申请时间间隔 默认15秒
 		{  
-			//detectServerBatteryState();//检测 服务器的电池申请情况	
-
-			//detectSubmitBatteryState(); //提交电池信息
 			m_ConnectDBThread.doDetectServerDB();
 
 			s_Qtime.restart();
 		}
-		iElaped = s_Qtime.elapsed();
-		qDebug() << "interval elaped:" << iElaped;
 	} 
 	else if (false == m_bConnectServerIsSeccuss && m_bContinueSubmit){
 		//尝试开启线程测试网络连接情况 20180620

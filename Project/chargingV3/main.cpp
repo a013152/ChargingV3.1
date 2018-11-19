@@ -6,6 +6,7 @@
 
 
 extern char g_AppPath[256] = { 0 };
+char g_logBuf[256] = { 0 };
 QString g_winTitle ;
 BOOL IsAlreadyRunning(char *_szAppName);
 int main(int argc, char *argv[])

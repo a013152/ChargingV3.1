@@ -79,6 +79,8 @@ void charging::init_now()
 		if ((isOpenSerialPort || isOpenCANProcess) && !meTimer->isActive())
 			meTimer->start();
 	}
+	LOG3(g_logBuf);
+	COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + QString::fromLocal8Bit(g_logBuf) + " 执行完成。\n");
 	
 }
 
@@ -260,6 +262,7 @@ void charging::combineConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP
 
 	for (itBattery = m_mapBattery.begin(); itBattery != m_mapBattery.end(); itBattery++)
 	{
+		itBattery->second.nlevel;
 		//关联电池与充电器
 		itCharger = m_mapCharger.find(itBattery->second.relatedCharger);
 		if (itCharger != m_mapCharger.end()){

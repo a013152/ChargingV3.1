@@ -3,6 +3,7 @@
  
 
 extern char g_AppPath[256];  //exe路径 
+extern char g_logBuf[256];  //log打印buf
 
 #define  MAIN_WINDOW_TITLE "未读取标题"
 #define  SETING_WINDOW_TITLE "系统参数设置"
@@ -67,4 +68,6 @@ enum enCANDevieErrorCode{	//CAN进程返回的错误码
 
 //调试信息
 #define DEBUG_LOG_FLAG  1
+#define LOG3(BUF) sprintf_s(BUF, 256, "F:%s  L:%d" ,__FUNCTION__, __LINE__)
+
 #endif // !H_COMMON
