@@ -533,7 +533,7 @@ void charging::onReadCAN(QString strContent)
 	if (strList.size() > 3)
 	{
 		LOG3(g_logBuf);
-		//COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString(" hh:mm:ss") + QString::fromLocal8Bit(g_logBuf) + " 接收到:" + strContent);
+		COperatorFile::GetInstance()->writeDebugLog((QDateTime::currentDateTime()).toString(" hh:mm:ss") + QString::fromLocal8Bit(g_logBuf) + " 接收到:" + strContent);
 
 		//分析命令类型
 		if (strList[1].compare("F1") == 0){

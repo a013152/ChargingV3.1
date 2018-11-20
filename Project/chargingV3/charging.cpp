@@ -418,7 +418,7 @@ bool charging::stopByLocalID(QString strBatteryId)
 QString charging::getBatteryState(int indexBattery)
 {
 	QString strResult;
-	QString strBState = battery_state[indexBattery];//"电池在线" : "未放置电池";
+	QString strBTempState = battery_state[indexBattery];//"电池在线" : "未放置电池";
 	float fvol = battery_voltage[indexBattery].toFloat();  //电压
 	QString strBatteryId = battery_local_id[indexBattery];//电池id
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
@@ -432,8 +432,8 @@ QString charging::getBatteryState(int indexBattery)
 			}
 			else  //充电器 未充电
 			{
-				if (strBState == "未放置电池"){
-					strResult = strBState;
+				if (strBTempState == "未放置电池"){
+					strResult = strBTempState;
 				}
 				else{
 					if (fvol == 0 || fvol < itBatteryModel->second.fullVoltage - 0.1)  //比较电压
@@ -460,11 +460,10 @@ QString charging::getBatteryState(int indexBattery)
 					strResult = "等待中";
 			}
 			else{
-				strBState = "未放置电池";
+				strResult = "未放置电池";
 			} 
 		} 
-	}
- 
+	} 
 	return strResult;
 }
 

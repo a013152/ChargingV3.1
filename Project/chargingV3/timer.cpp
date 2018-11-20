@@ -48,7 +48,7 @@ void charging::timer_out()
 		}
 	}
 
-	if (SERIAL_PORT->isOpen() == true)
+	if (isOpenCANProcess || isOpenSerialPort)
 	{
 		processApplyBatteryToCharging();//处理：申请与充电/停止 
 	}
@@ -154,6 +154,11 @@ void charging::detectSubmitBatteryState()
 		bcharging = battery_charging_record[i];
 		m_submitServer.msg_put(my_id, state, temperature, voltage, current, bcharging);
 		battery_charging_record[i] = false;  //重置充电记录 
+
+		LOG3(g_logBuf);
+		COperatorFile::GetInstance()->writeDebugLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + QString::fromLocal8Bit(g_logBuf) \
+			+ "my_id:" + my_id + " state:" + state + " T:" + temperature + " vol:" + voltage + "。\n");
+
 	}
 	// 提交停止充电的命令 add 20180524 
 	if (battery_cancel_charging_info.size() > 0){

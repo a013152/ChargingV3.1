@@ -1173,6 +1173,8 @@ void charging::OnBtnSysClose()
 		while (!m_ConnectDBThread.isFinished()){
 			Sleep(10);
 		} 
+		COperatorFile::GetInstance()->onCloseFile();
+
 		/*
 		SERIAL_PORT->ClosePort();
 		onOpenOrCloseCanDevice(false);*/

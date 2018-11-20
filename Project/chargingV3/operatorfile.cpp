@@ -6,8 +6,10 @@ COperatorFile::COperatorFile()
 {
 	m_pTextLogin = nullptr;
 	m_pLogfile = nullptr;
+	m_pTextDebug = nullptr;
 	m_pTextApplyBatteryLog = nullptr;
 	m_pLogfileApplyBattery = nullptr;
+	m_pDebugLogfile = nullptr;
 }
 
 
@@ -283,8 +285,7 @@ void COperatorFile::tryCreateLogFile()
 			m_pLogfile->close();
 			delete m_pLogfile;
 			m_pLogfile = nullptr;
-		}
-	}
+		}}
 	if (s_strPath != str)
 	{
 		if (m_pLogfile == nullptr)
@@ -302,7 +303,8 @@ void COperatorFile::tryCreateLogFile()
 		}
 		
 	} 
-
+	 
+	
 }
 //写log
 void COperatorFile::writeLog(QString str)
@@ -328,7 +330,39 @@ void COperatorFile::writeLog(QString str)
 		qDebug() << "Log文件指针为空，写入失败";
 
 }
+//写Debug log内容
+void COperatorFile::writeDebugLog(QString str)
+{
+	if (m_pDebugLogfile == nullptr){
+		QString str = g_AppPath;
+		str += "/LOG/debugLog.txt";
+		m_pDebugLogfile = new QFile(str);
+		if (!m_pDebugLogfile->open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
+		{
+			qDebug() << "打开debug log失败，路径：" << str;
+			return;
+		}
+		else{
+			m_pTextDebug = new QTextStream(m_pDebugLogfile);
+		}
+	}
+	
+	if (m_pDebugLogfile){
+		//判断文件大小，如果超过MAX_SIZE，清空
+		long long fileSize = m_pDebugLogfile->size();
+		static int MAX_SIZE = 1024 * 1024;
+		if (fileSize > MAX_SIZE){
+			m_pDebugLogfile->resize(0);
+		}
 
+		//写入
+		if (m_pTextDebug){
+			*m_pTextDebug << str;
+			m_pTextDebug->flush();
+		}
+	}
+
+}
 //写入所有配置：充电柜、电池、电池型
 void COperatorFile::writeAllConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, int* iError)
 {
@@ -524,4 +558,12 @@ void COperatorFile::writeApplyBatteryToCharging(QVector<stApplyBatteryDontCharge
 
 	m_pTextApplyBatteryLog->flush();//发送 
 	//m_pTextApplyBatteryLog->close();
+}
+#define DELETE_LOG_FILE(pfile) {if(pfile){pfile->close();delete pfile;pfile= nullptr;}}
+void COperatorFile::onCloseFile()
+{
+	DELETE_LOG_FILE(m_pLogfile);
+	DELETE_LOG_FILE(m_pLogfileApplyBattery);
+	DELETE_LOG_FILE(m_pDebugLogfile);
+
 }

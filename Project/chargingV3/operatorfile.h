@@ -47,10 +47,16 @@ public:
 	//写log内容
 	void writeLog(QString str); 
 
+	//写Debug log内容
+	void writeDebugLog(QString str);
+
 	//读取申请电池未充电的信息
 	void readApplyBatteryToCharging(QVector<stApplyBatteryDontCharge>& vtApplyBattery, int* iError);
 	//写入申请电池未充电的信息
 	void writeApplyBatteryToCharging(QVector<stApplyBatteryDontCharge>& vtApplyBattery, int* iError);
+
+	//关闭
+	void onCloseFile();
 
 private:
 	void readChargingClosetInfo(MAP_CLOSET& mapCloset, int* iError);  //获取充电柜
@@ -70,10 +76,13 @@ private:
 	QString m_strAppPath;
 
 	QTextStream *m_pTextLogin;   //记录文件
-	QFile* m_pLogfile;
+	QFile* m_pLogfile; 
 
 	QTextStream *m_pTextApplyBatteryLog;   //申请电池未充电记录文件
 	QFile* m_pLogfileApplyBattery;
+
+	QTextStream *m_pTextDebug;   //调试文件
+	QFile* m_pDebugLogfile;
 };
 
 #endif // OPERATORFILE_H
