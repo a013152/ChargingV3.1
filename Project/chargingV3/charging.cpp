@@ -424,23 +424,45 @@ QString charging::getBatteryState(int indexBattery)
 	MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 	if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 	{
-		if (itCharger->second.isCharging == true)//充电器 充电中
+		if (itCharger->second.chargerType == NF_Charger)
 		{
-			strResult = "充电中";
-		}
-		else  //充电器 未充电
+			if (itCharger->second.isCharging == true)//充电器 充电中
+			{
+				strResult = "充电中";
+			}
+			else  //充电器 未充电
+			{
+				if (strBState == "未放置电池"){
+					strResult = strBState;
+				}
+				else{
+					if (fvol == 0 || fvol < itBatteryModel->second.fullVoltage - 0.1)  //比较电压
+						strResult = "等待中";
+					else if (fvol >= itBatteryModel->second.fullVoltage - 0.1){
+						strResult = "充电完成";
+					}
+				}
+			}
+
+		}else if (itCharger->second.chargerType == DJI_Charger)
 		{
-			if (strBState == "未放置电池"){
-				strResult = strBState;
+			//state;   //状态 （针对DJI电池 的充电状态）电池状态	0x00 满电	0x01 充电中		0x02 放电中		0x03 静默
+			if (itBattery->second.isExisted)
+			{
+				if (itBattery->second.state == 0x00 && fvol >= itBatteryModel->second.fullVoltage - 0.1)
+					strResult = "充电完成"; 
+				else if (itBattery->second.state == 0x01)
+					strResult = "充电中";
+				else if (itBattery->second.state == 0x02)
+					strResult = "放电中";
+				//else if (itBattery->second.state == 0x03)
+				else
+					strResult = "等待中";
 			}
 			else{
-				if (fvol == 0 || fvol < itBatteryModel->second.fullVoltage - 0.2)  //比较电压
-					strResult = "等待中";
-				else if (fvol >= itBatteryModel->second.fullVoltage - 0.2){
-					strResult = "充电完成";
-				}
+				strBState = "未放置电池";
 			} 
-		}
+		} 
 	}
  
 	return strResult;

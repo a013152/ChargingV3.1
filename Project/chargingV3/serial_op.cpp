@@ -653,9 +653,8 @@ void charging::onReadCAN(QString strContent)
 							QStringList strList2 = strBattery.split(" ");
 							if (strList2.size() < 4)
 								continue;
-							//[0]位置 [1]状态 [2]电压 [3]温度
-							//pos:%d state:%d vol:%3.1fV T:%3.1f
-							
+							//协议字段： [0]位置 [1]状态 [2]电压 [3]温度  //位置 状态 电压 温度
+														
 							int pos = strList2[0].toInt();
 							
 							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
