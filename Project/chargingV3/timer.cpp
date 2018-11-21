@@ -153,11 +153,10 @@ void charging::detectSubmitBatteryState()
 		current = battery_current[i];
 		bcharging = battery_charging_record[i];
 		m_submitServer.msg_put(my_id, state, temperature, voltage, current, bcharging);
-		battery_charging_record[i] = false;  //重置充电记录 
-
-		LOG3(g_logBuf);
-		COperatorFile::GetInstance()->writeDebugLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + QString::fromLocal8Bit(g_logBuf) \
-			+ "my_id:" + my_id + " state:" + state + " T:" + temperature + " vol:" + voltage + "。\n");
+		battery_charging_record[i] = false;  //重置充电记录  
+		 
+		
+		DEBUG_LOG("线程内上传：my_id:" + my_id + " 状态:" + state + " 温度:" + temperature + " 电压:" + voltage + "。\n");
 
 	}
 	// 提交停止充电的命令 add 20180524 

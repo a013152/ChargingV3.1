@@ -276,8 +276,7 @@ void COperatorFile::tryCreateLogFile()
 	QDateTime time = QDateTime::currentDateTime();//获取系统现在的时间
 	QString str = g_AppPath;
 	str += "/LOG/" + time.toString("logyyyy_MM_dd");//设置显示格式
-	str += ".txt";	
-	//str = "C:\\Program Files\\2345Soft\\HaoZip\\HaoZipMiniPage.exe";
+	str += ".txt";	 
 	if (!s_strPath.isEmpty() && s_strPath != str) //如果 创建第二天，关闭第一天的文件
 	{
 		if (m_pLogfile)
@@ -300,11 +299,8 @@ void COperatorFile::tryCreateLogFile()
 		}
 		else{
 			m_pTextLogin = new QTextStream(m_pLogfile);
-		}
-		
-	} 
-	 
-	
+		} 
+	}  
 }
 //写log
 void COperatorFile::writeLog(QString str)

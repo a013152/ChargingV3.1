@@ -5,10 +5,11 @@
 
 void charging::init_now()
 { 	
+	DEBUG_LOG(" 执行开始。\n");
 	//设置 选中 充电柜页面
 	//ui.tabWidget->setCurrentIndex(1);
 	QTime qtime1; qtime1.start(); 
-
+	DEBUG_LOG(" 开启网络业务线程B。\n");
 	QObject::connect(&m_ConnectDBThread, &CConnectDBThread::connectDBResult, this, &charging::OnConnectDBResult);
 	 
 	//运行线程 测试连接服务器数据库
@@ -16,44 +17,47 @@ void charging::init_now()
 	m_ConnectDBThread.doTestConnectDB();
 	m_ConnectDBThread.setMainProcess(this);
 
-	if(m_OperDB.onOpenDbFile() == false)
+	DEBUG_LOG(" 打开本地sqlit。\n");
+	if (m_OperDB.onOpenDbFile() == false)
+	{
 		printfDebugInfo("打开Sqlite失败，充电记录失效！", DebugInfoLevelOne, true);
+		DEBUG_LOG(" 本地Sqlite失败。充电记录失效!\n");
+	}
 	printfDebugInfo("01开启测试连接服务器线程，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	qtime1.restart();
 
-	//初始化定时器
+	DEBUG_LOG(" 初始化定时器meTimer。\n");
+	//初始化定时器 
 	initTimer();
-	//printfDebugInfo("03初始化定时器，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
-	//qtime1.restart();
-
+	 
+	DEBUG_LOG(" 命令队列线程A。\n");
 	//开启命令队列线程
 	m_CommandQueue.start(QThread::NormalPriority);   
-	//printfDebugInfo("04开启命令队列线程，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
-	//qtime1.restart();
-
+	 
+	DEBUG_LOG(" 创建UI控件柜子编号。\n");
 	//创建柜子编号控件
 	createClosetRadio();
-	//printfDebugInfo("05创建柜子编号控件，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
-	//qtime1.restart();
+	 
+	DEBUG_LOG(" 创建UI控件充电格控件+充电器层级。\n");
 	//创建充电格控件+ 充电器层级
 	createChargGrid();
 	//printfDebugInfo("06创建充电格控件，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	//qtime1.restart(); 
-
+	DEBUG_LOG(" 创建UI调试信息窗口。\n");
 	//创建调试信息窗口
 	createDebugInfoUI();
-
+	DEBUG_LOG(" 创建UI菜单。\n");
 	//创建操作、串口菜单
 	QAction * actionBase = createMenus();
 	//printfDebugInfo("07创建操作、串口菜单，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	//qtime1.restart();
 
-	
-	//调整ui位置，与加载图片
+	DEBUG_LOG(" 调整UI位置与加载图片。\n");
+	//调整ui位置与加载图片
 	adjustUI(); 
 	//printfDebugInfo("08调整ui位置，与加载图片，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
 	//qtime1.restart();	
-	
+	DEBUG_LOG(" 连接UI控件响应函数。\n");
 	//连接控件响应函数
 	initConnectWidget();
 	//printfDebugInfo("09连接控件响应函数，耗时：" + QString::number(qtime1.elapsed() / 1000) + "秒" + QString::number(qtime1.elapsed() % 1000) + "毫秒");
@@ -62,31 +66,36 @@ void charging::init_now()
 
 	//打开串口
 	if (actionBase != NULL){
+		DEBUG_LOG(" 串口菜单不为空，尝试打开串口。\n");
 		//打开串口
 		OnClickMenuCom(actionBase);
 	} 
+	DEBUG_LOG(" 打开CAN扫描进程，尝试打开CAN设备。\n");
 	//打开can进程
 	onOpenOrCloseCanDevice(true);
 	if (isOpenSerialPort == false && isOpenCANProcess == false){
-		printfDebugInfo("***********未打开串口或者CAN设备**************", DebugInfoLevelOne, true);
+		printfDebugInfo("***********未打开串口 与 CAN设备**************", DebugInfoLevelOne, true);
+		DEBUG_LOG(" 未打开串口与CAN设备。\n");
 	}
 	else if (isOpenSerialPort || isOpenCANProcess){
 		printfDebugInfo("***********开始扫描设备**************");
-
+		DEBUG_LOG(" 开始扫描设备，开始定时器meTimer\n");
 		//开始扫描设备
 		beginScanBatteryState();
 		//开始定时器
-		if ((isOpenSerialPort || isOpenCANProcess) && !meTimer->isActive())
+		if ( !meTimer->isActive())
 			meTimer->start();
 	}
-	LOG3(g_logBuf);
-	COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + QString::fromLocal8Bit(g_logBuf) + " 执行完成。\n");
+	
+	DEBUG_LOG(" 执行结束。\n\n");
+	//COperatorFile::GetInstance()->writeDebugLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + QString::fromLocal8Bit(g_logBuf) + " 执行完成。\n");
 	
 }
 
 //初始化读取配置
 void charging::readConfig()
 { 
+	DEBUG_LOG(" 清理内存Closet、Battery……容器 。\n");
 	//清理内存
 	m_mapCloset.clear(); m_mapBattery.clear(); m_mapBatteryModel.clear(); m_mapCharger.clear(); 
 	//if (init_)
@@ -99,7 +108,7 @@ void charging::readConfig()
 		battery_apply_charging.clear();  //充电情况
 		m_vtApplyDontCharge.clear();  //申请还没充电的记录
 	}
-	
+	DEBUG_LOG(" 清理容器完成，读取配置，赋值Closet、Battery……容器 。\n");
 
 	COperatorFile::GetInstance()->setAppPath(g_AppPath);
 	COperatorFile::GetInstance()->readAllConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger,    &m_iError);
@@ -107,7 +116,7 @@ void charging::readConfig()
 	COperatorFile::GetInstance()->tryCreateLogFile();
 	if (m_iError == 0)
 	{
-		
+		DEBUG_LOG(" 读取配置完成，整合Closet、Battery……容器 。\n");
 		//整合配置内容
 		combineConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger, m_mapLevel);
 		//if (init_)
@@ -139,11 +148,13 @@ void charging::readConfig()
 				battery_charging_record.append(false); //充电记录
 				battery_state_enable_refresh.append(true);
 			} 
-		}
-	
+		}	
 	} 
+	DEBUG_LOG(" 整合容器完成，读取之前的申请未充电记录。\n");
 	COperatorFile::GetInstance()->readApplyBatteryToCharging(m_vtApplyDontCharge, &m_iError);
 	m_vtApplyDontChargeB = m_vtApplyDontCharge;
+
+	DEBUG_LOG(" 读取之前的申请未充电记录完成，读取ini配置。\n");
 	//读取继续扫描标志
 	m_bContinueScan = CReadIniFile::getInstance()->readProfileInfo("SET", "ContinueScan", QString(g_AppPath) + "\\set.ini", &iError).toInt() == 1;
 	//读取继续网络提交标志
@@ -188,6 +199,7 @@ void charging::readConfig()
 		m_nChargeLimitTime = CHARGING_LIMIT_TIME;
 		//printfDebugInfo("SET m_nChargeLimitTime 未设置充电时限，默认360分钟", enDebugInfoPriority::DebugInfoLevelOne, true);
 	}
+	DEBUG_LOG(" 执行结束。\n\n");
 }
 
 
@@ -314,7 +326,9 @@ void charging::OnConnectDBResult(bool  bResult)
 	{ 
 		strInfo += "网络异常，服务器"; strInfo += DBHOSTNAME; strInfo += "连接失败！";
 		printfDebugInfo(strInfo, enDebugInfoPriority::DebugInfoLevelOne, true);
+		
 	}
+	DEBUG_LOG(strInfo + " \n");
 }
 
 
