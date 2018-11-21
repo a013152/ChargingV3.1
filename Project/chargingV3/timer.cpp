@@ -156,7 +156,7 @@ void charging::detectSubmitBatteryState()
 		battery_charging_record[i] = false;  //重置充电记录  
 		 
 		
-		DEBUG_LOG("线程内上传：my_id:" + my_id + " 状态:" + state + " 温度:" + temperature + " 电压:" + voltage + "。\n");
+		DEBUG_LOG("线程B=>上传：my_id:" + my_id + " 状态:" + state + " 温度:" + temperature + " 电压:" + voltage + "。\n");
 
 	}
 	// 提交停止充电的命令 add 20180524 
@@ -179,10 +179,13 @@ void charging::detectSubmitBatteryState()
 		str += QString::number(temp % 1000); str += "毫秒";//
 		//printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne);
 		emit printfed(str);
+
+		DEBUG_LOG("线程B=>" + str + "\n");
 	}
 	else
 	{	//printfDebugInfo("\r\n电池数据上传失败", enDebugInfoPriority::DebugInfoLevelOne);
 		emit printfed("\r\n电池数据上传失败");
+		DEBUG_LOG("线程B=>电池数据上传失败\n");
 	}
 }
 //检测申请电池 本函数在线程中执行，不可操作UI
@@ -190,6 +193,7 @@ void charging::detectServerBatteryState()
 { 
 
 	if (m_bConnectServerIsSeccuss){
+		DEBUG_LOG("线程B=>获取服务器数据库的电池申请情况\n");
 		//获取服务器数据库的电池申请情况	 
 		battery_apply = m_submitServer.msg_get_now(battery_my_id);
 		for (int i = 0; i < battery_apply.size(); i++)
@@ -202,7 +206,10 @@ void charging::detectServerBatteryState()
 				if (item.bApply != flag)
 				{				
 					if (item.bApply == false && flag == true)
+					{
 						item.bNeedCharge = true;
+						DEBUG_LOG("线程B=>获取my_id:" + strMyId + "申请充电\n");
+					}
 					else
 						item.bNeedCharge = false;
 					item.bApply = flag;  //保存申请情况
@@ -215,11 +222,14 @@ void charging::detectServerBatteryState()
 		//检测服务器电池状态 处理停止充电信息 add20180524
 		battery_server_state = m_submitServer.msg_get_message_now(battery_my_id);
 		for (int i = 0; i < battery_server_state.size(); i++){
+			
 			stApplyInfo item = battery_apply_charging[i];
 			QString strMyId = battery_my_id[i];
+			
 			if (item.myID == strMyId.toInt())
 			{
 				QString strState = battery_server_state[i];
+				DEBUG_LOG("线程B=>获取my_id:" + strMyId + " 备注信息:" + strState + "\n");
 				if (strState == "取消" )  //收到“取消”字符串，表示取消充电
 				{
 					bool findFlag = false;
@@ -235,6 +245,7 @@ void charging::detectServerBatteryState()
 					{
 						item.bNeedStopCharge = true;
 						battery_apply_charging[i] = item;
+						DEBUG_LOG("线程B=>获取my_id:" + strMyId + "取消充电\n");
 					}
 				}
 			}
@@ -250,16 +261,16 @@ void charging::processApplyBatteryToCharging()
 	{
 		stApplyInfo item = battery_apply_charging[i];
 		if (battery_apply[i] == true && item.bNeedCharge == true)  //被申请了,同时需要充电
-		{
+		{ 
 			item.bNeedCharge = false;
 			battery_apply_charging[i] = item;
 
-			strId = battery_local_id[i];
+			strId = battery_local_id[i]; 
 			int indexArray = batteryIDtoArrayIndex(strId);
 
 			printfDebugInfo("远程申请" + strId + "电池，尝试充电", enDebugInfoPriority::DebugInfoLevelTwo);
 			COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + "远程申请" + strId + "电池，尝试充电\n");
-
+			DEBUG_LOG("定时器内=>电池:" + strId + "因远程申请而尝试充电\n");
 			if (detectChargingCondition(strId, &iResult,false)) //检测充电条件
 			{ 
 				MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
@@ -273,6 +284,8 @@ void charging::processApplyBatteryToCharging()
 							emit RefreshState(enRefreshType::ChargerState, indexArray);
 							item.timeLockUI.restart();		//触发充电成功 ，则2秒内禁止刷新充电状态
 							battery_apply_charging[i] = item;
+
+							DEBUG_LOG("定时器内=>电池:" + strId + "因远程申请而触发充电成功\n");
 						}
 					}else if (itCharger->second.chargerType == DJI_Charger)
 					{				
@@ -285,6 +298,7 @@ void charging::processApplyBatteryToCharging()
 						stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
 						vtStCommand.append(stCommW);
 						m_CommandQueue.addVtCommand(vtStCommand);
+						DEBUG_LOG("定时器内=>电池:" + strId + "因远程申请而触发充电命令:" + strCommad + "下达\n");
 					}
 					
 					itBattery->second.stRecord.beginChargeFlag = true;
@@ -296,6 +310,7 @@ void charging::processApplyBatteryToCharging()
 				//申请充电失败
 				printfDebugInfo("远程申请" + strId + "电池，尝试充电失败。", enDebugInfoPriority::DebugInfoLevelTwo);
 				COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss") + " 远程申请" + strId + "尝试充电失败。");
+				DEBUG_LOG("定时器内=>电池:" + strId + "因远程申请而尝试充电失败\n");
 				//添加到充电队列
 				//appendChargingQueue(strId);  
 			}		 
@@ -319,7 +334,10 @@ void charging::processApplyBatteryToCharging()
 						if (itCharger->second.isCharging || itCharger->second.isDisCharging)  //在充电或者放电
 						{
 							if (stopByLocalID(strId))
+							{
 								stopFlag = true;
+								DEBUG_LOG("定时器内=>电池:" + strId + "因远程取消而停止充放电\n");
+							}
 
 						}
 						else if (itBatteryModel->second.balance == false &&  //非智能 电池
@@ -337,6 +355,8 @@ void charging::processApplyBatteryToCharging()
 							printfDebugInfo(" 远程触发" + strId + "放电。", enDebugInfoPriority::DebugInfoLevelOne);
 							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ")
 								+ " 远程触发" + strId + "放电\n");
+
+							DEBUG_LOG("定时器内=>电池:" + strId + "因远程取消而触发放电\n");
 						}
 					}
 					else if (itCharger->second.chargerType == DJI_Charger)
@@ -353,6 +373,7 @@ void charging::processApplyBatteryToCharging()
 							vtStCommand.append(stCommW);
 							m_CommandQueue.addVtCommand(vtStCommand);
 							stopFlag = true;
+							DEBUG_LOG("定时器内=>电池:" + strId + "因远程取消而触发停止命令:" + strCommad + " 下达\n");
 						}
 						else if (itBattery->second.state == 3 || itBattery->second.state == 0)
 						{
@@ -367,6 +388,8 @@ void charging::processApplyBatteryToCharging()
 							stCommand stCommW = stCommand(strCommad, stCommand::hight); stCommW.chargerType = DJI_Charger;
 							vtStCommand.append(stCommW);
 							m_CommandQueue.addVtCommand(vtStCommand);
+
+							DEBUG_LOG("定时器内=>电池:" + strId + "因远程取消而触发放电命令:" + strCommad + " 下达\n");
 
 							//UI更新
 							int indexArray = batteryIDtoArrayIndex(strId);
@@ -402,7 +425,7 @@ void charging::processApplyBatteryToCharging()
 							itBattery->second.timeLockUI.restart();
 							printfDebugInfo(strId + "远程停止放电", enDebugInfoPriority::DebugInfoLevelOne);
 							COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strId + "远程停止放电\n");
-
+							DEBUG_LOG("定时器内=>电池:" + strId + "因远程取消而触发停止命令:" + strCommad + " 下达\n");
 							charger_state[indexArray] = STATE_FREE;//闲置;
 							stopFlag = true;
 						}
@@ -430,6 +453,7 @@ void charging::processApplyBatteryToCharging()
 	//处理申请未充电的情况
 	if (m_vtApplyDontCharge.size())
 	{
+		
 		printfDebugInfo("处理预充队列", enDebugInfoPriority::DebugInfoLevelTwo);
 		QString str;
 		for (int i = m_vtApplyDontCharge.size() - 1, indexArray = 0; i >= 0; i--){
@@ -438,6 +462,7 @@ void charging::processApplyBatteryToCharging()
 			if (getBatteryIdRelatedInfo(QString::number(m_vtApplyDontCharge[i].nBatteryID), itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 			{
 				itBattery->second.isApplyCharging = true;
+				DEBUG_LOG("定时器内=>处理预充队列，电池:" + QString::number(m_vtApplyDontCharge[i].nBatteryID) + "更新UI 预充状态\n");
 				indexArray = batteryIDtoArrayIndex(QString::number(m_vtApplyDontCharge[i].nBatteryID));
 				if (indexArray != -1){
 					//UI更新 
@@ -454,7 +479,8 @@ void charging::processApplyBatteryToCharging()
 		//尝试充电
 		strId = QString::number(m_vtApplyDontCharge[i].nBatteryID);
 		if (chargingByLocalID(strId, &iResult, false) && iResult == 0)
-		{			
+		{		
+			DEBUG_LOG("定时器内=>处理预充队列，电池:" + QString::number(m_vtApplyDontCharge[i].nBatteryID) + "充电成功\n");
 			//充电成功， 删除之前申请未充的记录
 			m_vtApplyDontCharge.remove(i);
 			//UI更新
@@ -464,18 +490,15 @@ void charging::processApplyBatteryToCharging()
 			stApplyInfo item = battery_apply_charging[indexArray];
 			item.timeLockUI.restart();		//触发申请充电 ，则2秒内禁止刷新充电状态
 		} 
-	}
-
+	} 
 	//比较 申请未充电的备份 是否有不同，不同则跟新到本地文件	
-	writeApplyChargingQueueToFile();
-	
-	
-
+	writeApplyChargingQueueToFile();  
 }
 
 //显示所有数据信息
 void charging::show_all_data_now()
 { 
+	DEBUG_LOG(" 开始显示所有数据信息\n");
 	// 获取对应的电池是否平衡  智能 非智能
 	auto getBalence = [&](QString strId)->bool 
 	{		  		
@@ -509,7 +532,8 @@ void charging::show_all_data_now()
 			QString strClosetNo = battery_local_id[indexArray].left(2);
 			if (strClosetNo == strClosetUiNo)  //当前柜子编号相同更新UI信息
 			{ 				
-				//显示状态、电压、电流、温度
+				 
+				DEBUG_LOG(" 开始刷新前柜子编号：" + strClosetNo + " 状态、电压、电流、温度\n");
 				//qDebug() << battery_local_id[j]; 
 				show_a_voltage(battery_voltage[indexArray], indexArray % MAX_BATTERY);
 				//show_a_current(battery_current[j], i);
@@ -534,6 +558,7 @@ void charging::show_all_data_now()
 		//fTemperature /= MAX_BATTERY; 
 		//show_temperature(fTemperature);
 	}
+	DEBUG_LOG(" 结束刷新\n");
 }
 
 //检测信息文本是否过长
@@ -550,9 +575,11 @@ void charging::detectTextEdit()
 	//qDebug() << "clear TextEdit elaped:" << iElaped;
 	if (s_Qtime.elapsed() >= 10 * 60 * 1000)	//10分钟删一次
 	{
+		
 		QString str = m_TextEdit_DebugInfo->toPlainText(), str2;
 		QStringList strlist = str.split("\n");	 
 		int nCount = strlist.size();
+		DEBUG_LOG(" 定时器-》超过10分钟-》检测调试信息文本行数" + QString::number(strlist.size()) + "\n");
 		for (int i = 0; i < strlist.size(); i++){
 			if (strlist.size() > 300)
 				strlist.removeAt(0); 
@@ -560,11 +587,11 @@ void charging::detectTextEdit()
 		for (int i = 0; i < strlist.size(); i++){
 			str2 += strlist[i] + "\r\n";
 		}
-		
+		DEBUG_LOG(" 定时器-》超过10分钟-》裁剪后信息文本行数" + QString::number(strlist.size()) + "\n");
 		m_TextEdit_DebugInfo->setText(str2);
 		s_Qtime.restart();
 	}
-
+	DEBUG_LOG(" 定时器-》结束检测信息文本\n");
 }
 
 void charging::detectHideDebugInfo()  //测检隐藏调试信息
@@ -583,6 +610,7 @@ void charging::detectHideDebugInfo()  //测检隐藏调试信息
 //增加扫描计数，判断充电器是否在线
 void charging::addChargerScanTime()
 {  
+	DEBUG_LOG(" 定时器-》开始 增加扫描计数，判断充电器是否在线\n");
 	MAP_CLOSET_IT itCloset;  MAP_CHARGER_IT itCharger; 
 	itCloset = m_mapCloset.find(m_iCurrentCloset);
 	if (itCloset != m_mapCloset.end())
@@ -592,6 +620,8 @@ void charging::addChargerScanTime()
 		{
 			//增加扫描计数				
 			itCharger->second.nScanWatchDog++;	
+			DEBUG_LOG(" 定时器-》充电器：" + QString::number(itCharger->first) + "不在线次数" + QString::number(itCharger->second.nScanWatchDog) + "\n");
+
 			if (itCharger->second.nScanWatchDog > 3)
 			{
 				//不在线判断。
@@ -602,6 +632,7 @@ void charging::addChargerScanTime()
 				if (itCharger->second.nScanWatchDog == 4)
 				{					
 					//更新ui不在线状态 
+					DEBUG_LOG(" 定时器-》充电器：" + QString::number(itCharger->first) + "不在线次数==4 ，开始更新ui不在线状态\n");
 					if (itCharger->second.chargerType == NF_Charger)
 					{						
 						//电池在位情况						 
@@ -642,17 +673,19 @@ void charging::addChargerScanTime()
 							}
 						}
 					}
-									
+					DEBUG_LOG(" 定时器-》充电器：" + QString::number(itCharger->first) + "不在线次数==4 ，结束更新ui\n");
 				}
 			}
 		} 
 	}
+	DEBUG_LOG(" 定时器-》结束扫描 充电器是否在线\n");
 }
 
 
 //提交电池型号
 void charging::submitBatteryModel(MAP_BATTERY& mapNew, MAP_BATTERY& mapBatteryOld)
 {
+	DEBUG_LOG(" 开始提交电池型号到服务器\n");
 	if (m_bConnectServerIsSeccuss == false)
 		return;
 	//比较两个电池map，对比是否修改电池型号 add20180418
@@ -679,20 +712,24 @@ void charging::submitBatteryModel(MAP_BATTERY& mapNew, MAP_BATTERY& mapBatteryOl
 		//更新修改的型号
 		for (auto &itB : mapCompareBatteryM)  //对每个元素
 		{
+			
 			MAP_BATTERY_MODEL_IT itM = m_mapBatteryModel.find(itB.second);
 			if (itM != m_mapBatteryModel.end()){
 				QString strModel = itM->second.droneModel;
+				DEBUG_LOG(" 提交电池型号到服务器,编号：" + QString::number(itB.second) + " 飞机型号:" + strModel + "\n");
 				m_submitServer.msg_put2(QString::number(itB.first), strModel);
 			}
 		}
 		m_submitServer.msg_put_now();
 	}
+	DEBUG_LOG(" 结束提交电池型号到服务器\n");
 }
 
 
 //检测判断需要数据库记录充电/停止充电
 void charging::detectChargeRecord()
 {
+	DEBUG_LOG(" 开始检测判断需要数据库记录充电/停止充电\n");
 	//if (GET_CAN->isPreareSendOrRead() )
 	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 	for (MAP_BATTERY_IT itBattery = itCloset->second.mapBattery.begin(); 
@@ -708,6 +745,8 @@ void charging::detectChargeRecord()
 			itBattery->second.stRecord.beginChargeFlag = false;
 			itBattery->second.stRecord.pendingEndFlag = true;
 			itBattery->second.timeLockChargeRecord.restart();  //重新计时，防止DJI电池读取错误状态3
+
+			DEBUG_LOG(" 定时器-》插入新的充电记录:电池:" + QString::number(itBattery->first) + " 电压:" + QString::number(fVol) + " 备注:" + itBattery->second.stRecord.strRemrk +"\n");
 		}
 		else if (itBattery->second.stRecord.endChargeFlag)
 		{
@@ -715,7 +754,9 @@ void charging::detectChargeRecord()
 			m_OperDB.onAddStopChargedRecord(itBattery->first,
 				fVol, itBattery->second.stRecord.beginTime, iError);
 			itBattery->second.stRecord.endChargeFlag = false;
-			
+			DEBUG_LOG(" 定时器-》更新停止充电记录:电池:" + QString::number(itBattery->first) + " 电压:" + QString::number(fVol) + "\n");
+
 		}
 	}
+	DEBUG_LOG(" 结束检测判断需要数据库记录充电/停止充电\n");
 }

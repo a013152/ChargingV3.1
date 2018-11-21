@@ -344,20 +344,25 @@ void COperatorFile::writeDebugLog(QString str)
 	}
 	
 	if (m_pDebugLogfile){
-		//判断文件大小，如果超过MAX_SIZE，清空
-		long long fileSize = m_pDebugLogfile->size();
-		static int MAX_SIZE = 1024 * 1024;
-		if (fileSize > MAX_SIZE){
-			m_pDebugLogfile->resize(0);
-		}
+		//上锁
+		bool bLockRet = m_Mutex.tryLock(1000);
+		if (bLockRet){
+			//判断文件大小，如果超过MAX_SIZE，清空
+			long long fileSize = m_pDebugLogfile->size();
+			static int MAX_SIZE = 1024 * 1024;
+			
+			if (fileSize > MAX_SIZE){
+				m_pDebugLogfile->resize(0);
+			}
 
-		//写入
-		if (m_pTextDebug){
-			*m_pTextDebug << str;
-			m_pTextDebug->flush();
-		}
-	}
-
+			//写入
+			if (m_pTextDebug){
+				*m_pTextDebug <<  str;
+				m_pTextDebug->flush();
+			}
+			m_Mutex.unlock();
+		} 
+	} 
 }
 //写入所有配置：充电柜、电池、电池型
 void COperatorFile::writeAllConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel, int* iError)

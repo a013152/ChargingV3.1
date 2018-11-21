@@ -25,6 +25,7 @@ auto pSetQPushButtonChecked = [](QPushButton *pBtn, bool checked){
 //改变柜子编号
 void charging::OnClickClosetNo()
 { 
+	DEBUG_LOG(" 开始改变柜子编号\n");
 	static int sCloset = 0;
 	QPushButton * radioButton = (QPushButton *)QObject::sender();
 	extractNumber(radioButton->text(), m_iCurrentCloset);
@@ -46,7 +47,7 @@ void charging::OnClickClosetNo()
 	refreshCurrentUI();
 
 	show_all_data_now(); 
-	
+	DEBUG_LOG("改变柜子编号\n");
 }
 //上一页
 void charging::OnClickPrePage()
@@ -881,40 +882,6 @@ void charging::createChargGrid()
 
 	m_groupBox->setLayout(m_gridLayout);
 
-	//暂时不需要显示非智能电池
-	//for (int i = 40; i < 44; i++)
-	//{
-	//	strID.sprintf("ui_chage_item%d", i + 0 );
-	//	ui_charg_grid *p_charge_grid = new ui_charg_grid(this, strID);
-	//	QString strTitle; strTitle.sprintf("%02d%02d", m_iCurrentCloset, i + 1);
-	//	p_charge_grid->setTitle(strTitle);
-	//	p_charge_grid->setBalence(i < 40);
-	//	MAP_BATTERY_IT itBattery = m_mapBattery.find(strTitle.toInt());
-	//	if (itBattery != m_mapBattery.end()){
-	//		MAP_BATTERY_MODEL_IT itBatteryModel = m_mapBatteryModel.find(itBattery->second.modelId);
-	//		if (itBatteryModel != m_mapBatteryModel.end()){
-	//			p_charge_grid->setBatteryModel(QString::fromLocal8Bit(itBatteryModel->second.droneModel));
-	//		}
-	//	} 
-	//	m_vtUiChargGrid.append(p_charge_grid); 
-	//	QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::singleClicked, this, &charging::OnBtnChargingOrStopCharging1);
-	//	QObject::connect(p_charge_grid->getChargingBtn(), &DoubleClickedButton::doubleClicked, this, &charging::OnBtnDisChargingOrStop1);
-	//	//定制非智能状态
-	//	p_charge_grid->setFixedSize(QSize(85*2 +12, 70));
-	//	p_charge_grid->setGeometry(QRect(19 + ((i - 40) * 193), 523, 85 * 2 + 12, 73));
-	//	p_charge_grid->getChargingBtn()->setGeometry(QRect(1, 3, 85 * 2 + 11, 68));
-	//	p_charge_grid->m_strBtnStyleOffline = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Gray_W.png);}";
-	//	p_charge_grid->m_strBtnStyleFree = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_W.png);}"
-	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Hover_W.png);}";
-	//	p_charge_grid->m_strBtnStyleCharging = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Pressed_W.png);}"
-	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Pressed_Hover_W.png);}";
-	//	p_charge_grid->m_strBtnStyleDischarg = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Pressed_W.png);}"
-	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Pressed_Hover_W.png);}";
-	//	p_charge_grid->m_strBtnStyleOverHeat = "QPushButton{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Red_W.png);}"
-	//		"QPushButton:hover{border-image: url(" + g_AppPath + "/img/btnCharge_Normal_Red_W.png);}";
-	//	p_charge_grid->setChargerState(STATE_OFFLINE);
-	//}
-
 	//创建层级
 	QString strPushButton;
 	QRect rect_;
@@ -1325,6 +1292,7 @@ void charging::createClosetRadio()
 //刷新当前的电池信息
 void charging::refreshCurrentUI()
 { 
+	DEBUG_LOG("开始刷新当前的电池信息\n");
 	MAP_LEVEL_IT itLevel = m_mapLevel.find(m_nCurrentLevel);
 	if (itLevel == m_mapLevel.end())
 		return;
@@ -1341,7 +1309,7 @@ void charging::refreshCurrentUI()
 			}
 		} 
 	}
-	
+	DEBUG_LOG("结束刷新当前的电池信息\n");
 }
 //按下鼠标
 void charging::mousePressEvent(QMouseEvent *event)
@@ -1381,6 +1349,7 @@ void charging::OnAdjustDebugInfoRect(QRect rect)
 
 void charging::updateListviewBatteryModel(int indexMem )
 {
+	DEBUG_LOG(" 开始更新电池信息列表UI\n");
 	QString str; QModelIndex modelIndex;
 	if (indexMem == -1){
 		//更新当前柜子所以电池数据
@@ -1430,5 +1399,6 @@ void charging::updateListviewBatteryModel(int indexMem )
 			m_listview_Battery_model->setData(modelIndex, str);
 		} 
 	}
+	DEBUG_LOG(" 结束更新电池信息列表UI\n");
 }
 

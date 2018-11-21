@@ -18,6 +18,7 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QMutex>
 //OPERATORFILE_EXPORT
 class COperatorFile
 {
@@ -83,6 +84,8 @@ private:
 
 	QTextStream *m_pTextDebug;   //╣Вйтнд╪Ч
 	QFile* m_pDebugLogfile;
+
+	QMutex m_Mutex;
 };
 
 #endif // OPERATORFILE_H

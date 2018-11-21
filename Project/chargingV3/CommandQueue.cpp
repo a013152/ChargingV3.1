@@ -3,6 +3,7 @@
 #include "errorCode.h"
 #include "CanProcess.h"
 #pragma execution_character_set("utf-8")
+#include "charging.h"
 static char szPrintf[256] = { 0 };
 
 static int countQueueSize = 0;
@@ -30,8 +31,8 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 {
 	stCommand stCurrentCommand; bool bLockRet = false; QString strPrint, strMsg;
 	 
-	strPrint = "启动can进程";
-	emit printfed(strPrint);
+	//strPrint = "启动can进程";
+	//emit printfed(strPrint);
 
 	//// 打开can进程	
 	//bool resultBool = GET_CAN->startCanDeviceProcess(szPrintf);
@@ -188,6 +189,7 @@ int CCommandQueue::countCommand(unsigned int nClosetId) const
 //发送命令到串口
 void CCommandQueue::sendCommand(stCommand stcommand)
 {
+	DEBUG_LOG(" 线程A-》 开始发送命令"+stcommand.m_strCommand+ "\n")
 	QByteArray baTemp;
 	//QString command, ls_temp, strReceiveContent, strReceiveContent2;
 	int timeElapsed = 0, iPosBegin = 0, iPosEnd = 0, nnPos = 0, nrPos = 0, iLength = 0; int sendLoop = 0;
@@ -322,18 +324,19 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 				}
 			}
 		}
-	}
-	
-	
+	} 
+	DEBUG_LOG(" 线程A-》 结束发送命令  \n")
 }
 
 //检测是否完成一个柜子的扫描
 void CCommandQueue::detectFinishOneCloset(stCommand currentCommand)
-{ 	 
+{ 		
 	if (currentCommand.lastCommandFlag == true ){		  
+		DEBUG_LOG(" 线程A-》 一组命令命令发送完毕 发送信号，拼装下一组命令\n")
 		emit printfed("\r\n");
-		Sleep(1000);
 
+		Sleep(1000);
+		
 		emit readyGetBatteryState(1);  //当前改动：只有1个柜子		
 	} 
 }
