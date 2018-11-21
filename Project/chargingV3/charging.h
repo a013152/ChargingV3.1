@@ -38,6 +38,11 @@
 
 
 
+#define GET_TIME (QDateTime::currentDateTime()).toString("hh:mm:ss ")
+#define C_QSTR(szBuf) QString::fromLocal8Bit(szBuf)
+#define DEBUG_LOG(str){char szBuf[256]={0};LOG3(szBuf);COperatorFile::GetInstance()->writeDebugLog(GET_TIME+C_QSTR(szBuf)+str);}
+
+
 //使用window消息 进行进程通信
 #ifdef Q_OS_WIN
 #pragma comment(lib, "user32.lib")

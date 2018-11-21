@@ -53,6 +53,7 @@ QAction * charging::serial_scan(QAction * parentMenu)
 //菜单 串口点击事件
 void charging::OnClickMenuCom(QAction * action)
 {
+	DEBUG_LOG(" 串口菜单点击事件开始执行\n");
 	QList<QAction*> listAction = m_menuCom->actions();
 	for (int i = 0; i < listAction.size(); i++){
 		listAction[i]->setChecked(false);
@@ -76,6 +77,7 @@ void charging::OnClickMenuCom(QAction * action)
 		s_preStr = action->text();
 		if (SERIAL_PORT->isOpen())
 			SERIAL_PORT->ClosePort(); 
+		DEBUG_LOG(" 尝试打开串口" + action->text()+"\n");
 		UINT portNo = action->text().remove("COM").toInt();		
 		if (SERIAL_PORT->openPort(portNo))
 		{
@@ -84,14 +86,11 @@ void charging::OnClickMenuCom(QAction * action)
 			//m_CommandQueue.init(&my_Serial , m_mapBattery.size()); 
 			m_CommandQueue.init( m_mapBattery.size()); 
 			printfDebugInfo("打开串口" + s_preStr + "成功", enDebugInfoPriority::DebugInfoLevelOne);
-			 
-			
-			if (m_bContinueScan)			
-				printfDebugInfo("开始扫描串口设备！\n", enDebugInfoPriority::DebugInfoLevelOne);	
-			 
+			DEBUG_LOG(" 打开串口" + s_preStr + "成功\n"); 
 		}
 		else{ 
 			printfDebugInfo("打开串口" + s_preStr + "失败", enDebugInfoPriority::DebugInfoLevelOne);
+			DEBUG_LOG(" 打开串口" + s_preStr + "失败\n");
 			isOpenSerialPort = false;
 		}
 	} 
@@ -105,13 +104,15 @@ void charging::OnClickMenuCom(QAction * action)
 		}
 	}
 
-	//打开CAN设备进程                        
+	//打开CAN设备进程  
+	DEBUG_LOG(" 执行结束\n");
 } 
 
 QString temp_command;
 //拼装命令，加入发送队列
 void charging::toSend(QString strCommand, stCommand::enPriority enPriority)
 {
+	DEBUG_LOG(" 拼装命令" + strCommand + "，加入发送队列\n");
 	stCommand stComm(packageCommand(strCommand), enPriority);
 	emit AddCommamdIntoQueue(stComm);
 }
@@ -143,19 +144,21 @@ QString  charging :: packageCommand(QString command)
 
 	command = command + xor;
 	command = command + "," + (QString('\r')) + QString('\n');
+	DEBUG_LOG(" 完成组装命令" + command + "\n");
 	return command;
 }
 
 //测检收到的数据XOR
 bool charging::detectRecvXOR(QString strContent)
 {
+	DEBUG_LOG(" 开始测检收到的数据XOR \n");
 	bool ret = false;
 	strContent.indexOf("");
 
 	//计算xor校验和
 	QByteArray myData(strContent.toLatin1());
 	char xor = 0, xor1= 0;
-
+	DEBUG_LOG(" 计算xor校验和" + strContent + " \n");
 	int pos = myData.indexOf("\r\n");
 	if (pos != -1)
 	{
@@ -178,13 +181,14 @@ bool charging::detectRecvXOR(QString strContent)
 			ret = true;
 		 
 	}
-	
+	DEBUG_LOG(" xor校验匹配" + (ret?"成功":"失败")+" ,执行完毕\n");
 	return  ret;
 }
 
 //解析收到的串口数据
 void charging::readSerial(QString type, QString strContent, int iError)
 {
+	DEBUG_LOG(" 开始解析串口数据：" + strContent + " \n");
 	int nPosEnd = strContent.lastIndexOf("\r\n");
 	if (nPosEnd != -1)
 		printfDebugInfo("I read: " + strContent.left(nPosEnd-2)+ "\\r\\n", enDebugInfoPriority::DebugInfoLevelThree);
@@ -204,6 +208,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 	if (type == QChar('G') && iError == ChargingClosetError::noError)  //处理 充电状态 温度 电池在线情况
 	{		 
 		//COperatorFile::GetInstance()->writeLog(strTime + " G 读:" + strContent); 
+		DEBUG_LOG(" 处理G协议：" + strContent + "\n");
 		QString strContent2 = strContent;
 		strContent2.remove("*NF,Y,");
 		int len1 = strContent2.indexOf(",");
@@ -215,7 +220,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 			strBatteryExist = get_back_message_at(strContent2, 4); //在位
 			strBatteryChanged = get_back_message_at(strContent2, 5); //在位时间是否变化
 			int nChargerId = strID.toInt();
-			MAP_CLOSET_IT itCloset = m_mapCloset.find(nChargerId / 100);
+			DEBUG_LOG(" 温度:" + strTemperature + " 在位:" + strBatteryExist + " 在位时间是否变化:" + strBatteryChanged + "\n");
+			MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 			if (itCloset != m_mapCloset.end()){
 				MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(nChargerId);
 				
@@ -241,6 +247,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 					itCharger->second.bOnline = true;  
 					//通知ui刷新充电器在线状态
 					//emit RefreshState(enRefreshType::ChargerOnlineState, batteryIDtoArrayIndex(QString::number(itCharger->first)));
+
+					DEBUG_LOG(" 更新充电器" + QString::number(itCharger->second.id) + "在线看门狗\n");
 					//更新在线看门狗
 					itCharger->second.nScanWatchDog = 0;
 					//保存充电器 的 充电状态
@@ -253,8 +261,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 
 						QString strChargerState = get_back_message_at(strContent2, 2);
 						if (strChargerState == QChar('1'))//
-						{
-							 
+						{							 
 							if (itBattery->second.stRecord.pendingEndFlag)
 							{
 								itBattery->second.stRecord.pendingEndFlag = false;
@@ -268,6 +275,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 							charger_state[indexArray] = STATE_CHARGING;// "充电中";
 						else if (strChargerState == QChar('3'))
 							charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
+						DEBUG_LOG(" 更新电池" + nBatteryID + "状态：" + charger_state[indexArray] + "\n");
 						emit RefreshState(enRefreshType::ChargerState, indexArray);
 					}
 					if (itCharger->second.timeLockChargingState.elapsed() > 2000){
@@ -281,7 +289,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 					{
 						//如果正在充电 计算充电时间,超时触发停止充电 add 20180527
 						int iChargingTime = itCharger->second.calculateChargeTime();
-						if (itCharger->second.calculateChargeTime() >= m_nChargeLimitTime)
+						DEBUG_LOG(" 比较" + QString::number(itCharger->first) + "充电时间:" + QString::number(iChargingTime) + "与限制时间" + QString::number(m_nChargeLimitTime) + "\n");
+						if (iChargingTime >= m_nChargeLimitTime)
 						{
 							int nBatteryID = chargerIDtoBatteryId(itCharger->first);
 							if (nBatteryID != -1){
@@ -290,6 +299,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 									QString::number(itCharger->second.calculateChargeTime()) + "分钟，触发停止";
 								printfDebugInfo(strContent, enDebugInfoPriority::DebugInfoLevelOne);
 								COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strContent + "\n");
+								DEBUG_LOG(strContent +"\n");
 								//更新UI 
 								int indexArray = batteryIDtoArrayIndex(QString::number(nBatteryID));
 								if (charger_state[indexArray] != STATE_FREE/*"充电器闲置"*/ \
@@ -311,6 +321,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 						}
 						//如果过热,停止充电
 						else if (itCharger->second.isOverHeat){
+							DEBUG_LOG(QString::number(itCharger->first) +"过热,停止充电\n");
 							toSend("P," + QString::number(itCharger->second.id), stCommand::hight);
 						} 
 					} 
@@ -324,6 +335,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 					if (itBatteryMode->second.balance == false)
 						readVol = true;
 					if (readVol){
+						DEBUG_LOG(QString::number(itCharger->first) + "智能电池在位并且充电||非智能电池 触发读取电压命令\n");
 						toSend("D," + QString::number(itCharger->second.id) + ",", stCommand::front);
 					}
 				}
@@ -336,6 +348,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 		//COperatorFile::GetInstance()->writeLog(strTime + " D 读:" + strContent); 
 		QString strContent2 = strContent;		
 		strContent2.remove("*NF,Y,");
+		DEBUG_LOG(" 处理D协议：" + strContent + "\n");
 		int len1 = strContent2.indexOf(",");		
 		if (len1 != -1)
 		{
@@ -343,12 +356,13 @@ void charging::readSerial(QString type, QString strContent, int iError)
 			int chargerId = strID.toInt();
 			QString str;
 			float vol = 0.0, curr = 0.0;  //电压电流
-			MAP_CLOSET_IT itCloset = m_mapCloset.find(chargerId / 100);
+			MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 			if (itCloset != m_mapCloset.end())
 			{
 				MAP_CHARGER_IT itCharger = itCloset->second.mapCharger.find(chargerId);
 				if (itCharger != itCloset->second.mapCharger.end()){
 					itCharger->second.bOnline = true; 
+					DEBUG_LOG("通知ui刷新充电器" + strID + "在线状态\n");
 					//通知ui刷新充电器在线状态
 					emit RefreshState(enRefreshType::ChargerOnlineState,\
 						batteryIDtoArrayIndex(QString::number(itCharger->first)));
@@ -423,6 +437,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 						itCharger->second.saveVoltage(vol);
 						itCharger->second.fCurrent = curr;
 						emit RefreshState(enRefreshType::BatteryState, indexArray);
+
+						DEBUG_LOG("通知ui更新电池" + QString::fromLocal8Bit(itBattery->second.id) + " 电压:" + battery_voltage[indexArray] + " 电流:" + battery_current[indexArray]+ "\n");
 					}
 				}
 			}
@@ -431,6 +447,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 	else if (type == QChar('O') && iError == ChargingClosetError::noError)  //处理 充电命令
 	{
 		//COperatorFile::GetInstance()->writeLog(strTime + " O 读:" + strContent);
+		DEBUG_LOG(" 处理O协议：" + strContent + "\n");
 		QString strContent2 = strContent;
 		strContent2.remove("*NF,Y,");
 		int len1 = strContent2.indexOf(",");
@@ -455,6 +472,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 								itCharger->second.isCharging = (strChargerState == QChar('1'));//充电成功
 							}
 							battery_charging_record[indexArray] = true;
+							DEBUG_LOG(" 充电器：" + strID + "开始充电\n");
 						}
 					} 
 				}
@@ -463,6 +481,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 	}
 	else if (type == QChar('P') && iError == ChargingClosetError::noError)  //处理 停止命令
 	{
+		DEBUG_LOG(" 处理P协议：" + strContent + "\n");
 		QString strContent2 = strContent;
 		strContent2.remove("*NF,Y,");
 		int len1 = strContent2.indexOf(",");
@@ -481,7 +500,8 @@ void charging::readSerial(QString type, QString strContent, int iError)
 					{
 						if(itBatteryModel->second.balance == true)
 							itCharger->second.fCurrent = 0;
-					}					
+					}	
+					DEBUG_LOG(" 充电器：" + strID + "闲置\n");
 				}
 			}
 		}
@@ -495,6 +515,7 @@ void charging::readSerial(QString type, QString strContent, int iError)
 }
 int charging::getCanDJIBattery(int CANID, int pos)
 {	
+	DEBUG_LOG(" 开始查找CanId&pos对应电池id\n");
 	int temp1 = 0, temp2 = 1;
 	MAP_CLOSET_IT itCloset = m_mapCloset.find(1);
 	if (itCloset != m_mapCloset.end())
@@ -518,12 +539,11 @@ int charging::getCanDJIBattery(int CANID, int pos)
 					temp1 = itBattery.first;					
 					break;
 				}
-				temp2++;
-
+				temp2++; 
 			}
 		}
-	}
-
+	} 
+	DEBUG_LOG(" 开始查找CanId：" + QString::number(CANID) + " 位置" + QString::number(pos) + "对应电池id" + QString::number(temp1) + "\n");
 	return temp1;
 }
 // 解析接收到的CAN的内容param 1 内容。
@@ -532,9 +552,7 @@ void charging::onReadCAN(QString strContent)
 	QStringList strList = strContent.split(",");
 	if (strList.size() > 3)
 	{
-		LOG3(g_logBuf);
-		COperatorFile::GetInstance()->writeDebugLog((QDateTime::currentDateTime()).toString(" hh:mm:ss") + QString::fromLocal8Bit(g_logBuf) + " 接收到:" + strContent);
-
+		DEBUG_LOG("接收到:" + strContent);
 		//分析命令类型
 		if (strList[1].compare("F1") == 0){
 			//"S2C,F1,2,打开设备失败。" /"S2C,F1,0,打开设备成功。"
@@ -546,17 +564,21 @@ void charging::onReadCAN(QString strContent)
 					m_menuItemCan->blockSignals(true);
 					m_menuItemCan->setChecked(true);
 					m_menuItemCan->blockSignals(false);
+					
 				}				
 				printfDebugInfo(strList[3], enDebugInfoPriority::DebugInfoLevelOne);
+				DEBUG_LOG("解析F1协议:匹配S2C,F1,0,打开设备成功\n ");
 			}
 			else{
 				printfDebugInfo(strList[3], enDebugInfoPriority::DebugInfoLevelOne, true);
+				DEBUG_LOG("解析F1协议:匹配S2C,F1,2,打开设备失败\n ");
 			}
+			
 		}
 		else if (strList[1].compare("F4") == 0)
 		{
 			//认证通过			
-			MAP_CLOSET_IT itCloset;; MAP_CHARGER_IT itCharger;
+			MAP_CLOSET_IT itCloset; MAP_CHARGER_IT itCharger;
 			QVector<stCommand> vtStCommand;	itCloset = m_mapCloset.find(1);
 			if (itCloset != m_mapCloset.end())
 			{
@@ -564,21 +586,18 @@ void charging::onReadCAN(QString strContent)
 				if (itCharger != itCloset->second.mapCharger.end())
 				{
 					if (strList[3].toInt() == 0){
-
+						DEBUG_LOG("解析F4协议:charger:" + strList[2] + " 认证通过\n ");
 						itCharger->second.bOnline = true;
 						MAP_LEVEL_IT itLevel = m_mapLevel.find(itCharger->second.nLevel);
 						if (itLevel != m_mapLevel.end())
 						{
 							//电池在位情况
 							for (auto itBattery : itLevel->second.mapBattery)
-							{
-								//if (itBattery.second.timeLockUI.elapsed() > 5000)
-								{
-									int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
-									charger_state[indexArray] = STATE_FREE;//"充电闲置";
-									emit RefreshState(enRefreshType::ChargerOnlineState, \
-										batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id))); //更新在线状态
-								} 
+							{ 
+								int indexArray = batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id));
+								charger_state[indexArray] = STATE_FREE;//"充电闲置";
+								emit RefreshState(enRefreshType::ChargerOnlineState, \
+									batteryIDtoArrayIndex(QString::fromLocal8Bit(itBattery.second.id))); //更新在线状态 
 							}
 						}
 					}					
@@ -586,6 +605,7 @@ void charging::onReadCAN(QString strContent)
 			}
 		}
 		else if (strList[1].compare("F8") == 0){
+			DEBUG_LOG("解析F8协议:  \n ");
 			//CAN ID
 			int CANID = strList[2].toInt();	
 			MAP_CLOSET_IT itCloset; itCloset = m_mapCloset.find(1);
@@ -633,7 +653,7 @@ void charging::onReadCAN(QString strContent)
 						} 
 						indexArray = batteryIDtoArrayIndex(itBattery->second.id);
 						emit RefreshState(enRefreshType::BatteryState, 	indexArray); //更新在线状态
-						
+						DEBUG_LOG(" 更新内存中电池:" + QString::fromLocal8Bit(itBattery->second.id) + " 在线状态:" + battery_state[indexArray] + "  \n ");
 						if (itBattery->second.isExisted == false && itBattery->second.timeLockUI.elapsed() > 10000){
 							charger_state[indexArray] = STATE_FREE;//"电池不在线，更新充电器闲置";
 							if (itBattery2->second.stRecord.pendingEndFlag)
@@ -641,6 +661,7 @@ void charging::onReadCAN(QString strContent)
 								itBattery2->second.stRecord.pendingEndFlag = false;
 								itBattery2->second.stRecord.endChargeFlag = true;  //电池不在线，停止充电
 							}
+							DEBUG_LOG(" 大于不在线时间10000，更新UI电池" + QString::fromLocal8Bit(itBattery->second.id) + " 在线状态:" + battery_state[indexArray] + "  \n ");
 						}
 					}
 
@@ -655,11 +676,8 @@ void charging::onReadCAN(QString strContent)
 								continue;
 							//协议字段： [0]位置 [1]状态 [2]电压 [3]温度  //位置 状态 电压 温度
 														
-							int pos = strList2[0].toInt();
-							
-							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默
-							
-							
+							int pos = strList2[0].toInt(); 
+							int state = strList2[1].toInt(); //电池状态:	0x00 满电	0x01 充电中	0x02 放电中	0x03 静默 
 							float vol = strList2[2].toFloat();//电压
 							float tem = strList2[3].toFloat();//温度
 							//赋值给内存中的电池映射
@@ -690,10 +708,14 @@ void charging::onReadCAN(QString strContent)
 										{
 											itBattery2->second.stRecord.pendingEndFlag = false;
 											itBattery2->second.stRecord.endChargeFlag = true;//满电/静默，准备写入数据库记录停止充电,
+
+											DEBUG_LOG(" 电池:" + QString::number(nBatteryId) + "大于不在线时间10000，满电/静默，准备写入数据库记录停止充电" + "\n");
 										}
 									}
 									if (itBattery->second.timeLockUI.elapsed() > 10000){
 										charger_state[indexArray] = STATE_FREE;//"充电器闲置";
+										DEBUG_LOG(" 电池:" + QString::number(nBatteryId) + "大于不在线时间10000，" + charger_state[indexArray]+"\n");
+
 									}
 								}
 								else if (state == 1)
@@ -701,6 +723,7 @@ void charging::onReadCAN(QString strContent)
 								else if (state == 2)
 									charger_state[indexArray] = STATE_DISCHARGING;//"放电中"; 
 								emit RefreshState(enRefreshType::ChargerState, indexArray);
+								DEBUG_LOG(" 电池:" + QString::number(nBatteryId) +": "+ charger_state[indexArray]+"\n");
 							}
 						}
 					} 

@@ -6,3 +6,4 @@ del *.idb /f /s /q /a
 del *.pdb /f /s /q /a
 del *.ilk /f /s /q /a
 del *.sdf /f /s /q /a
+del Project\x64\Debug\LOG\*.txt /f /s /q /a

@@ -68,6 +68,6 @@ enum enCANDevieErrorCode{	//CAN进程返回的错误码
 
 //调试信息
 #define DEBUG_LOG_FLAG  1
-#define LOG3(BUF) sprintf_s(BUF, 256, "F:%s  L:%d" ,__FUNCTION__, __LINE__)
+#define LOG3(BUF) sprintf_s(BUF, 256, "L:%d F:%s " , __LINE__,__FUNCTION__)
 
 #endif // !H_COMMON
