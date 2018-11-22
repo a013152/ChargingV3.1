@@ -1349,7 +1349,7 @@ void charging::OnAdjustDebugInfoRect(QRect rect)
 
 void charging::updateListviewBatteryModel(int indexMem )
 {
-	DEBUG_LOG(" 开始更新电池信息列表UI\n");
+	DEBUG_LOG(" 开始更新电池信息列表UI index:"+QString::number(indexMem)+"\n");
 	QString str; QModelIndex modelIndex;
 	if (indexMem == -1){
 		//更新当前柜子所以电池数据
@@ -1375,6 +1375,7 @@ void charging::updateListviewBatteryModel(int indexMem )
 	{
 		//更新index对应的数据
 		QString strBatteryId = battery_local_id[indexMem];
+		
 		MAP_CLOSET_IT itCloset;	MAP_BATTERY_IT itBattery; MAP_BATTERY_MODEL_IT itBatteryModel; MAP_CHARGER_IT itCharger; MAP_LEVEL_IT itLevel;
 		if (getBatteryIdRelatedInfo(strBatteryId, itCloset, itBattery, itBatteryModel, itCharger,itLevel))
 		{
@@ -1395,7 +1396,7 @@ void charging::updateListviewBatteryModel(int indexMem )
 					, (battery_voltage[indexMem].toFloat())
 					);
 			}
-			
+			DEBUG_LOG(" 更新电池信息列表UI 电池:" + strBatteryId + " 内容："+str+"\n");
 			m_listview_Battery_model->setData(modelIndex, str);
 		} 
 	}
