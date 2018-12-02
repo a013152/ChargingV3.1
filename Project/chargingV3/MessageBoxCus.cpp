@@ -10,7 +10,7 @@ CMessageBoxCus::CMessageBoxCus( QWidget* parent, int nTimerOut ) :QDialog(parent
 	pa.setColor(QPalette::Background, Qt::white);
 	setAutoFillBackground(true);
 	setPalette(pa);
-	ui.lab_logo->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/msg_tips.png);}");
+	ui.lab_logo->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/msg_tips.png);}");
 	ui.lab_logo->setText("");
 	ui.lab_message->setText("");
 	ui.lab_message->setAlignment(Qt::AlignCenter);    // 设置对齐方式 :：水平方向居中。
@@ -42,17 +42,17 @@ void CMessageBoxCus::setTypeShow(int nType)
 { 
 	//加载ui
 	if (nType == 0){
-		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/msg_tips.png);}");
+		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/msg_tips.png);}");
 		this->setWindowTitle("提示");
 		ui.lab_message->setStyleSheet("QLabel{font: 14px;color:black;}");		 
 	}
 	else if (nType == 1){
-		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/msg_warning.png);}");
+		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/msg_warning.png);}");
 		this->setWindowTitle("警告");
 		ui.lab_message->setStyleSheet("QLabel{font: 14px;color:black;}");
 	}
 	else if (nType == 2){
-		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/msg_error.png);}");
+		ui.lab_logo->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/msg_error.png);}");
 		this->setWindowTitle("错误");
 		ui.lab_message->setStyleSheet("QLabel{font: bold 16px;color:red;}");
 	} 

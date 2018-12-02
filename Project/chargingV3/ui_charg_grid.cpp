@@ -56,12 +56,12 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	labBatteryState = new QLabel("", this);
 	labBatteryState->setObjectName(QStringLiteral("labBatteryState"));
 	labBatteryState->setGeometry(QRect(25, 18, 53, 48));
-	labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_1_not_online.png);}");
+	labBatteryState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/battery_1_not_online.png);}");
 
 	labChargerState = new QLabel("", this);
 	labChargerState->setObjectName(QStringLiteral("labBatteryState"));
 	labChargerState->setGeometry(QRect(35, 31, 35, 28));
-	labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
+	labChargerState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/0.png);}");
 	
 
 	pushButton = new DoubleClickedButton("", this);  //充电
@@ -90,7 +90,7 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	pushButton_2 = new QPushButton("", this); //放电
 	pushButton_2->setObjectName(QStringLiteral("pushButton_2")); 
 	pushButton_2->setGeometry(QRect(165, 15, 50, 65));
-	pushButton_2->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnDischarge.png);}");
+	pushButton_2->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDischarge.png);}");
 
 	/*labTitle = new QLabel("001", this);
 	labTitle->setObjectName(QStringLiteral("labBatteryState"));
@@ -115,15 +115,15 @@ ui_charg_grid::ui_charg_grid(QWidget *parent, QString Id) : QGroupBox(parent)
 	setBorderColor(0);
 
 	this->setFixedSize(QSize(110, 95)); //设置自身的大小
-	m_strBtnStyleOffline = "QPushButton{border-image: url(" + QString(g_AppPath )+ "/img/btnCharge_Normal_Gray.png);}";
-	m_strBtnStyleFree = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Normal.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Normal_Hover.png);}";
-	m_strBtnStyleCharging = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Pressed.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Pressed_Hover.png);}";
-	m_strBtnStyleDischarg = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Pressed.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Pressed_Hover.png);}";
-	m_strBtnStyleOverHeat = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Normal_Red.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnCharge_Normal_Red.png);}";
+	m_strBtnStyleOffline = "QPushButton{border-image: url(" + QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Normal_Gray.png);}";
+	m_strBtnStyleFree = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Normal.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Normal_Hover.png);}";
+	m_strBtnStyleCharging = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Pressed.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Pressed_Hover.png);}";
+	m_strBtnStyleDischarg = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Pressed.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Pressed_Hover.png);}";
+	m_strBtnStyleOverHeat = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Normal_Red.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnCharge_Normal_Red.png);}";
 	 	 
 }
 
@@ -207,16 +207,16 @@ void ui_charg_grid::setBatteryState(QString strState, QString strVol, QString st
 		//判断电压
 		float fvol = strVol.toFloat();
 		if (fvol < 3.5)
-			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_2_online.png);}");
+			labBatteryState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/battery_2_online.png);}");
 		else if (fvol >= 3.5 && fvol < 4.19)
-			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_3_online_half.png);}");
+			labBatteryState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/battery_3_online_half.png);}");
 		else if (fvol >= 4.19 && fvol < 4.39)
-			labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_4_online_full.png);}");
+			labBatteryState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/battery_4_online_full.png);}");
 	}
 	else if (strState == "未放置电池")
 	{ 
-		labBatteryState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/battery_1_not_online.png);}");
-		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
+		labBatteryState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/battery_1_not_online.png);}");
+		labChargerState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/0.png);}");
 	}
 	label->setText(strTem + "° " + strVol + "v");
 }
@@ -229,12 +229,12 @@ void ui_charg_grid::setChargerState(QString strState)
 		pushButton->setStyleSheet(m_strBtnStyleOffline);
 		isCharging = false;
 		isDisCharging = false;
-		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
+		labChargerState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/0.png);}");
 	}
 	 else if (strState == STATE_FREE){  //闲置
 		pushButton->setStyleSheet(m_strBtnStyleFree);
-		pushButton_2->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnDischarge.png);}");
-		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
+		pushButton_2->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDischarge.png);}");
+		labChargerState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/0.png);}");
 
 		//pushButton->setText("充电"); //充电
 		//pushButton_2->setText("放电");//放电
@@ -244,7 +244,7 @@ void ui_charg_grid::setChargerState(QString strState)
 	else if (strState == STATE_CHARGING)  //充电中
 	{
 		pushButton->setStyleSheet(m_strBtnStyleCharging);
-		pushButton_2->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnDischarge.png);}");
+		pushButton_2->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDischarge.png);}");
 		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath )+ "/img/charging.png);}");
 
 		//pushButton->setText("停止"); //停止
@@ -266,8 +266,8 @@ void ui_charg_grid::setChargerState(QString strState)
 	else if (strState == STATE_OVER_HEAT)//高温
 	{ 
 		pushButton->setStyleSheet(m_strBtnStyleOverHeat);
-		pushButton_2->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnDischarge.png);}");
-		labChargerState->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/0.png);}");
+		pushButton_2->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDischarge.png);}");
+		labChargerState->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/0.png);}");
 		 
 		isCharging = false;
 		isDisCharging = false;

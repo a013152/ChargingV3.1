@@ -13,7 +13,7 @@ chargingOption::chargingOption(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	QString iConPath = g_AppPath; iConPath += "\\Icon\\Option.ico";	
+	QString iConPath = QString::fromLocal8Bit(g_AppPath); iConPath += "\\Icon\\Option.ico";
 	
 	this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 	setWindowIcon(QIcon(iConPath));
@@ -21,31 +21,31 @@ chargingOption::chargingOption(QWidget *parent)
 	setWindowTitle(SETING_WINDOW_TITLE);
 
 	//读取配置
-	COperatorFile::GetInstance()->setAppPath(QString(g_AppPath));
+	COperatorFile::GetInstance()->setAppPath( QString::fromLocal8Bit(g_AppPath));
 	COperatorFile::GetInstance()->readAllConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger, &m_iError);
 	//读取数据库充电记录
 	m_OperatoreDB.onOpenDbFile();
 	m_OperatoreDB.onQueryChargedRecord(m_vtChargeRecord);
 
 	//读取提交服务器时间间隔
-	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_SubmitInterval == 0){
 		m_SubmitInterval = ONE_SUBMIT_TIME;
 	}
 
 	//读取充电时限
-	m_ChargeLimitTime = CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_ChargeLimitTime = CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_ChargeLimitTime == 0){
 		m_ChargeLimitTime = CHARGING_LIMIT_TIME;
 	}
 
-	m_DisChargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_DisChargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_DisChargeDay == 0){
 		m_DisChargeDay = DISCHARGING_DAY;
 	}
 
 	//过热温度
-	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_fOverHeatTemperature == 0){
 		m_fOverHeatTemperature = DEFAUT_OVERHEATTEMPERATURE;
 	}
@@ -504,10 +504,10 @@ void chargingOption::OnBtnSave3()
 	}
 
 
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "SubmitInterval", QString::number(m_SubmitInterval), QString(g_AppPath) + "\\set.ini", &iError);
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "ChargeLimitTime", QString::number(m_ChargeLimitTime), QString(g_AppPath) + "\\set.ini", &iError2);
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "DisChargerDay", QString::number(m_DisChargeDay), QString(g_AppPath) + "\\set.ini", &iError2);
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "OverHeatTemperature", QString("%1").arg(m_fOverHeatTemperature), QString(g_AppPath) + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "SubmitInterval", QString::number(m_SubmitInterval),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "ChargeLimitTime", QString::number(m_ChargeLimitTime),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "DisChargerDay", QString::number(m_DisChargeDay),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError2);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "OverHeatTemperature", QString("%1").arg(m_fOverHeatTemperature),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError2);
 	if (iError2 == 0 && iError == 0){
 		QMessageBox::information(this, "提示", "保存完成");
 		//进程通信通知《智能充电保护箱》程序更新数据
@@ -668,7 +668,7 @@ void chargingOption::SendChargingProgramToReadConfig()
 {
 	HWND hwnd = NULL;
 	int iError = 0;
-	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle", QString(g_AppPath) + "\\set.ini", &iError);
+	g_winTitle = CReadIniFile::getInstance()->readProfileInfo("SET", "windowTitle",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError);
 	if (iError != 0)
 		g_winTitle = MAIN_WINDOW_TITLE;
 	LPWSTR path = (LPWSTR)g_winTitle.utf16();    

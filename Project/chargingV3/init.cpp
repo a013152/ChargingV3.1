@@ -110,7 +110,7 @@ void charging::readConfig()
 	}
 	DEBUG_LOG(" 清理容器完成，读取配置，赋值Closet、Battery……容器 。\n");
 
-	COperatorFile::GetInstance()->setAppPath(g_AppPath);
+	COperatorFile::GetInstance()->setAppPath(QString::fromLocal8Bit(g_AppPath));
 	COperatorFile::GetInstance()->readAllConfig(m_mapCloset, m_mapBattery, m_mapBatteryModel, m_mapCharger,    &m_iError);
 	
 	COperatorFile::GetInstance()->tryCreateLogFile();
@@ -156,45 +156,45 @@ void charging::readConfig()
 
 	DEBUG_LOG(" 读取之前的申请未充电记录完成，读取ini配置。\n");
 	//读取继续扫描标志
-	m_bContinueScan = CReadIniFile::getInstance()->readProfileInfo("SET", "ContinueScan", QString(g_AppPath) + "\\set.ini", &iError).toInt() == 1;
+	m_bContinueScan = CReadIniFile::getInstance()->readProfileInfo("SET", "ContinueScan",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt() == 1;
 	//读取继续网络提交标志
-	m_bContinueSubmit = CReadIniFile::getInstance()->readProfileInfo("SET", "ContinueSubmit", QString(g_AppPath) + "\\set.ini", &iError).toInt() == 1;
+	m_bContinueSubmit = CReadIniFile::getInstance()->readProfileInfo("SET", "ContinueSubmit",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt() == 1;
 
 	//提交间隔时间
-	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_SubmitInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "SubmitInterval",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_SubmitInterval == 0){
 		m_SubmitInterval = ONE_SUBMIT_TIME;
 		//printfDebugInfo("SET SubmitInterval 未设置提交时间，默认15秒提交一次", enDebugInfoPriority::DebugInfoLevelOne, true);
 	}
 
 	//扫描间隔时间
-	m_ScanDeviceInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "ScanDeviceInterval", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_ScanDeviceInterval = CReadIniFile::getInstance()->readProfileInfo("SET", "ScanDeviceInterval",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_ScanDeviceInterval == 0){
 		m_ScanDeviceInterval = ONE_CLOSET_SCAN_TIME;
 		//printfDebugInfo("SET ScanDeviceInterval 未设置扫描时间，默认5秒一柜一次", enDebugInfoPriority::DebugInfoLevelOne, true);
 	} 
 	//过热温度
-	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_fOverHeatTemperature = CReadIniFile::getInstance()->readProfileInfo("SET", "OverHeatTemperature",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_fOverHeatTemperature == 0){
 		m_fOverHeatTemperature = ONE_CLOSET_SCAN_TIME;
 		//printfDebugInfo("SET OverHeatTemperature 未设置过热温度，默认45度", enDebugInfoPriority::DebugInfoLevelOne, true);
 	}
 	//自动放电天数
-	m_nDischargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay", QString(g_AppPath) + "\\set.ini", &iError).toInt();
+	m_nDischargeDay = CReadIniFile::getInstance()->readProfileInfo("SET", "DisChargerDay",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt();
 	if (m_nDischargeDay == 0){
 		m_nDischargeDay = DISCHARGING_DAY;
 	}
 
 	//读取调试信息显示等级
-	m_enShowDebugInfoLevel = (enDebugInfoPriority)(CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "debugInfoLevel", QString(g_AppPath) + "\\set.ini", &iError).toInt());
+	m_enShowDebugInfoLevel = (enDebugInfoPriority)(CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "debugInfoLevel",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt());
 
 	//读取调试信息自动隐藏标志
 	m_bAutoHideDebugInfo = (CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "AutoHideDebugInfo", QString(g_AppPath )+ "\\set.ini", &iError).toInt()) == 1;
 
-	m_bCanMoveWindow = (CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "moveWindow", QString(g_AppPath) + "\\set.ini", &iError).toInt()) == 1;
+	m_bCanMoveWindow = (CReadIniFile::getInstance()->readProfileInfo("WidgetShow", "moveWindow",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt()) == 1;
 
 	//读取充电时限
-	m_nChargeLimitTime = (CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime", QString(g_AppPath) + "\\set.ini", &iError).toInt());
+	m_nChargeLimitTime = (CReadIniFile::getInstance()->readProfileInfo("SET", "ChargeLimitTime",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError).toInt());
 	if (m_nChargeLimitTime == 0){
 		m_nChargeLimitTime = CHARGING_LIMIT_TIME;
 		//printfDebugInfo("SET m_nChargeLimitTime 未设置充电时限，默认360分钟", enDebugInfoPriority::DebugInfoLevelOne, true);

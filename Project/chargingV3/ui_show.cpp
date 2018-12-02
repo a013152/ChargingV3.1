@@ -9,16 +9,16 @@ auto pSetQPushButtonChecked = [](QPushButton *pBtn, bool checked){
 	if (checked)
 	{
 		pBtn->setStyleSheet("QPushButton{font-size:16px; color:white;"
-			"border-image: url(" + QString(g_AppPath) + "/img/radioChecked_pressd.png);}"
-			"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/radioChecked_pressd.png);}"
-			"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/radioChecked_pressd.png);}");
+			"border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_pressd.png);}"
+			"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_pressd.png);}"
+			"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_pressd.png);}");
 	}
 	else
 	{
 		pBtn->setStyleSheet("QPushButton{font-size:16px; color:white;"
-			"border-image: url(" + QString(g_AppPath) + "/img/radioChecked_bg.png);}"
-			"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/radioChecked_hover.png);}"
-			"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/radioChecked_hover.png);}");
+			"border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_bg.png);}"
+			"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_hover.png);}"
+			"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/radioChecked_hover.png);}");
 	}
 };
 
@@ -173,7 +173,7 @@ void charging::onPauseScand(bool checked)
 		str += "未打开";
 		printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne, true);
 	}	
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueScan", QString("%1").arg(m_bContinueScan), QString(g_AppPath) + "\\set.ini", &iError);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueScan", QString("%1").arg(m_bContinueScan),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError);
 
 }
 
@@ -292,7 +292,7 @@ void charging::onPauseSubmit(bool checked)
 	else 
 		m_bContinueSubmit = true;// 继续扫描 
 
-	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueSubmit", QString("%1").arg(m_bContinueSubmit), QString(g_AppPath) + "\\set.ini", &iError);
+	CReadIniFile::getInstance()->writeProfileInfo("SET", "ContinueSubmit", QString("%1").arg(m_bContinueSubmit),  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError);
 
 	QString temp = (checked ? "暂停" : "继续");
 	printfDebugInfo(temp + "网络传输", enDebugInfoPriority::DebugInfoLevelOne);
@@ -307,7 +307,7 @@ void charging::onOpenOptionWin( )
 		m_pProcess = new QProcess(this);
 
 #if defined(QT_DEBUG)
-	strPath = QString(g_AppPath) + "/" + CHARGINGOPTIONPROCESS;
+	strPath =  QString::fromLocal8Bit(g_AppPath) + "/" + CHARGINGOPTIONPROCESS;
 	strExe = CHARGINGOPTIONPROCESS;
 #   else
 	strExe = CHARGINGOPTIONPROCESS;
@@ -614,14 +614,14 @@ void charging::OnBtnLevel()
 			levelBtnData* pData = (levelBtnData*)itpBtnLevel->userData(tempLevel++);
 			if (pData->nlevel == m_nCurrentLevel)  //选中的层级
 			{
-				itpBtnLevel->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
-					"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
-					"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+					"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}"
+					"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
 			}
 			else
-				itpBtnLevel->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}" //
-				"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"
-				"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
+				itpBtnLevel->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}" //
+				"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}"
+				"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
 		}
 
 		//更新充电格区域:是否隐藏，电压、电流、充电状态、在位状态
@@ -898,13 +898,13 @@ void charging::createChargGrid()
 		pushButton->setGeometry(rect_);
 		if (itLevel.first == m_nCurrentLevel)  //选中的层级
 		{
-			pushButton->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}" //
-				"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"
-				"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
+			pushButton->setStyleSheet("QPushButton{font-size:28px; color:white;border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}" //
+				"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}"
+				"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Checked.png);}"); //
 		}else
-		pushButton->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}" //
-			"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"
-			"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
+		pushButton->setStyleSheet("QPushButton{font-size:16px; color:white;border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}" //
+			"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}"
+			"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnLevel_Normal.png);}"); //
 		levelBtnData * pData = new levelBtnData; pData->nlevel = itLevel.first;
 		pushButton->setUserData(itLevel.first, pData);
 
@@ -951,18 +951,18 @@ void charging::createDebugInfoUI()
 void charging::adjustUI()
 { 
 	//设置主窗大小 、背景、标题
-	QString str = "QMainWindow{background-image: url(" + QString(g_AppPath) + "/img/mainwin_background.png);}";
+	QString str = "QMainWindow{background-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/mainwin_background.png);}";
 	this->setStyleSheet(str);
 	this->setFixedSize(800, 600); 
 	this->setWindowTitle(g_winTitle);
-	ui.lab_logo->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/logo.png);}");
+	ui.lab_logo->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/logo.png);}");
 	ui.lab_logo->setText("");  
 	ui.lab_title->setText(g_winTitle);
 	ui.lab_title->setStyleSheet("QLabel{font-size:24px;font-weight:bold;color:white}");
 
 	//设置主窗口 ，设置无边框，允许任务栏按钮右键菜单，允许最小化与还原。
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
-	setWindowIcon(QIcon(QString(g_AppPath) + "/ICon/MainWindow.ico"));
+	setWindowIcon(QIcon( QString::fromLocal8Bit(g_AppPath) + "/ICon/MainWindow.ico"));
 
 	//设置 电池组区域 尺寸
 	m_groupBox->setGeometry(QRect(120, 70, 698, 507));
@@ -989,13 +989,13 @@ void charging::adjustUI()
 
 	//上一页、下一页的图片
 	ui.btnPrePage->setText("");
-	ui.btnPrePage->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnPrePage.png);}" //
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnPrePage_hover.png);}"
-		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btnPrePage.png);}"); //
+	ui.btnPrePage->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnPrePage.png);}" //
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnPrePage_hover.png);}"
+		"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnPrePage.png);}"); //
 
 	ui.btnNextPage->setText("");
-	ui.btnNextPage->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnNextPage.png);}" //
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnNextPage_hover.png);}"
+	ui.btnNextPage->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnNextPage.png);}" //
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnNextPage_hover.png);}"
 		"QPushButton:pressed{border-image: url(" + QString(g_AppPath )+ "/img/btnNextPage.png);}"); //
 	 
 
@@ -1003,28 +1003,28 @@ void charging::adjustUI()
 	//设置操作按钮位置、大小、背景图
 	ui.btnMenuSys->setGeometry(QRect(520, 3, 94, 62));
 	ui.btnMenuSys->setText("");
-	ui.btnMenuSys->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_operator.png);}" //
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_operator_hover.png);}"
-		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_operator.png);}"); //
+	ui.btnMenuSys->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_operator.png);}" //
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_operator_hover.png);}"
+		"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_operator.png);}"); //
 	
 	//设置操作按钮位置、大小、背景图
 	ui.btnOneKey->setGeometry(QRect(605, 3, 94, 62));
 	ui.btnOneKey->setText("");
-	ui.btnOneKey->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey_hover.png);}"
-		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_onekey.png);}"); //
+	ui.btnOneKey->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_onekey.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_onekey_hover.png);}"
+		"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_onekey.png);}"); //
 
 	//设置操作按钮位置、大小、背景图
 	ui.btnSysClose->setGeometry(QRect(690, 3, 94, 62));
 	ui.btnSysClose->setText("");
-	ui.btnSysClose->setStyleSheet("QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_close.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_close_hover.png);}"
-		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_close.png);}"); //
+	ui.btnSysClose->setStyleSheet("QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_close.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_close_hover.png);}"
+		"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_close.png);}"); //
 
 	//设置最小化按钮隐藏
-	str = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btn_min_normal.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btn_min_hover.png);}"
-		"QPushButton:pressed{border-image: url(" + QString(g_AppPath) + "/img/btn_min_normal.png);}";
+	str = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_min_normal.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_min_hover.png);}"
+		"QPushButton:pressed{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btn_min_normal.png);}";
 	ui.btnSysMin->setStyleSheet(str);
 	ui.btnSysMin->setVisible(false);
 
@@ -1036,7 +1036,7 @@ void charging::adjustUI()
 	ui.lab_temperature_number->setStyleSheet("QLabel{font-size:24px;font-weight:bold;color:white}");
 	ui.lab_temperature_imge->setText("");
 	ui.lab_temperature_number->setText("0.0°");
-	ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" + QString(g_AppPath) + "/img/temperature_disenable.png);}");
+	ui.lab_temperature_imge->setStyleSheet("QLabel{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/temperature_disenable.png);}");
 
 
 	//设置调试信息区域
@@ -1048,8 +1048,8 @@ void charging::adjustUI()
 	m_Label_DebugInfo->setGeometry(QRect(10, 10, 150, 20));
 	m_Label_DebugInfo->setStyleSheet("QLabel{font-size:16px;font-weight:bold;color:black} ");
 	m_BtnMin_DebugInfo->setGeometry(QRect(309, 1, 40, 40));
-	str = "QPushButton{border-image: url(" + QString(g_AppPath) + "/img/btnDebugInfoMinNomarl.png);}"
-		"QPushButton:hover{border-image: url(" + QString(g_AppPath) + "/img/btnDebugInfoMinHover.png);}"
+	str = "QPushButton{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDebugInfoMinNomarl.png);}"
+		"QPushButton:hover{border-image: url(" +  QString::fromLocal8Bit(g_AppPath) + "/img/btnDebugInfoMinHover.png);}"
 		"QPushButton:pressed{border-image: url(" + QString(g_AppPath )+ "/img/btnDebugInfoMinPressed.png);}";
 	m_BtnMin_DebugInfo->setStyleSheet(str);
 
@@ -1177,7 +1177,7 @@ void charging::OnBtnShowDebugInfo()
 void charging::OnCheckAutoShowDebugInfo(int nState)
 { 
 	m_bAutoHideDebugInfo = (nState == 2);//打钩nState = 2, 不勾0
-	(CReadIniFile::getInstance()->writeProfileInfo("WidgetShow", "AutoHideDebugInfo", QString::number(m_bAutoHideDebugInfo), QString(g_AppPath) + "\\set.ini", &iError));
+	(CReadIniFile::getInstance()->writeProfileInfo("WidgetShow", "AutoHideDebugInfo", QString::number(m_bAutoHideDebugInfo), QString::fromLocal8Bit(g_AppPath) + "\\set.ini", &iError));
 }
 void charging::printfDebugInfo(QString strInfo, enDebugInfoPriority enLevel, bool bErrorInfo )
 {

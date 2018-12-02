@@ -27,7 +27,9 @@ public:
 	static COperatorFile* GetInstance(); //获取实例
 	~COperatorFile();
 	//设置运行目录
-	void setAppPath(QString strPath){ m_strAppPath = strPath; }
+	void setAppPath(QString strPath){
+		m_strAppPath = strPath; 
+	}
 	//读取所有配置
 	void readAllConfig(MAP_CLOSET& mapCloset, MAP_BATTERY& mapBattery, MAP_BATTERY_MODEL& mapBatteryModel,\
 		MAP_CHARGER& mapCharger,  int* iError); //读取所有配置：充电柜、电池、电池型号、继电器、充电器

@@ -20,7 +20,7 @@ bool COperatoreDBFile::onOpenDbFile()
 	bool bResult = true;
 	if (m_database.isOpen() == false)
 	{		
-		//m_database.setDatabaseName(QString(g_AppPath) + "\\chargedRecord.db");
+		//m_database.setDatabaseName( QString::fromLocal8Bit(g_AppPath) + "\\chargedRecord.db");
 		//bResult = m_database.open();
 		
 	}

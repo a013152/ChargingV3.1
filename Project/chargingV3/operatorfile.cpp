@@ -93,7 +93,7 @@ void COperatorFile::readBatteryInfo(MAP_BATTERY& mapBattery, int* iError)
 		*iError = ChargingClosetError::filePathError;
 		return;
 	}
-	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit", QString(g_AppPath) + "\\set.ini", iError).toInt();
+	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", iError).toInt();
 	QByteArray qba1, qba2; QString qstr1, qstr2; QStringList qstrlist; char szTemp[256] = { 0 }; int nIndexMap = 0;
 	 
 	while (!file.atEnd())
@@ -198,7 +198,7 @@ void COperatorFile::readChargerInfo(MAP_CHARGER& mapCharger, int* iError)
 		*iError = ChargingClosetError::filePathError;
 		return;
 	}
-	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit", QString(g_AppPath) + "\\set.ini", iError).toInt();
+	int nLevelLimit = CReadIniFile::getInstance()->readProfileInfo("SET", "nlevelLimit",  QString::fromLocal8Bit(g_AppPath) + "\\set.ini", iError).toInt();
 	QByteArray qba1, qba2; QString qstr1, qstr2; QStringList qstrlist; char szTemp[256] = { 0 };
 	while (!file.atEnd())
 	{
@@ -486,7 +486,7 @@ void COperatorFile::writeChargingModelInfo(MAP_BATTERY_MODEL& mapBatteryModel, i
 //读取申请电池未充电的信息
 void COperatorFile::readApplyBatteryToCharging(QVector<stApplyBatteryDontCharge>& vtApplyBattery, int* iError)
 {
-	QString str = g_AppPath;
+	QString str = m_strAppPath;
 	str += "/ApplyBatteryToCharging.txt";
 	 
 	QFile file(str);
