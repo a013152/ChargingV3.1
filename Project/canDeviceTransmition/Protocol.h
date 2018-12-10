@@ -12,11 +12,29 @@ extern "C"{
 #include "aes256.h"
 #include "crc.h"
 }
+#include <vector>
 
 struct stCAN_DevData;
 union UnionCRC;
 extern BYTE g_CAN_ID_Default[2];
 UINT  Uint8ToUint16(uint8_t * canID);
+
+
+struct stDEV_charger_status
+{ 
+	int _canid; //can id
+	uint8_t _status[16]; //状态 1打开充电 2关闭充电
+	stDEV_charger_status() :_canid(0){ 
+		memset(_status, 0x02, 15); _status[15] = 0; 
+	}
+	stDEV_charger_status(const  stDEV_charger_status& other){ 
+		this->_canid = other._canid; memcpy(this->_status, other._status, 16); 
+	}
+	stDEV_charger_status & operator=(const  stDEV_charger_status& other){
+		this->_canid = other._canid; memcpy(this->_status, other._status, 16);
+		return *this;
+	}
+};
 
 
 struct stDebugData 
@@ -261,6 +279,7 @@ private:
 	bool m_bReadChargeState = false;  //读取充电状态标志 0x07
 	bool m_bReadOnlineState = false;  //读取电池在位标志 0x09 0x0a
 	stBatteryInfo m_BatteryArray[30];
+	std::vector<stDEV_charger_status>m_vtStatus; //记录所有canid 的充电状态，在收到07数据时更新
 
 };
 

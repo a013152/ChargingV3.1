@@ -230,7 +230,7 @@ signals:
 
 	void AddCommamdIntoQueue(stCommand strCommand);
 
-	void printfed(QString strPrintf);
+	void printfed(QString strPrintf, int nDebugLevel);
 
 public:
 
@@ -325,7 +325,7 @@ public slots :
 	void OnBtnLevel();
 
 
-	void updateTextEdit(QString); 
+	void updateTextEdit(QString, int nDebugLevel);
 	
 	void detectTextEdit();  //测检textEdit 文本是否过长
 

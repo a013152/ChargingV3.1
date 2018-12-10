@@ -664,9 +664,9 @@ void charging::onRefreshUI(QString strID)
 
 
 // 更新textEdit 并且设置光标到末尾
-void charging::updateTextEdit(QString strContent)
+void charging::updateTextEdit(QString strContent, int nDebugLevel)
 { 
-	printfDebugInfo(strContent, enDebugInfoPriority::DebugInfoLevelThree); 
+	printfDebugInfo(strContent, (enDebugInfoPriority)nDebugLevel);
 } 
 
 //刷新解锁：允许所有刷新

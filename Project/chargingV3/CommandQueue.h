@@ -75,7 +75,7 @@ signals:
 	//param3  错误码 0 成功
 	void readed(QString strType, QString recvContend ,int iError );  
 
-	void printfed(QString writContend);
+	void printfed(QString writContend,int nDebugLevel);
 	
 
 	void readyGetBatteryState( int nClosetId);  //信号：完成读取一个柜子编号 

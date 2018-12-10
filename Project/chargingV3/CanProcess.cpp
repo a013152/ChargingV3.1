@@ -136,7 +136,7 @@ int CCanProcess::receiveFromCanDeviceProcess(char * szData, char * szPrintf)
 	{
 		DWORD rlen = 0;
 		ReadFile(s_hPipe, szData, MAX_BUF_SIZE, &rlen, NULL); //接受CAN进程发送过来的内容
-		sprintf_s(szPrintf, 256, "接收：%s\n", szData);
+		sprintf_s(szPrintf, MAX_BUF_SIZE, "接收：%s\n", szData);
 		return rlen;
 	}
 	sprintf_s(szPrintf, 256, "接收失败，管道未打开!\n");

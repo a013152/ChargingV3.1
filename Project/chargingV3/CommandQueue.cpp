@@ -4,7 +4,7 @@
 #include "CanProcess.h"
 #pragma execution_character_set("utf-8")
 #include "charging.h"
-static char szPrintf[256] = { 0 };
+static char szPrintf[MAX_BUF_SIZE] = { 0 };
 
 static int countQueueSize = 0;
 char szW[256] = { 0 }, szR[MAX_BUF_SIZE] = { 0 };
@@ -72,13 +72,13 @@ void CCommandQueue::run()  //处理队列 、并且发送数据
 				{ 
 					strMsg.sprintf("命令队列数量超过%d", m_iMaxLength);
 					strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(12).arg("red").arg(strMsg);
-					emit printfed(strPrint);
+					emit printfed(strPrint,3);
 				}
 			}
 			else{
 				strMsg = QString::number(m_iSend+1) + "次发送命令，尝试锁临界区超时 ,发送失败。";
 				strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(12).arg("red").arg(strMsg);
-				emit printfed(strPrint);
+				emit printfed(strPrint, 3);
 			}
 		}    
 		Sleep(30);
@@ -122,7 +122,7 @@ void CCommandQueue::addCommamd(stCommand command)
 	else{
 		strMsg = "添加" + command.m_strCommand.mid(3,6)+ " 单命令，尝试锁临界区超时 ,添加失败。";
 		strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(12).arg("red").arg(strMsg);
-		emit printfed(strPrint);
+		emit printfed(strPrint, 3);
 	}
 	
 }
@@ -143,6 +143,10 @@ void CCommandQueue::addVtCommand(QVector<stCommand>& vtStCommand)
 			else{
 				for (int i = vtStCommand.size() - 1; i >= 0; i--){
 					m_queComman.push_front(vtStCommand[i]);  //逆序插入
+
+					strMsg = "添加优先命令：" + vtStCommand[i].m_strCommand ;
+					strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(5).arg("red").arg(strMsg);
+					emit printfed(strPrint, 1);
 				}
 			}
 			m_MutexA.unlock();
@@ -150,7 +154,7 @@ void CCommandQueue::addVtCommand(QVector<stCommand>& vtStCommand)
 		else{
 			strMsg = "添加" + vtStCommand[0].m_strCommand.mid(5,1)+ "柜组命令，尝试锁临界区超时 ,添加失败。";
 			strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(12).arg("red").arg(strMsg);
-			emit printfed(strPrint);
+			emit printfed(strPrint, 3);
 		} 
 	} 
 }
@@ -211,11 +215,11 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			strcpy_s(szW, ba.data());
 			GET_CAN->sendToCanDeviceProcess(szW, 256, szPrintf);
 			m_strPrintf = "I write: "; m_strPrintf += stcommand.m_strCommand + "\r\n";
-			emit printfed(m_strPrintf); 
+			emit printfed(m_strPrintf, 3);
 
 			GET_CAN->receiveFromCanDeviceProcess(szR, szPrintf);
 			m_strPrintf = "I read: "; m_strPrintf += QString::fromLocal8Bit(szR) + "\r\n";
-			emit printfed(m_strPrintf);
+			emit printfed(m_strPrintf, 3);
 			 
 			//发送到charing分析解码
 			ls_temp = QString::fromLocal8Bit(szR);
@@ -234,7 +238,7 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 			if (command.at(4) == QChar('G') && (command.at(7) == QChar('0') && command.at(8) == QChar('1')))
 			{
 				Sleep(1000);
-				emit printfed("\r\n");
+				emit printfed("\r\n", 3);
 			}
 
 
@@ -248,11 +252,11 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 				SERIAL_PORT->ReadData(szReadData); ls_temp = QString("%1").arg(szReadData);
 				if (ls_temp.size() != 0){
 					ls_temp = "I discard: " + ls_temp;  //打印抛弃数据
-					emit printfed(ls_temp);
+					emit printfed(ls_temp, 3);
 				}
 
 				ls_temp = "I write: "; ls_temp += command.left(command.indexOf("\r\n"));
-				emit printfed(ls_temp);
+				emit printfed(ls_temp, 3);
 				ls_temp.clear();
 				baTemp = command.toLocal8Bit();
 				iLength = baTemp.size();
@@ -316,11 +320,11 @@ void CCommandQueue::sendCommand(stCommand stcommand)
 					if (iPosBegin == -1) strInfo += ",未找到*NF,";
 					if (iPosEnd == -1) strInfo += ",未找到\\r\\n,";
 
-					emit printfed(strInfo + "\r\n");
+					emit printfed(strInfo + "\r\n", 3);
 					//COperatorFile::GetInstance()->writeLog((QDateTime::currentDateTime()).toString("hh:mm:ss ") + strInfo + "\r\n");
 				}
 				else{
-					emit printfed("I read: " +command.mid(4, 1) + "接收超时,内存未收到数据\r\n");
+					emit printfed("I read: " + command.mid(4, 1) + "接收超时,内存未收到数据\r\n", 3);
 				}
 			}
 		}
@@ -333,7 +337,7 @@ void CCommandQueue::detectFinishOneCloset(stCommand currentCommand)
 { 		
 	if (currentCommand.lastCommandFlag == true ){		  
 		DEBUG_LOG(" 线程A-》 一组命令命令发送完毕 发送信号，拼装下一组命令\n")
-		emit printfed("\r\n");
+			emit printfed("\r\n", 3);
 
 		Sleep(1000);
 		

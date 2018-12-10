@@ -222,9 +222,9 @@ void charging::initConnectWidget()
 
 	QObject::connect(&m_CommandQueue, SIGNAL(readed(QString, QString, int)), this, SLOT(readSerial(QString, QString, int)));
 	QObject::connect(&m_CommandQueue, SIGNAL(readedCAN(QString)), this, SLOT(onReadCAN(QString)));
-	QObject::connect(&m_CommandQueue, SIGNAL(printfed(QString)), this, SLOT(updateTextEdit(QString)));
+	QObject::connect(&m_CommandQueue, SIGNAL(printfed(QString,int)), this, SLOT(updateTextEdit(QString,int)));
 	QObject::connect(&m_CommandQueue, SIGNAL(readyGetBatteryState( int)), this, SLOT(OnReadyGetBatteryState( int)));
-	QObject::connect(this, SIGNAL(printfed(QString)), this, SLOT(updateTextEdit(QString)));
+	QObject::connect(this, SIGNAL(printfed(QString,int)), this, SLOT(updateTextEdit(QString, int)));
 	QObject::connect(this, SIGNAL(refreshUI(QString)), this, SLOT(onRefreshUI(QString)));
 	 
 	QObject::connect(this, &charging::ExitApp, this, &charging::OnExitApp);

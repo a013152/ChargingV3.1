@@ -17,7 +17,7 @@ bool decideCANID(VT_STR  vtStrCommand ,char* resultString)
 	printf("判断CAN ID%s 是否符合规律", vtStrCommand[2].c_str());
 	if (isGoodCANID(vtStrCommand[2].c_str()))
 	{
-		printf("->符合\n");
+		printf("->符合 ");
 		return true;
 	}
 	else{

@@ -5,7 +5,7 @@
 
 #pragma execution_character_set("utf-8")
 
-static char szPrintf[256] = { 0 };
+static char szPrintf[MAX_BUF_SIZE] = { 0 };
 
 void charging::onBtnCanDevice(bool check){
 	onOpenOrCloseCanDevice(check);

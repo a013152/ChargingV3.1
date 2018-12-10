@@ -178,13 +178,13 @@ void charging::detectSubmitBatteryState()
 		str += "秒";
 		str += QString::number(temp % 1000); str += "毫秒";//
 		//printfDebugInfo(str, enDebugInfoPriority::DebugInfoLevelOne);
-		emit printfed(str);
+		emit printfed(str,3);
 
 		DEBUG_LOG("线程B=>" + str + "\n");
 	}
 	else
 	{	//printfDebugInfo("\r\n电池数据上传失败", enDebugInfoPriority::DebugInfoLevelOne);
-		emit printfed("\r\n电池数据上传失败");
+		emit printfed("\r\n电池数据上传失败", 3);
 		DEBUG_LOG("线程B=>电池数据上传失败\n");
 	}
 }
@@ -203,12 +203,13 @@ void charging::detectServerBatteryState()
 			if (item.myID == strMyId.toInt())
 			{
 				bool flag = battery_apply[i];
+				DEBUG_LOG("线程B=>获取my_id:" + strMyId + "申请充电:" + (flag?"trure":"false")+"\n");
 				if (item.bApply != flag)
 				{				
 					if (item.bApply == false && flag == true)
 					{
 						item.bNeedCharge = true;
-						DEBUG_LOG("线程B=>获取my_id:" + strMyId + "申请充电\n");
+						
 					}
 					else
 						item.bNeedCharge = false;

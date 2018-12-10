@@ -167,22 +167,46 @@ void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int 
 		//待修改: 需要根据UI情况赋值充电命令
 		if (changedId >= 0 && changedId <= 15)
 		{
+			size_t vtI = 0; bool bExist = false;
+			for (; vtI < m_vtStatus.size(); vtI++){
+				printf(" \nm_vtStatus[%d]._canid:%d === CurrentCanID %d\n", vtI, m_vtStatus[vtI]._canid, atoi(m_strCurrentCanID.c_str()));
+				if (m_vtStatus[vtI]._canid == atoi(m_strCurrentCanID.c_str())){
+					bExist = true; break;
+				}
+			}
+			
+
 			dataObj.Data_[0] = 0x01; // 0x01 设置
 			for (int i = 0; i < 15; i++){
-				if (m_BatteryArray[i].isOline_){
+				if (bExist){
+					//if (m_BatteryArray[i].isOline_){
+					//	if (changedId - 1 == i){
+					//		uint8_t chargingMode = bCharge == true ? 1 : 2;//1 开始充，2停止
+					//		dataObj.Data_[i + 1] = chargingMode;
+					//		m_vtStatus[vtI]._status[i] = chargingMode;
+					//		printf("%d",  m_vtStatus[vtI]._status[i]);
+					//	}
+					//	else{
+					//		dataObj.Data_[i + 1] = m_vtStatus[vtI]._status[i];
+					//		printf("%d",  m_vtStatus[vtI]._status[i]);
+					//	}
+					//}
+					//else{
+					//	dataObj.Data_[i + 1] = 0x02;
+					//	printf("%d",  2);
+					//}
 					if (changedId - 1 == i){
-						uint8_t chargingMode = bCharge == true ? 1 : 2;  
-						dataObj.Data_[i + 1] = chargingMode;//(m_BatteryArray[i].ChargingMode != 1 ? 1 : 2);//1 开始充，2停止
-						m_BatteryArray[i].ChargingMode = chargingMode;
+						m_vtStatus[vtI]._status[i] = (bCharge == true ? 1 : 2);//1 开始充，2停止
 					}
-					else{
-						dataObj.Data_[i + 1] = m_BatteryArray[i].ChargingMode;// 保留 ;
-					}
+					dataObj.Data_[i + 1] = m_vtStatus[vtI]._status[i];
+					printf("1# %d\n", m_vtStatus[vtI]._status[i]);
 				}
 				else{
 					dataObj.Data_[i + 1] = 0x02;
-				}
+					printf("2# 2\n");
+				} 
 			}
+			printf("\n");
 		}
 	}
 
@@ -451,22 +475,30 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			m_bReadChargeState = true;
 			//add 20181006 读取充电状态
 			sprintf_s(szTemp, 256, "%s,F9,%s,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success );
-			m_strDebugData += szTemp;
-			//m_strDebugData = "读取充电状态：\n";
+			m_strDebugData = szTemp;
+			stDEV_charger_status obj; obj._canid = atoi(m_strCurrentCanID.c_str()); size_t vtI = 0; bool bExist = false;
+			for (; vtI < m_vtStatus.size(); vtI++){
+				if (m_vtStatus[vtI]._canid == atoi(m_strCurrentCanID.c_str())){
+					obj = m_vtStatus[vtI]; bExist = true; break;
+				}
+			}
+			printf("\n接收%s充电状态：",m_strCurrentCanID.c_str());
 			for (int i = 2; i < 17; i++){
 				m_BatteryArray[i-2].ChargingMode = dataObj.Data_[i];
-				
-				/*if(dataObj.Data_[i]==0x01)
-					sprintf_s(szTemp, 256, " %02d:%02X 打开\n",i - 1, dataObj.Data_[i]);
-				else if(dataObj.Data_[i] == 0x02)
-					sprintf_s(szTemp, 256, " %02d:%02X 关闭\n", i - 1, dataObj.Data_[i]);
-				else if (dataObj.Data_[i] == 0xff)
-					sprintf_s(szTemp, 256, " %02d:%02X 自动\n", i - 1, dataObj.Data_[i]);*/
+				obj._status[i - 2] = dataObj.Data_[i] == 0xff ? 0x02 : dataObj.Data_[i];  //保存充电状态
+				printf("%d", obj._status[i - 2]);
 				sprintf_s(szTemp, 256, "%d", dataObj.Data_[i]);
 				m_strDebugData += szTemp;
 				 
-			}
+			}printf("\n");
 			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
+			if (bExist){	
+				m_vtStatus[vtI] = obj; //更新充电状态
+			}
+			else { 
+				m_vtStatus.push_back(obj); 
+			}
+
 		}
 		if (0x01 == dataObj.Data_[1] ){
 			//sprintf_s(szTemp, 256, "设置充电结束。返回码:%02X", dataObj.Data_[0]);
