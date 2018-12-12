@@ -199,14 +199,14 @@ void CProtocol::getCommandCharge(stCAN_DevData& dataObj, bool bReadOrWrite, int 
 						m_vtStatus[vtI]._status[i] = (bCharge == true ? 1 : 2);//1 ¿ªÊ¼³ä£¬2Í£Ö¹
 					}
 					dataObj.Data_[i + 1] = m_vtStatus[vtI]._status[i];
-					printf("1# %d\n", m_vtStatus[vtI]._status[i]);
+					//printf("1# %d\n", m_vtStatus[vtI]._status[i]);
 				}
 				else{
 					dataObj.Data_[i + 1] = 0x02;
-					printf("2# 2\n");
+					//printf("2# 2\n");
 				} 
 			}
-			printf("\n");
+			//printf("\n");
 		}
 	}
 

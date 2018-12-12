@@ -144,9 +144,9 @@ void CCommandQueue::addVtCommand(QVector<stCommand>& vtStCommand)
 				for (int i = vtStCommand.size() - 1; i >= 0; i--){
 					m_queComman.push_front(vtStCommand[i]);  //逆序插入
 
-					strMsg = "添加优先命令：" + vtStCommand[i].m_strCommand ;
-					strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(5).arg("red").arg(strMsg);
-					emit printfed(strPrint, 1);
+					//strMsg = "添加优先命令：" + vtStCommand[i].m_strCommand;
+					//strPrint = QString("<p><font size=\"%1\" color=\"%2\">%3</font></p>").arg(5).arg("red").arg(strMsg);
+					//emit printfed(strPrint, 1);
 				}
 			}
 			m_MutexA.unlock();
