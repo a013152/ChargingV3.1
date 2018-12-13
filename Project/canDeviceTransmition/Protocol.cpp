@@ -293,23 +293,26 @@ void CProtocol::getCommandDisCharge(stCAN_DevData& dataObj, bool bReadOrWrite, i
 	else
 	{
 		// 0x01 设置
-		//待修改: 需要根据UI情况赋值充电命令
 		if (dischangedId >= 0 && dischangedId <= 15)
 		{
+			//查找之前的放电状态
+			size_t vtI = 0; bool bExist = false;
+			for (; vtI < m_vtStatus.size(); vtI++){				
+				if (m_vtStatus[vtI]._canid == atoi(m_strCurrentCanID.c_str())){
+					bExist = true; break;
+				}
+			} 
+
 			dataObj.Data_[0] = 0x01; // 0x01 设置
 			for (int i = 0; i < 15; i++){
-				if (m_BatteryArray[i].isOline_){
+				if (bExist){ 
 					if (dischangedId - 1 == i){
-						uint8_t DischargingMode = bDischarge == true ? 1 : 0;//1 开始放电，0停止
-						dataObj.Data_[i + 1] = DischargingMode;
-						m_BatteryArray[i].DischargingMode = DischargingMode;
+						m_vtStatus[vtI]._status_d[i] = (bDischarge == true ? 1 : 0);//1 打开放电，0关闭放电
 					}
-					else{
-						dataObj.Data_[i + 1] = m_BatteryArray[i].DischargingMode;// 保留 ;
-					}
+					dataObj.Data_[i + 1] = m_vtStatus[vtI]._status_d[i]; 
 				}
 				else{
-					dataObj.Data_[i + 1] = 0x00;
+					dataObj.Data_[i + 1] = 0x00; 
 				}
 			}
 		}
@@ -663,10 +666,25 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			//add 20181007 读取放电状态
 			sprintf_s(szTemp, 256, "%s,F10,%s,%d,", S2C, m_strCurrentCanID.c_str(), enCANDevieErrorCode::Success);
 			m_strDebugData += szTemp; 
-			for (int i = 2; i < 17; i++){
-				m_BatteryArray[i - 2].ChargingMode = dataObj.Data_[i]; 
+			//查找之前的放电状态
+			stDEV_charger_status obj; obj._canid = atoi(m_strCurrentCanID.c_str()); size_t vtI = 0; bool bExist = false;
+			for (; vtI < m_vtStatus.size(); vtI++){
+				if (m_vtStatus[vtI]._canid == atoi(m_strCurrentCanID.c_str())){
+					obj = m_vtStatus[vtI]; bExist = true; break;
+				}
+			} 
+			for (int i = 2; i < 17; i++){ 
+				obj._status_d[i - 2] = dataObj.Data_[i] ;  //保存放电状态 0关闭 1打开				
 				sprintf_s(szTemp, 256, "%d", dataObj.Data_[i]);
-				m_strDebugData += szTemp; 
+				m_strDebugData += szTemp;
+
+			} 
+			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
+			if (bExist){
+				m_vtStatus[vtI] = obj; //更新充电状态
+			}
+			else {
+				m_vtStatus.push_back(obj);
 			}
 		}
 		if (0x01 == dataObj.Data_[1]){
