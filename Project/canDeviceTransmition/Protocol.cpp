@@ -488,12 +488,18 @@ void CProtocol::analyzeReceiveData(BYTE* szData, int Length)
 			printf("\n接收%s充电状态：",m_strCurrentCanID.c_str());
 			for (int i = 2; i < 17; i++){
 				m_BatteryArray[i-2].ChargingMode = dataObj.Data_[i];
-				obj._status[i - 2] = dataObj.Data_[i] == 0xff ? 0x02 : dataObj.Data_[i];  //保存充电状态
+				if (dataObj.Data_[i] == 1 || dataObj.Data_[i] == 2)
+					obj._status[i - 2] = dataObj.Data_[i];  //保存充电状态
+				else
+					obj._status[i - 2] = 2;
 				printf("%d", obj._status[i - 2]);
-				sprintf_s(szTemp, 256, "%d", dataObj.Data_[i]);
+				sprintf_s(szTemp, 256, "%d", obj._status[i - 2]);
 				m_strDebugData += szTemp;
 				 
-			}printf("\n");
+			}
+			if (m_strDebugData.length() > 28)
+				m_strDebugData[28] = 0;
+			printf("\n");
 			if (m_pPrintfFun){ m_pPrintfFun(1, true); }
 			if (bExist){	
 				m_vtStatus[vtI] = obj; //更新充电状态
