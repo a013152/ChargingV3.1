@@ -1202,7 +1202,14 @@ void charging::printfDebugInfo(QString strInfo, enDebugInfoPriority enLevel, boo
 		}
 	}
 }
-
+//覆盖原有调试信息
+void charging::onSetDebugInfo(QString strInfo)
+{
+	if (m_TextEdit_DebugInfo == nullptr)
+		return;
+	m_TextEdit_DebugInfo->clear();
+	m_TextEdit_DebugInfo->setText(strInfo);
+}
 
 void charging::OnRefreshState(enRefreshType type, int index)
 {

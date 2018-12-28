@@ -349,7 +349,7 @@ void COperatorFile::writeDebugLog(QString str)
 		if (bLockRet){
 			//判断文件大小，如果超过MAX_SIZE，清空
 			long long fileSize = m_pDebugLogfile->size();
-			static int MAX_SIZE = 1024 * 1024;
+			static int MAX_SIZE = 1024 * 1024 *5; //5mb
 			
 			if (fileSize > MAX_SIZE){
 				m_pDebugLogfile->resize(0);

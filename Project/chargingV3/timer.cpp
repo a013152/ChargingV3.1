@@ -581,15 +581,15 @@ void charging::detectTextEdit()
 		QStringList strlist = str.split("\n");	 
 		int nCount = strlist.size();
 		DEBUG_LOG(" 定时器-》超过10分钟-》检测调试信息文本行数" + QString::number(strlist.size()) + "\n");
-		for (int i = 0; i < strlist.size(); i++){
-			if (strlist.size() > 300)
+		for (int i = 0; i < strlist.size() - 100; i++){
 				strlist.removeAt(0); 
 		}
 		for (int i = 0; i < strlist.size(); i++){
 			str2 += strlist[i] + "\r\n";
 		}
 		DEBUG_LOG(" 定时器-》超过10分钟-》裁剪后信息文本行数" + QString::number(strlist.size()) + "\n");
-		m_TextEdit_DebugInfo->setText(str2);
+		//m_TextEdit_DebugInfo->setText(str2);
+		emit setDebugInfo(str2);
 		s_Qtime.restart();
 	}
 	DEBUG_LOG(" 定时器-》结束检测信息文本\n");

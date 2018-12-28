@@ -371,6 +371,8 @@ public slots :
 	void updateListviewBatteryModel(int indexMem = -1);  //更新详细电池数据
 
 	void onOpenOrCloseCanDevice(bool bOpenOrClose);
+
+	void onSetDebugInfo(QString strInfo);  //覆盖原有调试信息
 public slots:
 	void allClosetCharging();
 	void oneClosetCharging();
@@ -381,7 +383,7 @@ public slots:
 	
 signals:
 	void refreshUI(QString strID);  //刷新信号 ： 参数电池ID 
-
+	void setDebugInfo(QString);  //定时器清理调试信息
 
 	
 private:
