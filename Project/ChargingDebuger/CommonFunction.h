@@ -31,6 +31,16 @@ public:
 	/*宽字节转多字节*/
 	static std::string WStringToMBytes(const wchar_t* lpwcszWString);
 
+	// ASCII与Unicode互转  
+	static std::wstring AsciiToUnicode(const std::string& str);
+	static std::string  UnicodeToAscii(const std::wstring& wstr);
+	// UTF8与Unicode互转  
+	static std::wstring Utf8ToUnicode(const std::string& str);
+	static std::string  UnicodeToUtf8(const std::wstring& wstr);
+	// ASCII与UTF8互转  
+	static std::string  AsciiToUtf8(const std::string& str);
+	static std::string  Utf8ToAscii(const std::string& str);
+
 
 	//查找can设备通讯进程:返回进程id
 	static DWORD GetProcessidFromName(LPCTSTR name);
