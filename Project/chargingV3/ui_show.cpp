@@ -1208,7 +1208,7 @@ void charging::onSetDebugInfo(QString strInfo)
 	if (m_TextEdit_DebugInfo == nullptr)
 		return;
 	m_TextEdit_DebugInfo->clear();
-	m_TextEdit_DebugInfo->setText(strInfo);
+	//m_TextEdit_DebugInfo->setText(strInfo);
 }
 
 void charging::OnRefreshState(enRefreshType type, int index)
