@@ -1,0 +1,5 @@
+1、调整UI
+	使用RadioButton控件代替TableWidget： 切换柜子功能， OK
+		超过5个柜子时出现切换页按钮， 翻页控制与显示。 OK
+	设置tabPage样式，跟换底色。 OK
+		
